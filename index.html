@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>도지봇 | DOGE BOT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Sans+SC:wght@400;500;700;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg: #14110d;
+  --panel: #1c1813;
+  --panel-2: #221c14;
+  --line: #332a1c;
+  --doge-orange: #ff8a1f;
+  --doge-gold: #ffce5c;
+  --ink: #f3ead9;
+  --ink-dim: #b3a795;
+  --ink-faint: #756b59;
+  --shadow-ink: #0a0805;
+  --radius: 18px;
+  --radius-sm: 10px;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:
+    radial-gradient(ellipse 900px 500px at 80% -10%, rgba(255,138,31,0.10), transparent 60%),
+    radial-gradient(ellipse 700px 500px at -10% 100%, rgba(255,206,92,0.06), transparent 60%),
+    var(--bg);
+  color: var(--ink);
+  font-family: 'Noto Sans KR','Inter',sans-serif;
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+[lang-ja] body{ font-family:'Noto Sans JP','Inter',sans-serif; }
+[lang-zh] body{ font-family:'Noto Sans SC','Inter',sans-serif; }
+
+.display{
+  font-family:'Jua','Noto Sans KR',sans-serif;
+  letter-spacing:0.5px;
+}
+.app{
+  display:grid;
+  grid-template-columns: 280px 1fr;
+  min-height:100vh;
+}
+@media (max-width: 860px){
+  .app{ grid-template-columns: 1fr; }
+  .sidebar{ position:static; }
+}
+
+/* ---------- SIDEBAR ---------- */
+.sidebar{
+  background: linear-gradient(180deg, var(--panel) 0%, #161210 100%);
+  border-right: 1px solid var(--line);
+  padding: 22px 18px 28px;
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+  position: sticky;
+  top:0;
+  height:100vh;
+  overflow-y:auto;
+}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, var(--doge-orange), #d96a00);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 3px 0 var(--shadow-ink);
+}
+.brand-coin{
+  width:30px;height:30px;flex:none;
+}
+.brand-text{
+  font-family:'Jua','Noto Sans KR',sans-serif;
+  font-size: 17px;
+  color:#1a1308;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.25);
+  line-height:1.1;
+}
+.search-box{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  background: var(--panel-2);
+  border:1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding:9px 12px;
+}
+.search-box input{
+  background:none;
+  border:none;
+  outline:none;
+  color:var(--ink);
+  font-size:13px;
+  width:100%;
+  font-family:inherit;
+}
+.search-box input::placeholder{ color: var(--ink-faint); }
+.search-box svg{ flex:none; opacity:.6; }
+
+.nav{
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+  margin-top:4px;
+}
+.nav-item{
+  display:flex;
+  align-items:center;
+  gap:11px;
+  padding:11px 12px;
+  border-radius: var(--radius-sm);
+  cursor:pointer;
+  color: var(--ink-dim);
+  font-weight:700;
+  font-size:14.5px;
+  border:1px solid transparent;
+  background:none;
+  text-align:left;
+  width:100%;
+  font-family:'Noto Sans KR','Inter',sans-serif;
+  transition: background .15s, color .15s, border-color .15s, transform .1s;
+}
+.nav-item .ic{ width:18px; flex:none; text-align:center; opacity:.85; }
+a.nav-item{ text-decoration:none; box-sizing:border-box; }
+.nav-item:hover{ background: rgba(255,138,31,0.08); color: var(--ink); }
+.nav-item.active{
+  background: rgba(255,138,31,0.14);
+  border-color: rgba(255,138,31,0.35);
+  color: var(--doge-gold);
+}
+.nav-item:active{ transform: scale(0.98); }
+
+.sidebar-spacer{ flex:1; }
+
+.auth-zone{
+  border-top:1px solid var(--line);
+  padding-top:16px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.btn-discord{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:9px;
+  width:100%;
+  padding:11px 14px;
+  background: #5865F2;
+  color:#fff;
+  border:none;
+  border-radius: var(--radius-sm);
+  font-weight:700;
+  font-size:13.5px;
+  cursor:pointer;
+  box-shadow: 0 3px 0 #3a44c4;
+  font-family:'Noto Sans KR','Inter',sans-serif;
+  transition: transform .1s, box-shadow .1s;
+}
+.btn-discord:hover{ filter:brightness(1.06); }
+.btn-discord:active{ transform: translateY(2px); box-shadow:0 1px 0 #3a44c4; }
+
+.user-card{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  background: var(--panel-2);
+  border:1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding:9px 10px;
+}
+.user-avatar{
+  width:34px;height:34px;border-radius:50%;
+  background: linear-gradient(135deg,var(--doge-orange),var(--doge-gold));
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px; flex:none;
+}
+.user-meta{ flex:1; min-width:0; }
+.user-name{ font-size:13px; font-weight:700; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.user-tag{ font-size:11px; color: var(--ink-faint); }
+.btn-logout{
+  background:none;
+  border:1px solid var(--line);
+  color: var(--ink-dim);
+  border-radius:8px;
+  padding:7px 10px;
+  font-size:12px;
+  font-weight:700;
+  cursor:pointer;
+  font-family:'Noto Sans KR','Inter',sans-serif;
+}
+.btn-logout:hover{ background: rgba(255,90,90,0.1); color:#ff8d8d; border-color:rgba(255,90,90,0.3); }
+
+/* ---------- MAIN ---------- */
+.main{
+  padding: 26px 5vw 70px;
+  max-width: 1080px;
+}
+.topbar{
+  display:flex;
+  justify-content:flex-end;
+  margin-bottom: 8px;
+}
+.lang-wrap{ position:relative; }
+.btn-settings{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  background: var(--panel);
+  border:1px solid var(--line);
+  color: var(--ink-dim);
+  padding:9px 14px;
+  border-radius: 999px;
+  cursor:pointer;
+  font-weight:600;
+  font-size:13px;
+  font-family:'Noto Sans KR','Inter',sans-serif;
+}
+.btn-settings:hover{ color:var(--doge-gold); border-color: rgba(255,138,31,.4); }
+.btn-settings svg{ transition: transform .4s; }
+.btn-settings.open svg{ transform: rotate(75deg); }
+
+.lang-menu{
+  position:absolute;
+  right:0;
+  top:calc(100% + 8px);
+  background: var(--panel);
+  border:1px solid var(--line);
+  border-radius: 12px;
+  padding:6px;
+  display:none;
+  min-width:170px;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.45);
+  z-index: 30;
+}
+.lang-menu.show{ display:block; }
+.lang-opt{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:9px 10px;
+  border-radius:8px;
+  cursor:pointer;
+  font-size:13.5px;
+  color: var(--ink-dim);
+  font-weight:600;
+}
+.lang-opt:hover{ background: rgba(255,138,31,0.1); color:var(--ink); }
+.lang-opt.active{ color: var(--doge-gold); background: rgba(255,138,31,0.12); }
+.lang-flag{ font-size:16px; }
+
+.hero{
+  text-align:center;
+  margin: 18px 0 30px;
+}
+.hero h1{
+  font-family:'Jua','Noto Sans KR',sans-serif;
+  font-size: clamp(30px, 4.5vw, 46px);
+  background: linear-gradient(135deg, var(--doge-gold), var(--doge-orange));
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  margin:0 0 6px;
+}
+.hr{
+  height:1px;
+  background: linear-gradient(90deg, transparent, var(--line) 15%, var(--line) 85%, transparent);
+  margin: 22px 0;
+}
+
+.page{ display:none; animation: fade .25s ease; }
+.page.active{ display:block; }
+@keyframes fade{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+
+.lead{
+  text-align:center;
+  font-size: 18px;
+  font-weight:700;
+  line-height:1.7;
+  color: var(--ink);
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.section-title{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-family:'Jua','Noto Sans KR',sans-serif;
+  font-size:20px;
+  color: var(--doge-gold);
+  margin: 26px 0 14px;
+}
+.section-title .tri{ color: var(--doge-orange); }
+
+.card-grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px,1fr));
+  gap:14px;
+  margin-top: 16px;
+}
+.card{
+  background: var(--panel);
+  border:1px solid var(--line);
+  border-radius: var(--radius);
+  padding:18px;
+}
+.card h3{
+  margin:0 0 8px;
+  font-family:'Jua','Noto Sans KR',sans-serif;
+  color: var(--ink);
+  font-size:16px;
+}
+.card p{
+  margin:0;
+  font-size:13.5px;
+  line-height:1.7;
+  color: var(--ink-dim);
+}
+
+.bodytext p{
+  font-size:15px;
+  line-height:1.9;
+  color: var(--ink-dim);
+  margin: 0 0 14px;
+}
+.bodytext strong{ color: var(--ink); }
+
+.qna-item{
+  background: var(--panel);
+  border:1px solid var(--line);
+  border-radius: var(--radius-sm);
+  margin-bottom:10px;
+  overflow:hidden;
+}
+.qna-q{
+  padding:14px 16px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  cursor:pointer;
+  font-weight:700;
+  font-size:14.5px;
+}
+.qna-q .tri{ color: var(--doge-orange); transition: transform .2s; flex:none; }
+.qna-item.open .qna-q .tri{ transform: rotate(90deg); }
+.qna-a{
+  max-height:0;
+  overflow:hidden;
+  transition: max-height .25s ease;
+  padding: 0 16px;
+  color: var(--ink-dim);
+  font-size:13.5px;
+  line-height:1.8;
+}
+.qna-item.open .qna-a{ max-height: 200px; padding: 0 16px 16px; }
+
+.invite-box{
+  background: linear-gradient(135deg, rgba(255,138,31,.12), rgba(255,206,92,.05));
+  border: 1px solid rgba(255,138,31,.3);
+  border-radius: var(--radius);
+  padding: 30px 24px;
+  text-align:center;
+  margin-top:18px;
+}
+.invite-box p{ color: var(--ink-dim); font-size:14px; margin: 8px 0 18px; }
+.btn-invite{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  background: var(--doge-orange);
+  color:#1a1308;
+  font-family:'Jua','Noto Sans KR',sans-serif;
+  font-size:15px;
+  border:none;
+  padding:13px 26px;
+  border-radius: 999px;
+  cursor:pointer;
+  box-shadow: 0 4px 0 #c46300;
+}
+.btn-invite:active{ transform: translateY(3px); box-shadow:0 1px 0 #c46300; }
+
+.gate{
+  text-align:center;
+  padding: 50px 20px;
+  color: var(--ink-faint);
+  font-size:14px;
+}
+.gate strong{ color: var(--doge-gold); }
+
+footer{
+  text-align:center;
+  color: var(--ink-faint);
+  font-size:12px;
+  padding: 30px 0 10px;
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="brand">
+      <svg class="brand-coin" viewBox="0 0 40 40"><circle cx="20" cy="20" r="19" fill="#1a1308" stroke="#fff3d6" stroke-width="1.5"/><text x="20" y="27" text-anchor="middle" font-family="Jua" font-size="20" fill="#ffce5c">D</text></svg>
+      <div class="brand-text" data-i18n="brandTitle">도지봇 | DOGE BOT</div>
+    </div>
+
+    <div class="search-box">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" data-i18n-placeholder="search" placeholder="검색">
+    </div>
+
+    <nav class="nav">
+      <button class="nav-item" data-page="home"><span class="ic">⌂</span><span data-i18n="navHome">홈메뉴</span></button>
+      <button class="nav-item" data-page="intro"><span class="ic">✦</span><span data-i18n="navIntro">도지봇 소개</span></button>
+      <button class="nav-item" data-page="invite"><span class="ic">☞</span><span data-i18n="navInvite">도지봇 초대</span></button>
+      <a class="nav-item" href="https://dog869973-prog.github.io/-dogebot/terms.html" target="_blank" rel="noopener"><span class="ic">♣</span><span data-i18n="navTerms">도지봇 이용약관</span></a>
+      <a class="nav-item" href="https://dog869973-prog.github.io/-dogebot/privacy.html" target="_blank" rel="noopener"><span class="ic">♤</span><span data-i18n="navPrivacy">개인정보처리방침</span></a>
+      <button class="nav-item" data-page="qna"><span class="ic">▶</span><span data-i18n="navQna">QnA</span></button>
+    </nav>
+
+    <div class="sidebar-spacer"></div>
+
+    <div class="auth-zone">
+      <button class="btn-discord" id="loginBtn">
+        <svg width="18" height="18" viewBox="0 0 127.14 96.36"><path fill="#fff" d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1A105.25,105.25,0,0,0,126.6,80.22h0C129.24,52.84,122.09,29.11,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,46,96.12,53,91.08,65.69,84.69,65.69Z"/></svg>
+        <span data-i18n="loginBtn">디스코드로 로그인</span>
+      </button>
+
+      <div class="user-card" id="userCard" style="display:none;">
+        <div class="user-avatar">🐶</div>
+        <div class="user-meta">
+          <div class="user-name">DogeMaster</div>
+          <div class="user-tag">#0420</div>
+        </div>
+        <button class="btn-logout" id="logoutBtn" data-i18n="logoutBtn">로그아웃</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="topbar">
+      <div class="lang-wrap">
+        <button class="btn-settings" id="settingsBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span data-i18n="settings">설정</span>
+        </button>
+        <div class="lang-menu" id="langMenu">
+          <div class="lang-opt" data-lang="ko"><span class="lang-flag">🇰🇷</span>한국어</div>
+          <div class="lang-opt" data-lang="en"><span class="lang-flag">🇺🇸</span>English</div>
+          <div class="lang-opt" data-lang="ja"><span class="lang-flag">🇯🇵</span>日本語</div>
+          <div class="lang-opt" data-lang="zh"><span class="lang-flag">🇨🇳</span>中文</div>
+          <div class="lang-opt" data-lang="fr"><span class="lang-flag">🇫🇷</span>Français</div>
+          <div class="lang-opt" data-lang="ru"><span class="lang-flag">🇷🇺</span>Русский</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HOME / INTRO PAGE -->
+    <section class="page active" id="page-home">
+      <div class="hero">
+        <h1 class="display" data-i18n="brandTitle">도지봇 | DOGE BOT</h1>
+      </div>
+      <div class="hr"></div>
+      <p class="lead" data-i18n="heroLead">도지봇은 디스코드에서 필요한 커뮤니티용 봇으로, 다양한 기능과 정보를 제공합니다.</p>
+      <div class="hr"></div>
+
+      <div class="section-title"><span class="tri">▶</span><span data-i18n="whyTitle">도지봇의 특징</span></div>
+      <div class="card-grid">
+        <div class="card">
+          <h3 data-i18n="why1Title">실시간 소통</h3>
+          <p data-i18n="why1Body">지속적인 업데이트와 활발한 유저 소통을 통해 커뮤니티에 꼭 맞게 설계되었습니다.</p>
+        </div>
+        <div class="card">
+          <h3 data-i18n="why2Title">계속되는 연구</h3>
+          <p data-i18n="why2Body">2025년부터 개발을 시작해 지금까지도 새로운 기능을 연구하고 있습니다.</p>
+        </div>
+        <div class="card">
+          <h3 data-i18n="why3Title">충실한 컨셉</h3>
+          <p data-i18n="why3Body">신식 기능을 꾸준히 추가하면서도 도지(Doge) 컨셉에 충실하도록 설계 중입니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- INTRO PAGE -->
+    <section class="page" id="page-intro">
+      <div class="section-title"><span class="tri">✦</span><span data-i18n="navIntro">도지봇 소개</span></div>
+      <div class="bodytext">
+        <p data-i18n="introP1">도지봇은 디스코드 서버 운영에 필요한 다양한 기능을 한곳에 모은 커뮤니티 전용 봇입니다.</p>
+        <p data-i18n="introP2">멤버 관리, 알림, 미니게임 등 서버 분위기를 살리는 기능들을 지속적으로 추가하고 있으며, 사용자 피드백을 반영해 매주 업데이트되고 있습니다.</p>
+        <p data-i18n="introP3">앞으로도 도지(Doge) 특유의 유쾌한 컨셉을 잃지 않으면서, 실제로 유용한 커뮤니티 도구로 발전시켜 나갈 예정입니다.</p>
+      </div>
+    </section>
+
+    <!-- INVITE PAGE -->
+    <section class="page" id="page-invite">
+      <div class="section-title"><span class="tri">☞</span><span data-i18n="navInvite">도지봇 초대</span></div>
+      <div class="invite-box">
+        <div style="font-family:'Jua'; font-size:20px; color:var(--doge-gold);" data-i18n="inviteHeadline">내 서버에 도지봇 데려오기</div>
+        <p data-i18n="inviteBody">버튼 한 번이면 도지봇이 여러분의 디스코드 서버에 합류합니다.</p>
+        <button class="btn-invite" id="inviteAction">🐶 <span data-i18n="inviteBtn">디스코드에 초대하기</span></button>
+      </div>
+    </section>
+
+    <!-- TERMS & PRIVACY now link to external pages, see sidebar -->
+    <section class="page" id="page-terms" style="display:none"></section>
+
+    <section class="page" id="page-privacy" style="display:none"></section>
+
+    <!-- QNA PAGE -->
+    <section class="page" id="page-qna">
+      <div class="section-title"><span class="tri">▶</span><span data-i18n="navQna">QnA</span></div>
+
+      <div class="qna-item">
+        <div class="qna-q"><span class="tri">▶</span><span data-i18n="q1">도지봇은 무료인가요?</span></div>
+        <div class="qna-a" data-i18n="a1">네, 도지봇의 모든 기본 기능은 무료로 제공됩니다.</div>
+      </div>
+      <div class="qna-item">
+        <div class="qna-q"><span class="tri">▶</span><span data-i18n="q2">로그인은 어떻게 하나요?</span></div>
+        <div class="qna-a" data-i18n="a2">왼쪽 사이드바 하단의 디스코드로 로그인 버튼을 눌러 디스코드 계정으로 간편하게 로그인할 수 있습니다.</div>
+      </div>
+      <div class="qna-item">
+        <div class="qna-q"><span class="tri">▶</span><span data-i18n="q3">기능 추가 요청은 어디서 하나요?</span></div>
+        <div class="qna-a" data-i18n="a3">공식 디스코드 서버 내 건의 채널을 통해 언제든지 요청해 주세요.</div>
+      </div>
+    </section>
+
+    <footer data-i18n="footer">© 2025 도지봇 | DOGE BOT. All rights reserved.</footer>
+  </main>
+</div>
+
+<script>
+const i18n = {
+  ko: {
+    brandTitle:"도지봇 | DOGE BOT", search:"검색", settings:"설정",
+    navHome:"홈메뉴", navIntro:"도지봇 소개", navInvite:"도지봇 초대", navTerms:"도지봇 이용약관", navPrivacy:"개인정보처리방침", navQna:"QnA",
+    loginBtn:"디스코드로 로그인", logoutBtn:"로그아웃",
+    heroLead:"도지봇은 디스코드에서 필요한 커뮤니티용 봇으로, 다양한 기능과 정보를 제공합니다.",
+    whyTitle:"도지봇의 특징",
+    why1Title:"실시간 소통", why1Body:"지속적인 업데이트와 활발한 유저 소통을 통해 커뮤니티에 꼭 맞게 설계되었습니다.",
+    why2Title:"계속되는 연구", why2Body:"2025년부터 개발을 시작해 지금까지도 새로운 기능을 연구하고 있습니다.",
+    why3Title:"충실한 컨셉", why3Body:"신식 기능을 꾸준히 추가하면서도 도지(Doge) 컨셉에 충실하도록 설계 중입니다.",
+    introP1:"도지봇은 디스코드 서버 운영에 필요한 다양한 기능을 한곳에 모은 커뮤니티 전용 봇입니다.",
+    introP2:"멤버 관리, 알림, 미니게임 등 서버 분위기를 살리는 기능들을 지속적으로 추가하고 있으며, 사용자 피드백을 반영해 매주 업데이트되고 있습니다.",
+    introP3:"앞으로도 도지(Doge) 특유의 유쾌한 컨셉을 잃지 않으면서, 실제로 유용한 커뮤니티 도구로 발전시켜 나갈 예정입니다.",
+    inviteHeadline:"내 서버에 도지봇 데려오기", inviteBody:"버튼 한 번이면 도지봇이 여러분의 디스코드 서버에 합류합니다.", inviteBtn:"디스코드에 초대하기",
+    termsArt1:"제1조 (목적)", termsP1:"본 약관은 도지봇이 제공하는 서비스의 이용 조건 및 절차에 관한 사항을 규정함을 목적으로 합니다.",
+    termsArt2:"제2조 (서비스 이용)", termsP2:"이용자는 디스코드 계정으로 로그인하여 서비스를 이용할 수 있으며, 관련 법령 및 디스코드 이용약관을 준수해야 합니다.",
+    termsArt3:"제3조 (책임 제한)", termsP3:"도지봇은 무료로 제공되는 서비스이며, 예기치 못한 오류나 일시적 장애에 대해 별도의 보상을 하지 않습니다.",
+    privP1:"도지봇은 서비스 제공을 위해 디스코드 로그인 시 제공되는 최소한의 정보(닉네임, 디스코드 ID, 프로필 이미지)만을 수집합니다.",
+    privP2:"수집된 정보는 서비스 운영 목적 외에는 사용되지 않으며, 이용자가 원할 경우 언제든지 연동 해제 및 정보 삭제를 요청할 수 있습니다.",
+    privP3:"제3자에게 개인정보를 제공하지 않으며, 관련 법령에 따라 안전하게 보관 및 관리합니다.",
+    q1:"도지봇은 무료인가요?", a1:"네, 도지봇의 모든 기본 기능은 무료로 제공됩니다.",
+    q2:"로그인은 어떻게 하나요?", a2:"왼쪽 사이드바 하단의 디스코드로 로그인 버튼을 눌러 디스코드 계정으로 간편하게 로그인할 수 있습니다.",
+    q3:"기능 추가 요청은 어디서 하나요?", a3:"공식 디스코드 서버 내 건의 채널을 통해 언제든지 요청해 주세요.",
+    footer:"© 2025 도지봇 | DOGE BOT. All rights reserved."
+  },
+  en: {
+    brandTitle:"DOGE BOT", search:"Search", settings:"Settings",
+    navHome:"Home", navIntro:"About Doge Bot", navInvite:"Invite Doge Bot", navTerms:"Terms of Service", navPrivacy:"Privacy Policy", navQna:"QnA",
+    loginBtn:"Log in with Discord", logoutBtn:"Log out",
+    heroLead:"Doge Bot is the community bot your Discord server needs, packed with features and useful info.",
+    whyTitle:"What makes Doge Bot different",
+    why1Title:"Active community", why1Body:"Built around steady updates and real engagement with users, made for thriving communities.",
+    why2Title:"Always evolving", why2Body:"In development since 2025 and still being actively researched and improved.",
+    why3Title:"True to the concept", why3Body:"New features keep arriving without losing the playful Doge spirit at its core.",
+    introP1:"Doge Bot brings together everything a Discord server needs in one dedicated community bot.",
+    introP2:"Member management, alerts, mini-games and more are added regularly, with weekly updates shaped by user feedback.",
+    introP3:"Going forward, it'll keep its cheerful Doge identity while growing into a genuinely useful community tool.",
+    inviteHeadline:"Bring Doge Bot to your server", inviteBody:"One click and Doge Bot joins your Discord server.", inviteBtn:"Invite to Discord",
+    termsArt1:"Article 1 (Purpose)", termsP1:"These terms set out the conditions and procedures for using the services provided by Doge Bot.",
+    termsArt2:"Article 2 (Using the service)", termsP2:"Users may sign in with their Discord account, and must follow applicable laws and Discord's own Terms of Service.",
+    termsArt3:"Article 3 (Limitation of liability)", termsP3:"Doge Bot is provided free of charge, and no compensation is offered for unexpected errors or temporary outages.",
+    privP1:"Doge Bot only collects the minimal information provided at Discord login (nickname, Discord ID, profile image) needed to run the service.",
+    privP2:"Collected data is never used beyond operating the service, and users may request disconnection or deletion of their data at any time.",
+    privP3:"Personal data is never shared with third parties, and is stored and managed securely in line with applicable law.",
+    q1:"Is Doge Bot free?", a1:"Yes, all of Doge Bot's core features are free to use.",
+    q2:"How do I log in?", a2:"Click the 'Log in with Discord' button at the bottom of the sidebar to sign in with your Discord account.",
+    q3:"Where can I request a new feature?", a3:"Feel free to suggest one anytime in the suggestions channel of our official Discord server.",
+    footer:"© 2025 Doge Bot. All rights reserved."
+  },
+  ja: {
+    brandTitle:"ドージボット | DOGE BOT", search:"検索", settings:"設定",
+    navHome:"ホーム", navIntro:"ドージボット紹介", navInvite:"ドージボット招待", navTerms:"利用規約", navPrivacy:"プライバシーポリシー", navQna:"QnA",
+    loginBtn:"Discordでログイン", logoutBtn:"ログアウト",
+    heroLead:"ドージボットはDiscordコミュニティに必要な機能と情報を提供するボットです。",
+    whyTitle:"ドージボットの特徴",
+    why1Title:"活発な交流", why1Body:"継続的なアップデートとユーザーとの活発な交流により、コミュニティに最適化されています。",
+    why2Title:"進化を続ける", why2Body:"2025年から開発を開始し、現在も新機能の研究を続けています。",
+    why3Title:"コンセプトを大切に", why3Body:"新機能を追加しながらも、ドージらしい遊び心のあるコンセプトを大切にしています。",
+    introP1:"ドージボットはDiscordサーバー運営に必要な機能を一つにまとめたコミュニティ専用ボットです。",
+    introP2:"メンバー管理、通知、ミニゲームなどを継続的に追加し、ユーザーのフィードバックを反映して毎週アップデートしています。",
+    introP3:"今後もドージらしい楽しさを保ちながら、実用的なコミュニティツールへと発展させていきます。",
+    inviteHeadline:"サーバーにドージボットを招待", inviteBody:"ボタン一つでドージボットがあなたのDiscordサーバーに参加します。", inviteBtn:"Discordに招待する",
+    termsArt1:"第1条（目的）", termsP1:"本規約はドージボットが提供するサービスの利用条件および手続きを定めることを目的とします。",
+    termsArt2:"第2条（サービスの利用）", termsP2:"利用者はDiscordアカウントでログインしてサービスを利用でき、関連法令およびDiscord利用規約を遵守する必要があります。",
+    termsArt3:"第3条（責任の制限）", termsP3:"ドージボットは無料で提供されるサービスであり、予期しないエラーや一時的な障害について補償は行いません。",
+    privP1:"ドージボットはサービス提供のため、Discordログイン時に提供される最小限の情報（ニックネーム、Discord ID、プロフィール画像）のみを収集します。",
+    privP2:"収集された情報はサービス運営目的以外には使用されず、利用者はいつでも連携解除や情報削除を要求できます。",
+    privP3:"第三者に個人情報を提供することはなく、関連法令に従い安全に保管・管理します。",
+    q1:"ドージボットは無料ですか？", a1:"はい、ドージボットの基本機能はすべて無料でご利用いただけます。",
+    q2:"ログイン方法は？", a2:"サイドバー下部の「Discordでログイン」ボタンから簡単にログインできます。",
+    q3:"機能追加のリクエストはどこで？", a3:"公式Discordサーバーの提案チャンネルからいつでもご要望をお寄せください。",
+    footer:"© 2025 ドージボット | DOGE BOT. All rights reserved."
+  },
+  zh: {
+    brandTitle:"狗狗机器人 | DOGE BOT", search:"搜索", settings:"设置",
+    navHome:"主页", navIntro:"机器人介绍", navInvite:"邀请机器人", navTerms:"使用条款", navPrivacy:"隐私政策", navQna:"常见问题",
+    loginBtn:"使用Discord登录", logoutBtn:"退出登录",
+    heroLead:"DOGE BOT 是 Discord 社区不可或缺的机器人，提供丰富的功能与信息。",
+    whyTitle:"为什么选择 DOGE BOT",
+    why1Title:"活跃互动", why1Body:"持续更新并与用户保持活跃互动，专为社区量身打造。",
+    why2Title:"持续进化", why2Body:"自2025年开始开发，至今仍在不断研究新功能。",
+    why3Title:"坚持初心", why3Body:"不断添加新功能的同时，始终保持狗狗（Doge）的趣味精神。",
+    introP1:"DOGE BOT 将 Discord 服务器运营所需的各种功能集于一身，是专为社区打造的机器人。",
+    introP2:"持续添加成员管理、提醒、小游戏等功能，并根据用户反馈每周更新。",
+    introP3:"未来将在保持狗狗趣味特色的同时，发展成真正实用的社区工具。",
+    inviteHeadline:"把 DOGE BOT 带入你的服务器", inviteBody:"只需一键，DOGE BOT 即可加入你的 Discord 服务器。", inviteBtn:"邀请加入 Discord",
+    termsArt1:"第一条（目的）", termsP1:"本条款旨在规定使用 DOGE BOT 所提供服务的条件及程序。",
+    termsArt2:"第二条（服务使用）", termsP2:"用户可使用 Discord 账号登录使用服务，并须遵守相关法律法规及 Discord 使用条款。",
+    termsArt3:"第三条（责任限制）", termsP3:"DOGE BOT 为免费提供的服务，对意外错误或临时故障不提供额外赔偿。",
+    privP1:"DOGE BOT 仅收集 Discord 登录时提供的最少必要信息（昵称、Discord ID、头像）。",
+    privP2:"所收集信息仅用于服务运营，用户可随时申请解除关联或删除信息。",
+    privP3:"我们不会向第三方提供个人信息，并依据相关法律安全保管与管理。",
+    q1:"DOGE BOT 是免费的吗？", a1:"是的，DOGE BOT 的所有基础功能均免费提供。",
+    q2:"如何登录？", a2:"点击侧边栏底部的「使用Discord登录」按钮即可轻松登录。",
+    q3:"在哪里可以提出功能建议？", a3:"欢迎随时在官方 Discord 服务器的建议频道提出。",
+    footer:"© 2025 DOGE BOT. All rights reserved."
+  },
+  fr: {
+    brandTitle:"DOGE BOT", search:"Rechercher", settings:"Paramètres",
+    navHome:"Accueil", navIntro:"À propos de Doge Bot", navInvite:"Inviter Doge Bot", navTerms:"Conditions d'utilisation", navPrivacy:"Politique de confidentialité", navQna:"FAQ",
+    loginBtn:"Se connecter avec Discord", logoutBtn:"Se déconnecter",
+    heroLead:"Doge Bot est le bot communautaire indispensable pour votre serveur Discord, avec de nombreuses fonctionnalités et informations.",
+    whyTitle:"Ce qui distingue Doge Bot",
+    why1Title:"Communauté active", why1Body:"Conçu pour les communautés grâce à des mises à jour régulières et un vrai dialogue avec les utilisateurs.",
+    why2Title:"En constante évolution", why2Body:"En développement depuis 2025, avec de nouvelles fonctionnalités toujours à l'étude.",
+    why3Title:"Fidèle à l'esprit", why3Body:"De nouvelles fonctionnalités arrivent sans jamais perdre l'esprit ludique de Doge.",
+    introP1:"Doge Bot rassemble en un seul endroit toutes les fonctionnalités utiles à la gestion d'un serveur Discord.",
+    introP2:"Gestion des membres, notifications, mini-jeux et plus sont ajoutés régulièrement, avec des mises à jour hebdomadaires basées sur les retours des utilisateurs.",
+    introP3:"Il continuera d'évoluer en un outil communautaire vraiment utile, tout en gardant son esprit Doge si particulier.",
+    inviteHeadline:"Ajoutez Doge Bot à votre serveur", inviteBody:"Un seul clic suffit pour que Doge Bot rejoigne votre serveur Discord.", inviteBtn:"Inviter sur Discord",
+    termsArt1:"Article 1 (Objet)", termsP1:"Les présentes conditions définissent les modalités et procédures d'utilisation des services fournis par Doge Bot.",
+    termsArt2:"Article 2 (Utilisation du service)", termsP2:"Les utilisateurs peuvent se connecter avec leur compte Discord et doivent respecter la législation en vigueur ainsi que les conditions d'utilisation de Discord.",
+    termsArt3:"Article 3 (Limitation de responsabilité)", termsP3:"Doge Bot est un service gratuit ; aucune compensation n'est accordée en cas d'erreur imprévue ou d'interruption temporaire.",
+    privP1:"Doge Bot ne collecte que les informations minimales fournies lors de la connexion Discord (pseudo, identifiant Discord, photo de profil).",
+    privP2:"Les données collectées ne sont jamais utilisées en dehors du fonctionnement du service, et l'utilisateur peut demander à tout moment la déconnexion ou la suppression de ses données.",
+    privP3:"Aucune donnée personnelle n'est partagée avec des tiers ; elles sont conservées et gérées en toute sécurité conformément à la loi.",
+    q1:"Doge Bot est-il gratuit ?", a1:"Oui, toutes les fonctionnalités essentielles de Doge Bot sont gratuites.",
+    q2:"Comment se connecter ?", a2:"Cliquez sur le bouton « Se connecter avec Discord » en bas de la barre latérale pour vous connecter facilement.",
+    q3:"Où proposer une nouvelle fonctionnalité ?", a3:"N'hésitez pas à faire vos suggestions sur le salon dédié de notre serveur Discord officiel.",
+    footer:"© 2025 Doge Bot. Tous droits réservés."
+  },
+  ru: {
+    brandTitle:"DOGE BOT", search:"Поиск", settings:"Настройки",
+    navHome:"Главная", navIntro:"О Doge Bot", navInvite:"Пригласить Doge Bot", navTerms:"Условия использования", navPrivacy:"Политика конфиденциальности", navQna:"Вопросы и ответы",
+    loginBtn:"Войти через Discord", logoutBtn:"Выйти",
+    heroLead:"Doge Bot — незаменимый бот для вашего Discord-сообщества с множеством функций и полезной информации.",
+    whyTitle:"Чем хорош Doge Bot",
+    why1Title:"Живое общение", why1Body:"Регулярные обновления и активное общение с пользователями делают бота идеальным для сообществ.",
+    why2Title:"Постоянное развитие", why2Body:"Разработка ведётся с 2025 года, и новые функции исследуются до сих пор.",
+    why3Title:"Верность концепции", why3Body:"Новые функции добавляются регулярно, но дух Doge остаётся неизменным.",
+    introP1:"Doge Bot объединяет в одном месте все функции, нужные для управления Discord-сервером.",
+    introP2:"Управление участниками, уведомления, мини-игры и многое другое регулярно добавляются, а еженедельные обновления основаны на отзывах пользователей.",
+    introP3:"В будущем бот сохранит весёлый дух Doge, развиваясь при этом в по-настоящему полезный инструмент сообщества.",
+    inviteHeadline:"Добавьте Doge Bot на свой сервер", inviteBody:"Одно нажатие — и Doge Bot присоединится к вашему Discord-серверу.", inviteBtn:"Пригласить в Discord",
+    termsArt1:"Статья 1 (Цель)", termsP1:"Настоящие условия определяют порядок и правила использования сервисов Doge Bot.",
+    termsArt2:"Статья 2 (Использование сервиса)", termsP2:"Пользователи могут входить через аккаунт Discord и обязаны соблюдать законодательство и условия использования Discord.",
+    termsArt3:"Статья 3 (Ограничение ответственности)", termsP3:"Doge Bot предоставляется бесплатно, и компенсация за непредвиденные ошибки или временные сбои не предусмотрена.",
+    privP1:"Doge Bot собирает только минимально необходимые данные, предоставляемые при входе через Discord (никнейм, Discord ID, изображение профиля).",
+    privP2:"Собранные данные используются исключительно для работы сервиса, и пользователь может в любой момент запросить отключение или удаление данных.",
+    privP3:"Личные данные не передаются третьим лицам и хранятся в безопасности в соответствии с законодательством.",
+    q1:"Doge Bot бесплатен?", a1:"Да, все основные функции Doge Bot доступны бесплатно.",
+    q2:"Как войти в аккаунт?", a2:"Нажмите кнопку «Войти через Discord» внизу боковой панели, чтобы быстро войти через свой аккаунт.",
+    q3:"Где предложить новую функцию?", a3:"Оставляйте предложения в канале для идей на нашем официальном Discord-сервере.",
+    footer:"© 2025 Doge Bot. Все права защищены."
+  }
+};
+
+let currentLang = 'ko';
+
+function applyLang(lang){
+  currentLang = lang;
+  document.documentElement.lang = lang;
+  const dict = i18n[lang];
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const key = el.getAttribute('data-i18n');
+    if(dict[key]) el.textContent = dict[key];
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{
+    const key = el.getAttribute('data-i18n-placeholder');
+    if(dict[key]) el.placeholder = dict[key];
+  });
+  document.querySelectorAll('.lang-opt').forEach(o=>{
+    o.classList.toggle('active', o.dataset.lang === lang);
+  });
+}
+
+// Settings / language dropdown
+const settingsBtn = document.getElementById('settingsBtn');
+const langMenu = document.getElementById('langMenu');
+settingsBtn.addEventListener('click', (e)=>{
+  e.stopPropagation();
+  langMenu.classList.toggle('show');
+  settingsBtn.classList.toggle('open');
+});
+document.addEventListener('click', ()=>{
+  langMenu.classList.remove('show');
+  settingsBtn.classList.remove('open');
+});
+document.querySelectorAll('.lang-opt').forEach(opt=>{
+  opt.addEventListener('click', ()=>{
+    applyLang(opt.dataset.lang);
+    langMenu.classList.remove('show');
+    settingsBtn.classList.remove('open');
+  });
+});
+
+// Navigation
+document.querySelectorAll('.nav-item[data-page]').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.nav-item[data-page]').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const target = btn.dataset.page;
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.getElementById('page-'+target).classList.add('active');
+  });
+});
+document.querySelector('.nav-item[data-page="home"]').classList.add('active');
+
+// Mock Discord login state
+const loginBtn = document.getElementById('loginBtn');
+const userCard = document.getElementById('userCard');
+const logoutBtn = document.getElementById('logoutBtn');
+
+loginBtn.addEventListener('click', ()=>{
+  loginBtn.style.display = 'none';
+  userCard.style.display = 'flex';
+});
+logoutBtn.addEventListener('click', ()=>{
+  userCard.style.display = 'none';
+  loginBtn.style.display = 'flex';
+});
+
+// QnA accordion
+document.querySelectorAll('.qna-q').forEach(q=>{
+  q.addEventListener('click', ()=>{
+    q.parentElement.classList.toggle('open');
+  });
+});
+
+// Invite button (placeholder action since no real OAuth backend)
+document.getElementById('inviteAction').addEventListener('click', ()=>{
+  alert(currentLang === 'ko' ? '실제 초대 링크는 디스코드 개발자 포털 설정 후 연결됩니다.' : 'The real invite link will be connected once the Discord developer portal is set up.');
+});
+
+applyLang('ko');
+</script>
+</body>
+</html>
