@@ -374,6 +374,7 @@ a.nav-item{ text-decoration:none; box-sizing:border-box; }
 }
 .invite-box p{ color: var(--ink-dim); font-size:14px; margin: 8px 0 18px; }
 .btn-invite{
+  text-decoration:none;
   display:inline-flex;
   align-items:center;
   gap:8px;
@@ -509,7 +510,7 @@ footer{
       <div class="invite-box">
         <div style="font-family:'Jua'; font-size:20px; color:var(--doge-gold);" data-i18n="inviteHeadline">내 서버에 도지봇 데려오기</div>
         <p data-i18n="inviteBody">버튼 한 번이면 도지봇이 여러분의 디스코드 서버에 합류합니다.</p>
-        <button class="btn-invite" id="inviteAction">🐶 <span data-i18n="inviteBtn">디스코드에 초대하기</span></button>
+        <a class="btn-invite" id="inviteAction" href="https://discord.com/oauth2/authorize?client_id=1424989612455235614&permissions=8&integration_type=0&scope=bot" target="_blank" rel="noopener">🐶 <span data-i18n="inviteBtn">디스코드에 초대하기</span></a>
       </div>
     </section>
 
@@ -799,10 +800,7 @@ document.querySelectorAll('.qna-q').forEach(q=>{
   });
 });
 
-// Invite button (placeholder action since no real OAuth backend)
-document.getElementById('inviteAction').addEventListener('click', ()=>{
-  alert(currentLang === 'ko' ? '실제 초대 링크는 디스코드 개발자 포털 설정 후 연결됩니다.' : 'The real invite link will be connected once the Discord developer portal is set up.');
-});
+// Invite button now links directly to the real Discord OAuth invite URL (see HTML href).
 
 applyLang('ko');
 </script>
