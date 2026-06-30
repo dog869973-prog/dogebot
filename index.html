@@ -46,9 +46,84 @@ body{
   grid-template-columns: 280px 1fr;
   min-height:100vh;
 }
-@media (max-width: 860px){
+.mobile-topbar{ display:none; }
+
+@media (max-width: 860px) and (orientation: portrait){
   .app{ grid-template-columns: 1fr; }
-  .sidebar{ position:static; }
+  .mobile-topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding: 14px 16px;
+    background: var(--panel);
+    border-bottom:1px solid var(--line);
+    position: sticky;
+    top:0;
+    z-index: 25;
+  }
+  .mobile-topbar .brand{ margin:0; padding:7px 12px; }
+  .mobile-topbar .brand-text{ font-size:14px; }
+  .btn-hamburger{
+    background: var(--panel-2);
+    border:1px solid var(--line);
+    color: var(--ink);
+    width:42px; height:42px; flex:none;
+    border-radius: 10px;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+  }
+  .sidebar{
+    position: fixed;
+    top:0; left:0;
+    height:100dvh;
+    width: min(82vw, 320px);
+    z-index: 40;
+    transform: translateX(-105%);
+    transition: transform .28s ease;
+    box-shadow: 8px 0 30px rgba(0,0,0,0.5);
+  }
+  .sidebar.open{ transform: translateX(0); }
+  .sidebar-backdrop{
+    display:none;
+    position: fixed; inset:0;
+    background: rgba(0,0,0,0.55);
+    z-index: 35;
+  }
+  .sidebar-backdrop.show{ display:block; }
+  .sidebar-close{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:34px; height:34px;
+    background: var(--panel-2);
+    border:1px solid var(--line);
+    border-radius: 8px;
+    color: var(--ink-dim);
+    cursor:pointer;
+    flex:none;
+  }
+  .sidebar .brand{ flex:1; }
+  .sidebar-head{ display:flex; align-items:center; gap:10px; }
+  .main{ padding: 18px 5vw 60px; }
+  .hero h1{ font-size: 26px; }
+}
+
+@media (min-width: 861px), (orientation: landscape){
+  .sidebar-close{ display:none; }
+  .sidebar-backdrop{ display:none !important; }
+}
+
+/* Landscape phones: keep the desktop two-column layout, just scaled down */
+@media (max-width: 1000px) and (orientation: landscape){
+  .app{ grid-template-columns: 220px 1fr; }
+  .sidebar{ padding: 16px 12px 20px; gap:14px; }
+  .brand{ padding:8px 11px; }
+  .brand-text{ font-size:14px; }
+  .nav-item{ padding:9px 10px; font-size:13px; }
+  .main{ padding: 18px 4vw 50px; }
+  .hero h1{ font-size: clamp(22px, 4vw, 32px); }
+  .lead{ font-size:15px; }
 }
 
 /* ---------- SIDEBAR ---------- */
@@ -408,12 +483,29 @@ footer{
 </head>
 <body>
 <div class="app">
-
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
+  <div class="mobile-topbar">
+    <button class="btn-hamburger" id="hamburgerBtn" aria-label="open menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
     <div class="brand">
       <svg class="brand-coin" viewBox="0 0 40 40"><circle cx="20" cy="20" r="19" fill="#1a1308" stroke="#fff3d6" stroke-width="1.5"/><text x="20" y="27" text-anchor="middle" font-family="Jua" font-size="20" fill="#ffce5c">D</text></svg>
       <div class="brand-text" data-i18n="brandTitle">도지봇 | DOGE BOT</div>
+    </div>
+    <div style="width:42px;"></div>
+  </div>
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-head">
+    <div class="brand">
+      <svg class="brand-coin" viewBox="0 0 40 40"><circle cx="20" cy="20" r="19" fill="#1a1308" stroke="#fff3d6" stroke-width="1.5"/><text x="20" y="27" text-anchor="middle" font-family="Jua" font-size="20" fill="#ffce5c">D</text></svg>
+      <div class="brand-text" data-i18n="brandTitle">도지봇 | DOGE BOT</div>
+    </div>
+    <button class="sidebar-close" id="sidebarClose" aria-label="close menu">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>
+    </button>
     </div>
 
     <div class="search-box">
@@ -726,6 +818,28 @@ document.querySelectorAll('.lang-opt').forEach(opt=>{
     langMenu.classList.remove('show');
     settingsBtn.classList.remove('open');
   });
+});
+
+// Mobile sidebar drawer toggle
+const sidebar = document.getElementById('sidebar');
+const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+const hamburgerBtn = document.getElementById('hamburgerBtn');
+const sidebarClose = document.getElementById('sidebarClose');
+
+function openSidebar(){
+  sidebar.classList.add('open');
+  sidebarBackdrop.classList.add('show');
+}
+function closeSidebar(){
+  sidebar.classList.remove('open');
+  sidebarBackdrop.classList.remove('show');
+}
+hamburgerBtn?.addEventListener('click', openSidebar);
+sidebarClose?.addEventListener('click', closeSidebar);
+sidebarBackdrop?.addEventListener('click', closeSidebar);
+// Close drawer automatically after picking a menu item on mobile
+document.querySelectorAll('.nav-item').forEach(item=>{
+  item.addEventListener('click', ()=>{ if(window.innerWidth <= 860) closeSidebar(); });
 });
 
 // Navigation
