@@ -6,6 +6,7 @@
 <title>도지봇 | DOGE BOT</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Sans+SC:wght@400;500;700;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
 :root{
   --bg: #14110d;
@@ -180,7 +181,9 @@ a.nav-item{ text-decoration:none; box-sizing:border-box; }
   background: linear-gradient(135deg,var(--doge-orange),var(--doge-gold));
   display:flex;align-items:center;justify-content:center;
   font-size:16px; flex:none;
+  overflow:hidden;
 }
+.user-avatar img{ width:100%; height:100%; object-fit:cover; }
 .user-meta{ flex:1; min-width:0; }
 .user-name{ font-size:13px; font-weight:700; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .user-tag{ font-size:11px; color: var(--ink-faint); }
@@ -435,10 +438,10 @@ footer{
       </button>
 
       <div class="user-card" id="userCard" style="display:none;">
-        <div class="user-avatar">🐶</div>
+        <div class="user-avatar" id="userAvatar">🐶</div>
         <div class="user-meta">
-          <div class="user-name">DogeMaster</div>
-          <div class="user-tag">#0420</div>
+          <div class="user-name" id="userName">DogeMaster</div>
+          <div class="user-tag" id="userTag">#0420</div>
         </div>
         <button class="btn-logout" id="logoutBtn" data-i18n="logoutBtn">로그아웃</button>
       </div>
@@ -736,18 +739,57 @@ document.querySelectorAll('.nav-item[data-page]').forEach(btn=>{
 });
 document.querySelector('.nav-item[data-page="home"]').classList.add('active');
 
-// Mock Discord login state
+// ---- Supabase Auth (Discord OAuth) ----
 const loginBtn = document.getElementById('loginBtn');
 const userCard = document.getElementById('userCard');
 const logoutBtn = document.getElementById('logoutBtn');
+const SUPABASE_URL = "https://ixlytdmnnizdpuzutepu.supabase.co";
+const SUPABASE_KEY = "sb_publishable_gqk-h2_X1KX0sUBCV_qfRA_RsrQevhZ";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-loginBtn.addEventListener('click', ()=>{
+const userAvatar = document.getElementById('userAvatar');
+const userName = document.getElementById('userName');
+const userTag = document.getElementById('userTag');
+
+function renderLoggedIn(user){
   loginBtn.style.display = 'none';
   userCard.style.display = 'flex';
-});
-logoutBtn.addEventListener('click', ()=>{
-  userCard.style.display = 'none';
+  const meta = user.user_metadata || {};
+  const displayName = meta.full_name || meta.name || meta.custom_claims?.global_name || user.email || 'Discord User';
+  const avatarUrl = meta.avatar_url || meta.picture || '';
+  userName.textContent = displayName;
+  userTag.textContent = user.email || '';
+  if(avatarUrl){
+    userAvatar.innerHTML = `<img src="${avatarUrl}" alt="avatar">`;
+  } else {
+    userAvatar.innerHTML = '🐶';
+  }
+}
+function renderLoggedOut(){
   loginBtn.style.display = 'flex';
+  userCard.style.display = 'none';
+}
+
+loginBtn.addEventListener('click', async ()=>{
+  await sb.auth.signInWithOAuth({
+    provider: 'discord',
+    options: { redirectTo: window.location.href.split('#')[0].split('?')[0] }
+  });
+});
+logoutBtn.addEventListener('click', async ()=>{
+  await sb.auth.signOut();
+  renderLoggedOut();
+});
+
+sb.auth.onAuthStateChange((_event, session)=>{
+  if(session && session.user){ renderLoggedIn(session.user); }
+  else { renderLoggedOut(); }
+});
+
+// Check existing session on load
+sb.auth.getSession().then(({data})=>{
+  if(data.session && data.session.user){ renderLoggedIn(data.session.user); }
+  else { renderLoggedOut(); }
 });
 
 // QnA accordion
