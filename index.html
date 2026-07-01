@@ -568,6 +568,286 @@ footer{
   color: var(--ink-faint);
   line-height:1.6;
 }
+/* ── Management Panel ── */
+.ptab-panel{ display:none; animation: fade .2s ease; }
+.ptab-panel.active{ display:block; }
+
+.panel-toolbar{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-bottom:14px;
+}
+.panel-stat{
+  background: var(--panel);
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:8px 14px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  min-width:80px;
+}
+.panel-stat.open{ border-color: rgba(80,200,120,.35); }
+.panel-stat.closed{ border-color: rgba(150,150,150,.35); }
+.pstat-num{ font-family:'Jua',sans-serif; font-size:20px; color:var(--doge-gold); line-height:1.1; }
+.pstat-label{ font-size:11px; color:var(--ink-faint); margin-top:2px; }
+.btn-new-ticket{
+  margin-left:auto;
+  background: var(--doge-orange);
+  color:#1a1308;
+  border:none;
+  border-radius:8px;
+  padding:9px 16px;
+  font-weight:700;
+  font-size:13px;
+  cursor:pointer;
+  font-family:'Noto Sans KR','Inter',sans-serif;
+}
+.btn-new-ticket:hover{ filter:brightness(1.1); }
+
+.ticket-list{ display:flex; flex-direction:column; gap:8px; }
+.ticket-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  background: var(--panel);
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:12px 14px;
+}
+.ticket-row.open-t{ border-left:3px solid rgba(80,200,120,.6); }
+.ticket-row.closed-t{ border-left:3px solid var(--line); opacity:.6; }
+.ticket-icon{ font-size:18px; flex:none; }
+.ticket-info{ flex:1; min-width:0; }
+.ticket-title{ font-weight:700; font-size:13.5px; color:var(--ink); }
+.ticket-meta{ font-size:11.5px; color:var(--ink-faint); margin-top:2px; }
+.ticket-status{
+  font-size:11px;
+  font-weight:700;
+  border-radius:6px;
+  padding:3px 8px;
+  white-space:nowrap;
+  flex:none;
+}
+.open-s{ background:rgba(80,200,120,.15); color:#50c878; border:1px solid rgba(80,200,120,.3); }
+.closed-s{ background:rgba(150,150,150,.1); color:var(--ink-faint); border:1px solid var(--line); }
+.btn-close-ticket{
+  background: var(--panel-2);
+  border:1px solid var(--line);
+  color:var(--ink-dim);
+  border-radius:7px;
+  padding:6px 11px;
+  font-size:12px;
+  font-weight:700;
+  cursor:pointer;
+  font-family:'Noto Sans KR','Inter',sans-serif;
+  white-space:nowrap;
+  flex:none;
+}
+.btn-close-ticket:hover:not(:disabled){ background:rgba(255,90,90,.1); color:#ff8d8d; border-color:rgba(255,90,90,.3); }
+.btn-close-ticket:disabled{ opacity:.35; cursor:not-allowed; }
+
+/* Server setting grid */
+.server-setting-grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px,1fr));
+  gap:12px;
+}
+.setting-card{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:16px;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:6px;
+}
+.setting-icon{ font-size:22px; }
+.setting-label{ font-size:13px; font-weight:700; color:var(--ink); }
+.setting-val{ font-size:12px; color:var(--ink-faint); flex:1; }
+.setting-btn{
+  align-self:stretch;
+  background: rgba(255,138,31,.1);
+  border:1px solid rgba(255,138,31,.3);
+  color:var(--doge-gold);
+  border-radius:7px;
+  padding:7px 0;
+  font-size:12px;
+  font-weight:700;
+  cursor:pointer;
+  font-family:'Noto Sans KR','Inter',sans-serif;
+  margin-top:4px;
+}
+.setting-btn:hover{ background:rgba(255,138,31,.2); }
+.setting-btn:disabled{ opacity:.35; cursor:not-allowed; filter:grayscale(1); }
+
+/* Server selector */
+.server-select-screen{
+  padding:20px 0;
+}
+.server-select-title{
+  font-family:'Jua',sans-serif;
+  font-size:17px;
+  color:var(--doge-gold);
+  margin-bottom:14px;
+}
+.server-list{
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px,1fr));
+  gap:10px;
+}
+.server-card{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:16px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  transition:border-color .15s, background .15s;
+}
+.server-card:hover{ border-color:rgba(255,138,31,.4); background:rgba(255,138,31,.05); }
+.server-icon{
+  width:42px; height:42px; border-radius:12px;
+  background:linear-gradient(135deg,var(--doge-orange),#c46300);
+  display:flex; align-items:center; justify-content:center;
+  font-size:20px; flex:none;
+}
+.server-name{ font-weight:700; font-size:13.5px; color:var(--ink); }
+.server-role{
+  font-size:11px;
+  margin-top:3px;
+  font-weight:700;
+  padding:2px 7px;
+  border-radius:5px;
+}
+.role-owner{ background:rgba(255,206,92,.15); color:var(--doge-gold); border:1px solid rgba(255,206,92,.3); }
+.role-admin{ background:rgba(80,200,120,.12); color:#50c878; border:1px solid rgba(80,200,120,.3); }
+.role-member{ background:rgba(150,150,150,.1); color:var(--ink-faint); border:1px solid var(--line); }
+
+.panel-server-header{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:16px;
+  padding-bottom:14px;
+  border-bottom:1px solid var(--line);
+}
+.btn-back-server{
+  background:var(--panel-2);
+  border:1px solid var(--line);
+  color:var(--ink-dim);
+  border-radius:8px;
+  padding:7px 12px;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+  font-family:'Noto Sans KR','Inter',sans-serif;
+}
+.btn-back-server:hover{ color:var(--ink); }
+.panel-server-name{ font-family:'Jua',sans-serif; font-size:16px; color:var(--ink); }
+.panel-perm-badge{
+  font-size:11px;
+  font-weight:700;
+  padding:3px 9px;
+  border-radius:6px;
+  margin-left:auto;
+}
+.readonly-notice{
+  background:rgba(255,150,50,.08);
+  border:1px solid rgba(255,150,50,.2);
+  border-radius:10px;
+  padding:10px 14px;
+  font-size:13px;
+  color:var(--doge-orange);
+  margin-bottom:14px;
+}
+.owner-only-notice{
+  background:rgba(255,206,92,.07);
+  border:1px solid rgba(255,206,92,.25);
+  border-radius:10px;
+  padding:10px 14px;
+  font-size:13px;
+  color:var(--doge-gold);
+  margin-bottom:14px;
+}
+.owner-label{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  font-size:10px;
+  font-weight:700;
+  background:rgba(255,206,92,.15);
+  color:var(--doge-gold);
+  border:1px solid rgba(255,206,92,.3);
+  border-radius:4px;
+  padding:1px 6px;
+  vertical-align:middle;
+  margin-left:4px;
+}
+
+/* Modal */
+.modal-backdrop{
+  position:fixed; inset:0;
+  background:rgba(0,0,0,.6);
+  z-index:60;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+.modal-box{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:24px;
+  width:100%;
+  max-width:420px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+.modal-title{ font-family:'Jua',sans-serif; font-size:17px; color:var(--doge-gold); }
+.modal-input, .modal-textarea{
+  background:var(--panel-2);
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:10px 12px;
+  color:var(--ink);
+  font-size:13.5px;
+  font-family:'Noto Sans KR','Inter',sans-serif;
+  outline:none;
+  resize:none;
+  width:100%;
+  box-sizing:border-box;
+}
+.modal-input:focus, .modal-textarea:focus{ border-color:rgba(255,138,31,.5); }
+.modal-cancel{
+  background:none;
+  border:1px solid var(--line);
+  color:var(--ink-dim);
+  border-radius:8px;
+  padding:9px 18px;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+  font-family:'Noto Sans KR','Inter',sans-serif;
+}
+.modal-submit{
+  background:var(--doge-orange);
+  border:none;
+  color:#1a1308;
+  border-radius:8px;
+  padding:9px 20px;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+  font-family:'Noto Sans KR','Inter',sans-serif;
+}
 </style>
 </head>
 <body>
@@ -609,6 +889,7 @@ footer{
       <a class="nav-item" href="https://dog869973-prog.github.io/-dogebot/terms.html" target="_blank" rel="noopener"><span class="ic">♣</span><span data-i18n="navTerms">도지봇 이용약관</span></a>
       <a class="nav-item" href="https://dog869973-prog.github.io/-dogebot/privacy.html" target="_blank" rel="noopener"><span class="ic">♤</span><span data-i18n="navPrivacy">개인정보처리방침</span></a>
       <button class="nav-item" data-page="qna"><span class="ic">▶</span><span data-i18n="navQna">QnA</span></button>
+      <button class="nav-item nav-panel-only" data-page="panel" id="navPanel" style="display:none; margin-top:6px; background:rgba(255,138,31,0.08); border:1px solid rgba(255,138,31,0.3); color:var(--doge-gold);"><span class="ic">⚙</span><span data-i18n="navPanel">관리패널</span></button>
     </nav>
 
     <div class="sidebar-spacer"></div>
@@ -790,6 +1071,174 @@ footer{
       <div class="qna-item">
         <div class="qna-q"><span class="tri">▶</span><span data-i18n="q3">기능 추가 요청은 어디서 하나요?</span></div>
         <div class="qna-a" data-i18n="a3">공식 디스코드 서버 내 건의 채널을 통해 언제든지 요청해 주세요.</div>
+      </div>
+    </section>
+
+    <!-- 관리패널 PAGE -->
+    <section class="page" id="page-panel">
+      <div class="section-title"><span class="tri">⚙</span><span>관리패널</span></div>
+
+      <!-- STEP 1: 서버 선택 화면 -->
+      <div id="panelServerSelect">
+        <div class="server-select-screen">
+          <div class="server-select-title">🐶 관리할 서버를 선택해주세요</div>
+          <p style="font-size:13px;color:var(--ink-faint);margin:0 0 16px;">도지봇이 초대된 서버만 표시돼요. 권한에 따라 수정 가능 범위가 달라져요.</p>
+          <div class="server-list" id="serverList">
+            <!-- JS로 렌더링 -->
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2: 선택된 서버 패널 -->
+      <div id="panelContent" style="display:none;">
+        <div class="panel-server-header">
+          <button class="btn-back-server" onclick="backToServerSelect()">← 서버 목록</button>
+          <div>
+            <div class="panel-server-name" id="selectedServerName"></div>
+          </div>
+          <span class="panel-perm-badge role-owner" id="permBadge"></span>
+        </div>
+        <div class="readonly-notice" id="readonlyNotice" style="display:none;">
+          👀 이 서버에서는 읽기만 가능해요. 수정하려면 최상위 역할 이상의 권한이 필요해요.
+        </div>
+
+        <!-- 패널 탭 -->
+        <div class="cat-tabs">
+          <button class="cat-tab active" data-ptab="ticket">🎫 티켓</button>
+          <button class="cat-tab" data-ptab="warn-panel">⚠️ 경고</button>
+          <button class="cat-tab" data-ptab="point-panel">💰 포인트</button>
+          <button class="cat-tab" data-ptab="server-panel">🛠 서버설정</button>
+        </div>
+
+        <!-- 티켓 -->
+        <div class="ptab-panel active" id="ptab-ticket">
+          <div class="panel-toolbar">
+            <div class="panel-stat"><span class="pstat-num">3</span><span class="pstat-label">전체 티켓</span></div>
+            <div class="panel-stat open"><span class="pstat-num">2</span><span class="pstat-label">열린 티켓</span></div>
+            <div class="panel-stat closed"><span class="pstat-num">1</span><span class="pstat-label">닫힌 티켓</span></div>
+            <button class="btn-new-ticket panel-write-ctrl" onclick="openNewTicketModal()">+ 새 티켓</button>
+          </div>
+          <div class="ticket-list">
+            <div class="ticket-row open-t">
+              <div class="ticket-icon">🎫</div>
+              <div class="ticket-info"><div class="ticket-title">#001 — 봇 오류 문의</div><div class="ticket-meta">roblox_doge · 2025.07.01</div></div>
+              <span class="ticket-status open-s">열림</span>
+              <button class="btn-close-ticket panel-write-ctrl" onclick="closeTicket(this)">닫기</button>
+            </div>
+            <div class="ticket-row open-t">
+              <div class="ticket-icon">🎫</div>
+              <div class="ticket-info"><div class="ticket-title">#002 — 포인트 문의</div><div class="ticket-meta">DogeMaster · 2025.07.01</div></div>
+              <span class="ticket-status open-s">열림</span>
+              <button class="btn-close-ticket panel-write-ctrl" onclick="closeTicket(this)">닫기</button>
+            </div>
+            <div class="ticket-row closed-t">
+              <div class="ticket-icon">🎟</div>
+              <div class="ticket-info"><div class="ticket-title">#000 — 서버 초대 문의</div><div class="ticket-meta">도지유저 · 2025.06.30</div></div>
+              <span class="ticket-status closed-s">닫힘</span>
+              <button class="btn-close-ticket" disabled>닫기</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 경고 -->
+        <div class="ptab-panel" id="ptab-warn-panel">
+          <div class="panel-toolbar">
+            <div class="panel-stat"><span class="pstat-num">2</span><span class="pstat-label">경고 보유 유저</span></div>
+          </div>
+          <div class="ticket-list">
+            <div class="ticket-row open-t">
+              <div class="ticket-icon">⚠️</div>
+              <div class="ticket-info"><div class="ticket-title">roblox_doge</div><div class="ticket-meta">경고 2개 보유</div></div>
+              <span class="ticket-status open-s">주의</span>
+              <button class="btn-close-ticket panel-write-ctrl" onclick="alert('봇 연동 후 경고 제거 기능이 활성화돼요.')">제거</button>
+            </div>
+            <div class="ticket-row open-t">
+              <div class="ticket-icon">⚠️</div>
+              <div class="ticket-info"><div class="ticket-title">DogeFan123</div><div class="ticket-meta">경고 1개 보유</div></div>
+              <span class="ticket-status open-s">주의</span>
+              <button class="btn-close-ticket panel-write-ctrl" onclick="alert('봇 연동 후 경고 제거 기능이 활성화돼요.')">제거</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 포인트 -->
+        <div class="ptab-panel" id="ptab-point-panel">
+          <div class="panel-toolbar">
+            <div class="panel-stat"><span class="pstat-num">1,240</span><span class="pstat-label">총 유통 포인트</span></div>
+          </div>
+          <div class="owner-only-notice" id="ownerOnlyNotice" style="display:none;">
+            👑 포인트 지급/차감은 <strong>봇 오너 전용</strong> 기능이에요. 서버장·최상위역할이어도 이 기능은 사용할 수 없어요.
+          </div>
+          <div class="ticket-list">
+            <div class="ticket-row open-t">
+              <div class="ticket-icon">💰</div>
+              <div class="ticket-info"><div class="ticket-title">roblox_doge</div><div class="ticket-meta">보유 포인트: 850P</div></div>
+              <div style="display:flex;gap:6px;">
+                <button class="btn-close-ticket panel-owner-ctrl" onclick="alert('봇 연동 후 활성화돼요.')">지급</button>
+                <button class="btn-close-ticket panel-owner-ctrl" onclick="alert('봇 연동 후 활성화돼요.')">차감</button>
+              </div>
+            </div>
+            <div class="ticket-row open-t">
+              <div class="ticket-icon">💰</div>
+              <div class="ticket-info"><div class="ticket-title">DogeFan123</div><div class="ticket-meta">보유 포인트: 390P</div></div>
+              <div style="display:flex;gap:6px;">
+                <button class="btn-close-ticket panel-owner-ctrl" onclick="alert('봇 연동 후 활성화돼요.')">지급</button>
+                <button class="btn-close-ticket panel-owner-ctrl" onclick="alert('봇 연동 후 활성화돼요.')">차감</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 서버설정 -->
+        <div class="ptab-panel" id="ptab-server-panel">
+          <div class="section-title" style="font-size:15px; margin:0 0 10px;">🛠 서버 채널 설정 <span style="font-size:12px; color:var(--ink-faint); font-family:inherit; font-weight:400;">(서버장/최상위역할 이상)</span></div>
+          <div class="server-setting-grid">
+            <div class="setting-card"><div class="setting-icon">📢</div><div class="setting-label">부스트 알림 채널</div><div class="setting-val">미설정</div><button class="setting-btn panel-write-ctrl" onclick="alert('봇 연동 후 설정 가능해요.')">설정</button></div>
+            <div class="setting-card"><div class="setting-icon">📝</div><div class="setting-label">경고 로그 채널</div><div class="setting-val">미설정</div><button class="setting-btn panel-write-ctrl" onclick="alert('봇 연동 후 설정 가능해요.')">설정</button></div>
+            <div class="setting-card"><div class="setting-icon">🏷</div><div class="setting-label">별명 변경 로그 채널</div><div class="setting-val">미설정</div><button class="setting-btn panel-write-ctrl" onclick="alert('봇 연동 후 설정 가능해요.')">설정</button></div>
+            <div class="setting-card"><div class="setting-icon">💬</div><div class="setting-label">포인트 채널</div><div class="setting-val">미설정</div><button class="setting-btn panel-write-ctrl" onclick="alert('봇 연동 후 설정 가능해요.')">설정</button></div>
+            <div class="setting-card"><div class="setting-icon">🎮</div><div class="setting-label">게임 로비 카테고리</div><div class="setting-val">미설정</div><button class="setting-btn panel-write-ctrl" onclick="alert('봇 연동 후 설정 가능해요.')">설정</button></div>
+            <div class="setting-card"><div class="setting-icon">📚</div><div class="setting-label">학교(학습 채널)</div><div class="setting-val">미설정</div><button class="setting-btn panel-write-ctrl" onclick="alert('봇 연동 후 설정 가능해요.')">설정</button></div>
+          </div>
+
+          <div class="owner-only-notice" id="serverOwnerNotice" style="display:none; margin-top:20px;">
+            👑 아래 항목은 <strong>봇 오너 전용</strong>이에요. 서버장·최상위역할이어도 사용할 수 없어요.
+          </div>
+          <div class="section-title" style="font-size:15px; margin:20px 0 10px;">👑 봇 오너 전용 <span style="font-size:12px; color:var(--ink-faint); font-family:inherit; font-weight:400;">(봇 개발자만 가능)</span></div>
+          <div class="server-setting-grid">
+            <div class="setting-card" style="border-color:rgba(255,206,92,.2);">
+              <div class="setting-icon">📋</div>
+              <div class="setting-label">즉시등록 <span class="owner-label">👑 오너</span></div>
+              <div class="setting-val">라이센스 계약을 즉시 완료해요</div>
+              <button class="setting-btn panel-owner-ctrl" style="border-color:rgba(255,206,92,.3); color:var(--doge-gold);" onclick="alert('봇 연동 후 활성화돼요.')">실행</button>
+            </div>
+            <div class="setting-card" style="border-color:rgba(255,206,92,.2);">
+              <div class="setting-icon">🗑</div>
+              <div class="setting-label">등록해제 <span class="owner-label">👑 오너</span></div>
+              <div class="setting-val">이 서버의 라이센스 승인을 해제해요</div>
+              <button class="setting-btn panel-owner-ctrl" style="border-color:rgba(255,90,90,.3); color:#ff8d8d;" onclick="alert('봇 연동 후 활성화돼요.')">실행</button>
+            </div>
+            <div class="setting-card" style="border-color:rgba(255,206,92,.2);">
+              <div class="setting-icon">🔑</div>
+              <div class="setting-label">비밀번호 변경 <span class="owner-label">👑 오너</span></div>
+              <div class="setting-val">최상위 역할 관리자 비밀번호를 변경해요</div>
+              <button class="setting-btn panel-owner-ctrl" style="border-color:rgba(255,206,92,.3); color:var(--doge-gold);" onclick="alert('봇 연동 후 활성화돼요.')">변경</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 새 티켓 모달 -->
+      <div class="modal-backdrop" id="ticketModal" style="display:none;" onclick="closeModal(event)">
+        <div class="modal-box">
+          <div class="modal-title">🎫 새 티켓 작성</div>
+          <input class="modal-input" id="ticketTitleInput" placeholder="티켓 제목을 입력하세요" maxlength="50">
+          <textarea class="modal-textarea" id="ticketBodyInput" placeholder="문의 내용을 입력하세요" rows="4"></textarea>
+          <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:4px;">
+            <button class="modal-cancel" onclick="document.getElementById('ticketModal').style.display='none'">취소</button>
+            <button class="modal-submit" onclick="submitTicket()">제출</button>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -984,10 +1433,189 @@ document.querySelectorAll('.lang-opt').forEach(opt=>{
   });
 });
 
-// Category tabs in intro page
-document.querySelectorAll('.cat-tab').forEach(tab=>{
+// ── 관리패널 JS ──
+
+// 봇 오너 디스코드 ID (실제 오너 ID로 교체하세요)
+const BOT_OWNER_ID = '1176661509833752637';
+
+// 모의 서버 데이터 (봇 연동 후 실제 API로 교체)
+const mockServers = [
+  { id: '001', name: '도지봇 공식 서버', icon: '🐶', role: 'owner' },
+  { id: '002', name: '테스트 서버',       icon: '🧪', role: 'admin' },
+  { id: '003', name: '친구들 서버',       icon: '👥', role: 'member' },
+];
+
+const roleLabel = { owner:'오너', admin:'최상위역할', member:'일반 멤버' };
+const roleClass = { owner:'role-owner', admin:'role-admin', member:'role-member' };
+
+let currentServerRole = null;
+
+function renderServerList(user){
+  const list = document.getElementById('serverList');
+  if(!list) return;
+
+  // 봇 개발자 여부 확인 및 전역 플래그 설정
+  isBotOwner = user && (user.id === BOT_OWNER_ID);
+
+  list.innerHTML = mockServers.map(s => {
+    // 봇 오너는 모든 서버에서 서버 오너 권한으로 표시
+    const effectiveRole = isBotOwner ? 'owner' : s.role;
+    const extraBadge = isBotOwner
+      ? `<span class="server-role role-owner" style="margin-top:3px;">봇 오너</span>`
+      : `<span class="server-role ${roleClass[effectiveRole]}">${roleLabel[effectiveRole]}</span>`;
+    return `
+    <div class="server-card" onclick="selectServer('${s.id}','${s.name}','${effectiveRole}')">
+      <div class="server-icon">${s.icon}</div>
+      <div>
+        <div class="server-name">${s.name}</div>
+        ${extraBadge}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+let isBotOwner = false; // 봇 개발자 여부 (로그인 시 설정됨)
+
+function selectServer(id, name, role){
+  currentServerRole = role;
+  document.getElementById('panelServerSelect').style.display = 'none';
+  document.getElementById('panelContent').style.display = 'block';
+  document.getElementById('selectedServerName').textContent = name;
+
+  const badge = document.getElementById('permBadge');
+  // 봇 오너일 경우 배지에 별도 표시
+  if(isBotOwner){
+    badge.textContent = '봇 오너';
+    badge.className = 'panel-perm-badge role-owner';
+  } else {
+    badge.textContent = roleLabel[role] || role;
+    badge.className = 'panel-perm-badge ' + (roleClass[role] || 'role-member');
+  }
+
+  const canWrite  = isBotOwner || role === 'owner' || role === 'admin';
+  const canOwner  = isBotOwner; // 봇 오너만 가능한 기능
+
+  // 읽기전용 안내 (서버관리자 미만)
+  document.getElementById('readonlyNotice').style.display = canWrite ? 'none' : 'block';
+
+  // 오너 전용 안내 (서버관리자 이상이지만 봇 오너 아닐 때)
+  const ownerNotice = document.getElementById('ownerOnlyNotice');
+  if(ownerNotice) ownerNotice.style.display = (!canOwner && canWrite) ? 'block' : 'none';
+
+  const serverOwnerNotice = document.getElementById('serverOwnerNotice');
+  if(serverOwnerNotice) serverOwnerNotice.style.display = (!canOwner && canWrite) ? 'block' : 'none';
+
+  // 서버관리자 이상 권한 버튼 (경고, 티켓, 서버설정 등)
+  document.querySelectorAll('.panel-write-ctrl').forEach(el => {
+    const enable = canWrite;
+    el.disabled = !enable;
+    el.style.opacity = enable ? '' : '0.35';
+    el.style.pointerEvents = enable ? '' : 'none';
+  });
+
+  // 봇 오너 전용 버튼 (포인트 지급/차감 등)
+  document.querySelectorAll('.panel-owner-ctrl').forEach(el => {
+    el.disabled = !canOwner;
+    el.style.opacity = canOwner ? '' : '0.35';
+    el.style.pointerEvents = canOwner ? '' : 'none';
+    // 오너 전용임을 tooltip으로 표시
+    if(!canOwner) el.title = '봇 오너 전용 기능이에요';
+    else el.title = '';
+  });
+
+  // 패널 탭 초기화
+  document.querySelectorAll('#panelContent .cat-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.ptab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelector('#panelContent .cat-tab[data-ptab="ticket"]').classList.add('active');
+  document.getElementById('ptab-ticket').classList.add('active');
+}
+
+function backToServerSelect(){
+  document.getElementById('panelServerSelect').style.display = 'block';
+  document.getElementById('panelContent').style.display = 'none';
+  currentServerRole = null;
+}
+
+// 패널 탭 전환
+document.addEventListener('click', e => {
+  const tab = e.target.closest('.cat-tab[data-ptab]');
+  if(!tab) return;
+  const parent = tab.closest('#panelContent, #page-panel');
+  if(!parent) return;
+  parent.querySelectorAll('.cat-tab[data-ptab]').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.ptab-panel').forEach(p=>p.classList.remove('active'));
+  tab.classList.add('active');
+  const target = document.getElementById('ptab-' + tab.dataset.ptab);
+  if(target) target.classList.add('active');
+});
+
+// 티켓 닫기
+function closeTicket(btn){
+  if(currentServerRole !== 'owner' && currentServerRole !== 'admin') return;
+  const row = btn.closest('.ticket-row');
+  row.classList.remove('open-t');
+  row.classList.add('closed-t');
+  row.querySelector('.ticket-status').className = 'ticket-status closed-s';
+  row.querySelector('.ticket-status').textContent = '닫힘';
+  row.querySelector('.ticket-icon').textContent = '🎟';
+  btn.disabled = true;
+}
+
+// 새 티켓 모달
+function openNewTicketModal(){
+  if(currentServerRole !== 'owner' && currentServerRole !== 'admin') return;
+  document.getElementById('ticketTitleInput').value = '';
+  document.getElementById('ticketBodyInput').value = '';
+  document.getElementById('ticketModal').style.display = 'flex';
+}
+function closeModal(e){
+  if(e.target === document.getElementById('ticketModal')){
+    document.getElementById('ticketModal').style.display = 'none';
+  }
+}
+function submitTicket(){
+  const title = document.getElementById('ticketTitleInput').value.trim();
+  if(!title){ alert('제목을 입력해주세요.'); return; }
+  const list = document.querySelector('#ptab-ticket .ticket-list');
+  const rows = list.querySelectorAll('.ticket-row');
+  const num = String(rows.length).padStart(3,'0');
+  const today = new Date().toLocaleDateString('ko-KR',{year:'numeric',month:'2-digit',day:'2-digit'}).replace(/ /g,'').replace(/\./g,'.').slice(0,-1);
+  const row = document.createElement('div');
+  row.className = 'ticket-row open-t';
+  row.innerHTML = `
+    <div class="ticket-icon">🎫</div>
+    <div class="ticket-info">
+      <div class="ticket-title">#${num} — ${title}</div>
+      <div class="ticket-meta">${document.getElementById('userName').textContent} · ${today}</div>
+    </div>
+    <span class="ticket-status open-s">열림</span>
+    <button class="btn-close-ticket panel-write-ctrl" onclick="closeTicket(this)">닫기</button>`;
+  list.appendChild(row);
+  document.getElementById('ticketModal').style.display = 'none';
+}
+
+// 로그인 시 패널 메뉴 표시, 서버 목록 렌더링
+function showPanelMenu(user){
+  const navPanel = document.getElementById('navPanel');
+  if(navPanel) navPanel.style.display = 'flex';
+  renderServerList(user);
+}
+function hidePanelMenu(){
+  const navPanel = document.getElementById('navPanel');
+  if(navPanel) navPanel.style.display = 'none';
+  // 패널 페이지 선택 중이면 홈으로 이동
+  if(document.getElementById('page-panel').classList.contains('active')){
+    document.querySelectorAll('.nav-item[data-page]').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.querySelector('.nav-item[data-page="home"]').classList.add('active');
+    document.getElementById('page-home').classList.add('active');
+  }
+}
+
+// 소개 페이지 기능 카테고리 탭 (data-cat)
+document.querySelectorAll('.cat-tab[data-cat]').forEach(tab=>{
   tab.addEventListener('click', ()=>{
-    document.querySelectorAll('.cat-tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.cat-tab[data-cat]').forEach(t=>t.classList.remove('active'));
     document.querySelectorAll('.cmd-panel').forEach(p=>p.classList.remove('active'));
     tab.classList.add('active');
     document.getElementById('cat-'+tab.dataset.cat).classList.add('active');
@@ -1053,10 +1681,12 @@ function renderLoggedIn(user){
   } else {
     userAvatar.innerHTML = '🐶';
   }
+  showPanelMenu(user);
 }
 function renderLoggedOut(){
   loginBtn.style.display = 'flex';
   userCard.style.display = 'none';
+  hidePanelMenu();
 }
 
 loginBtn.addEventListener('click', async ()=>{
