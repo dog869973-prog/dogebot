@@ -501,6 +501,73 @@ footer{
   font-size:12px;
   padding: 30px 0 10px;
 }
+
+/* ── Command category tabs ── */
+.cat-tabs{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin: 18px 0 14px;
+}
+.cat-tab{
+  background: var(--panel);
+  border:1px solid var(--line);
+  color: var(--ink-dim);
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+  font-family:'Noto Sans KR','Inter',sans-serif;
+  transition: background .15s, color .15s, border-color .15s;
+}
+.cat-tab:hover{ color: var(--ink); border-color: rgba(255,138,31,.4); }
+.cat-tab.active{
+  background: rgba(255,138,31,0.15);
+  border-color: var(--doge-orange);
+  color: var(--doge-gold);
+}
+.cmd-panel{ display:none; animation: fade .2s ease; }
+.cmd-panel.active{ display:block; }
+.cmd-grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px,1fr));
+  gap:10px;
+}
+.cmd-card{
+  background: var(--panel);
+  border:1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding:12px 14px;
+  transition: border-color .15s;
+}
+.cmd-card:hover{ border-color: rgba(255,138,31,.35); }
+.cmd-card.cmd-admin{ border-left: 2px solid rgba(255,138,31,.5); }
+.cmd-name{
+  font-family:'Noto Sans KR','Inter',sans-serif;
+  font-weight:900;
+  font-size:13px;
+  color: var(--doge-gold);
+  margin-bottom:5px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  flex-wrap:wrap;
+}
+.cmd-badge{
+  font-size:10px;
+  font-weight:700;
+  background: rgba(255,138,31,0.15);
+  color: var(--doge-orange);
+  border:1px solid rgba(255,138,31,.3);
+  border-radius:4px;
+  padding:1px 5px;
+}
+.cmd-desc{
+  font-size:12px;
+  color: var(--ink-faint);
+  line-height:1.6;
+}
 </style>
 </head>
 <body>
@@ -612,9 +679,84 @@ footer{
     <section class="page" id="page-intro">
       <div class="section-title"><span class="tri">✦</span><span data-i18n="navIntro">도지봇 소개</span></div>
       <div class="bodytext">
-        <p data-i18n="introP1">도지봇은 디스코드 서버 운영에 필요한 다양한 기능을 한곳에 모은 커뮤니티 전용 봇입니다.</p>
-        <p data-i18n="introP2">멤버 관리, 알림, 미니게임 등 서버 분위기를 살리는 기능들을 지속적으로 추가하고 있으며, 사용자 피드백을 반영해 매주 업데이트되고 있습니다.</p>
-        <p data-i18n="introP3">앞으로도 도지(Doge) 특유의 유쾌한 컨셉을 잃지 않으면서, 실제로 유용한 커뮤니티 도구로 발전시켜 나갈 예정입니다.</p>
+        <p data-i18n="introP1">도지봇은 디스코드 서버 운영에 필요한 다양한 기능을 한곳에 모은 커뮤니티 전용 봇이에요.</p>
+        <p data-i18n="introP2">멤버 관리, 알림, 미니게임, 학습 기능 등 서버 분위기를 살리는 기능들을 지속적으로 추가하고 있어요.</p>
+      </div>
+
+      <!-- 카테고리 탭 -->
+      <div class="cat-tabs" id="catTabs">
+        <button class="cat-tab active" data-cat="general">🔧 기본</button>
+        <button class="cat-tab" data-cat="warn">⚠️ 경고</button>
+        <button class="cat-tab" data-cat="game">🎮 게임</button>
+        <button class="cat-tab" data-cat="point">💰 포인트</button>
+        <button class="cat-tab" data-cat="study">📚 학습</button>
+        <button class="cat-tab" data-cat="server">🛠 서버관리</button>
+      </div>
+
+      <div class="cmd-panel active" id="cat-general">
+        <div class="cmd-grid">
+          <div class="cmd-card"><div class="cmd-name">/도지봇</div><div class="cmd-desc">도지봇 안내 및 이용 규칙을 확인할 수 있어요</div></div>
+          <div class="cmd-card"><div class="cmd-name">/핑</div><div class="cmd-desc">봇의 응답 속도를 확인할 수 있어요</div></div>
+          <div class="cmd-card"><div class="cmd-name">/서포트서버</div><div class="cmd-desc">도지봇 서포트 서버 링크를 확인할 수 있어요</div></div>
+          <div class="cmd-card"><div class="cmd-name">/프로필</div><div class="cmd-desc">자신의 프로필을 확인할 수 있어요</div></div>
+          <div class="cmd-card"><div class="cmd-name">/출석체크</div><div class="cmd-desc">출석체크를 할 수 있어요 (매일 1회)</div></div>
+          <div class="cmd-card"><div class="cmd-name">/채널정보</div><div class="cmd-desc">선택한 채널의 정보를 확인할 수 있어요</div></div>
+        </div>
+      </div>
+
+      <div class="cmd-panel" id="cat-warn">
+        <div class="cmd-grid">
+          <div class="cmd-card"><div class="cmd-name">/내경고</div><div class="cmd-desc">자신의 경고 갯수를 볼 수 있어요</div></div>
+          <div class="cmd-card"><div class="cmd-name">/경고목록</div><div class="cmd-desc">경고를 보유 중인 상위 10명을 볼 수 있어요</div></div>
+          <div class="cmd-card"><div class="cmd-name">/경고패널티보기</div><div class="cmd-desc">설정된 경고 패널티 목록을 볼 수 있어요</div></div>
+          <div class="cmd-card cmd-admin"><div class="cmd-name">/경고추가 <span class="cmd-badge">관리자</span></div><div class="cmd-desc">선택한 대상에게 경고를 부여할 수 있어요</div></div>
+          <div class="cmd-card cmd-admin"><div class="cmd-name">/경고제거 <span class="cmd-badge">관리자</span></div><div class="cmd-desc">선택한 대상의 경고를 제거할 수 있어요</div></div>
+          <div class="cmd-card cmd-admin"><div class="cmd-name">/경고로그채널설정 <span class="cmd-badge">관리자</span></div><div class="cmd-desc">경고 추가/제거 알림을 보낼 채널을 설정할 수 있어요</div></div>
+          <div class="cmd-card cmd-admin"><div class="cmd-name">/경고패널티설정 <span class="cmd-badge">관리자</span></div><div class="cmd-desc">경고 갯수별 패널티를 설정할 수 있어요</div></div>
+          <div class="cmd-card cmd-admin"><div class="cmd-name">/경고패널티수정 <span class="cmd-badge">관리자</span></div><div class="cmd-desc">설정된 경고 패널티를 수정할 수 있어요</div></div>
+          <div class="cmd-card cmd-admin"><div class="cmd-name">/경고패널티제거 <span class="cmd-badge">관리자</span></div><div class="cmd-desc">설정된 경고 패널티를 제거할 수 있어요</div></div>
+        </div>
+      </div>
+
+      <div class="cmd-panel" id="cat-game">
+        <div class="cmd-grid">
+          <div class="cmd-card"><div class="cmd-name">/게임참여</div><div class="cmd-desc">미니게임에 참여할 수 있어요</div></div>
+          <div class="cmd-card"><div class="cmd-name">/게임랭킹</div><div class="cmd-desc">게임 랭크 상위 10명을 확인할 수 있어요</div></div>
+          <div class="cmd-card"><div class="cmd-name">/내랭크</div><div class="cmd-desc">러시아룰렛 내 랭크를 확인할 수 있어요</div></div>
+          <div class="cmd-card cmd-admin"><div class="cmd-name">/게임로비카테고리 <span class="cmd-badge">관리자</span></div><div class="cmd-desc">게임 로비 채널이 생성될 카테고리를 설정할 수 있어요</div></div>
+          <div class="cmd-card cmd-admin"><div class="cmd-name">/랭크시작 <span class="cmd-badge">관리자</span></div><div class="cmd-desc">즉시 랭크 시즌을 시작할 수 있어요</div></div>
+          <div class="cmd-card cmd-admin"><div class="cmd-name">/랭크시작일지정 <span class="cmd-badge">관리자</span></div><div class="cmd-desc">러시아룰렛 랭크 시작일을 지정할 수 있어요</div></div>
+          <div class="cmd-card cmd-admin"><div class="cmd-name">/랭크종료 <span class="cmd-badge">관리자</span></div><div class="cmd-desc">즉시 랭크 시즌을 종료하고 보상을 지급할 수 있어요</div></div>
+        </div>
+      </div>
+
+      <div class="cmd-panel" id="cat-point">
+        <div class="cmd-grid">
+          <div class="cmd-card"><div class="cmd-name">/포인트</div><div class="cmd-desc">자신의 보유중인 포인트를 확인할 수 있어요</div></div>
+          <div class="cmd-card"><div class="cmd-name">/포인트랭킹</div><div class="cmd-desc">포인트 상위 10명을 확인할 수 있어요</div></div>
+          <div class="cmd-card"><div class="cmd-name">/포인트얻기</div><div class="cmd-desc">간단한 미션으로 포인트를 획득할 수 있어요</div></div>
+          <div class="cmd-card"><div class="cmd-name">/상점</div><div class="cmd-desc">아이템 상점을 열 수 있어요</div></div>
+          <div class="cmd-card"><div class="cmd-name">/인벤토리</div><div class="cmd-desc">보유 중인 아이템을 확인할 수 있어요</div></div>
+          <div class="cmd-card cmd-admin"><div class="cmd-name">/포인트채널설정 <span class="cmd-badge">관리자</span></div><div class="cmd-desc">채팅 포인트를 적립할 채널을 설정할 수 있어요</div></div>
+        </div>
+      </div>
+
+      <div class="cmd-panel" id="cat-study">
+        <div class="cmd-grid">
+          <div class="cmd-card"><div class="cmd-name">/학습</div><div class="cmd-desc">도지봇에게 새로운 말과 반응을 가르칠 수 있어요</div></div>
+          <div class="cmd-card"><div class="cmd-name">/학습내용</div><div class="cmd-desc">도지봇이 학습한 내용을 확인할 수 있어요</div></div>
+          <div class="cmd-card"><div class="cmd-name">/학습평가</div><div class="cmd-desc">선택한 번호의 학습 내용을 평가할 수 있어요</div></div>
+          <div class="cmd-card cmd-admin"><div class="cmd-name">/학교지정 <span class="cmd-badge">관리자</span></div><div class="cmd-desc">학습이 가능한 채널/카테고리를 지정할 수 있어요</div></div>
+          <div class="cmd-card cmd-admin"><div class="cmd-name">/학습제거 <span class="cmd-badge">관리자</span></div><div class="cmd-desc">선택한 번호의 학습을 제거할 수 있어요</div></div>
+          <div class="cmd-card cmd-admin"><div class="cmd-name">/폐교 <span class="cmd-badge">관리자</span></div><div class="cmd-desc">지정된 학교(채널)의 학습 지정을 해제할 수 있어요</div></div>
+        </div>
+      </div>
+
+      <div class="cmd-panel" id="cat-server">
+        <div class="cmd-grid">
+          <div class="cmd-card cmd-admin"><div class="cmd-name">/별명변경로그채널 <span class="cmd-badge">관리자</span></div><div class="cmd-desc">별명/대명사 변경 알림을 보낼 채널을 설정할 수 있어요</div></div>
+          <div class="cmd-card cmd-admin"><div class="cmd-name">/부스트알림설정 <span class="cmd-badge">관리자</span></div><div class="cmd-desc">서버 부스트 알림을 받을 채널을 설정할 수 있어요</div></div>
+        </div>
       </div>
     </section>
 
@@ -839,6 +981,16 @@ document.querySelectorAll('.lang-opt').forEach(opt=>{
     applyLang(opt.dataset.lang);
     langMenu.classList.remove('show');
     settingsBtn.classList.remove('open');
+  });
+});
+
+// Category tabs in intro page
+document.querySelectorAll('.cat-tab').forEach(tab=>{
+  tab.addEventListener('click', ()=>{
+    document.querySelectorAll('.cat-tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.cmd-panel').forEach(p=>p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('cat-'+tab.dataset.cat).classList.add('active');
   });
 });
 
