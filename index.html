@@ -1435,105 +1435,301 @@ document.querySelectorAll('.lang-opt').forEach(opt=>{
 
 // ── 관리패널 JS ──
 
-// 봇 오너 디스코드 ID (실제 오너 ID로 교체하세요)
 const BOT_OWNER_ID = '1176661509833752637';
-
-// 모의 서버 데이터 (봇 연동 후 실제 API로 교체)
-const mockServers = [
-  { id: '001', name: '도지봇 공식 서버', icon: '🐶', role: 'owner' },
-  { id: '002', name: '테스트 서버',       icon: '🧪', role: 'admin' },
-  { id: '003', name: '친구들 서버',       icon: '👥', role: 'member' },
-];
-
 const roleLabel = { owner:'오너', admin:'최상위역할', member:'일반 멤버' };
 const roleClass = { owner:'role-owner', admin:'role-admin', member:'role-member' };
 
 let currentServerRole = null;
+let currentGuildId = null;
+let isBotOwner = false;
+let currentProviderToken = null; // Discord access token
 
-function renderServerList(user){
+// ── 서버 목록 로드 (Discord API + Supabase 교차 확인) ──
+async function renderServerList(user, providerToken){
   const list = document.getElementById('serverList');
   if(!list) return;
 
-  // 봇 개발자 여부 확인 및 전역 플래그 설정
   isBotOwner = user && (user.id === BOT_OWNER_ID);
+  currentProviderToken = providerToken || null;
 
-  list.innerHTML = mockServers.map(s => {
-    // 봇 오너는 모든 서버에서 서버 오너 권한으로 표시
-    const effectiveRole = isBotOwner ? 'owner' : s.role;
-    const extraBadge = isBotOwner
-      ? `<span class="server-role role-owner" style="margin-top:3px;">봇 오너</span>`
-      : `<span class="server-role ${roleClass[effectiveRole]}">${roleLabel[effectiveRole]}</span>`;
-    return `
-    <div class="server-card" onclick="selectServer('${s.id}','${s.name}','${effectiveRole}')">
-      <div class="server-icon">${s.icon}</div>
-      <div>
-        <div class="server-name">${s.name}</div>
-        ${extraBadge}
-      </div>
-    </div>`;
-  }).join('');
+  list.innerHTML = `<div style="color:var(--ink-faint);font-size:13px;padding:10px;">서버 목록 불러오는 중...</div>`;
+
+  try {
+    // 1) 도지봇이 등록된 서버 목록 (Supabase acknowledged 테이블)
+    const { data: ackRows } = await sb.from('acknowledged').select('guild_id').eq('done', true);
+    const botGuildIds = new Set((ackRows || []).map(r => r.guild_id));
+
+    // 2) 유저가 속한 디스코드 서버 목록 (Discord API)
+    let discordGuilds = [];
+    if(currentProviderToken){
+      const res = await fetch('https://discord.com/api/users/@me/guilds', {
+        headers: { Authorization: `Bearer ${currentProviderToken}` }
+      });
+      if(res.ok) discordGuilds = await res.json();
+    }
+
+    // 3) 교차 — 봇이 있는 서버 + 유저도 있는 서버
+    const myGuilds = isBotOwner
+      ? discordGuilds.filter(g => botGuildIds.has(g.id))
+      : discordGuilds.filter(g => botGuildIds.has(g.id));
+
+    if(myGuilds.length === 0){
+      list.innerHTML = `<div style="color:var(--ink-faint);font-size:13px;padding:10px;">도지봇이 초대된 서버가 없거나, 아직 라이선스 계약(/도지봇)이 완료되지 않은 서버예요.</div>`;
+      return;
+    }
+
+    // 4) 권한 계산 (서버 오너이거나 MANAGE_GUILD 권한)
+    list.innerHTML = myGuilds.map(g => {
+      const isGuildOwner = g.owner === true;
+      const hasManage = (parseInt(g.permissions || '0') & 0x20) !== 0;
+      let role = 'member';
+      if(isBotOwner || isGuildOwner) role = 'owner';
+      else if(hasManage) role = 'admin';
+
+      const iconUrl = g.icon
+        ? `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.png?size=64`
+        : null;
+      const iconHtml = iconUrl
+        ? `<img src="${iconUrl}" style="width:42px;height:42px;border-radius:12px;object-fit:cover;">`
+        : `<div class="server-icon">🐶</div>`;
+
+      return `
+      <div class="server-card" onclick="selectServer('${g.id}','${g.name.replace(/'/g,"\\'")}','${role}')">
+        ${iconHtml}
+        <div>
+          <div class="server-name">${g.name}</div>
+          <span class="server-role ${roleClass[role]}">${isBotOwner ? '봇 오너' : roleLabel[role]}</span>
+        </div>
+      </div>`;
+    }).join('');
+
+  } catch(e){
+    list.innerHTML = `<div style="color:var(--ink-faint);font-size:13px;padding:10px;">서버 목록을 불러오지 못했어요. (${e.message})</div>`;
+  }
 }
 
-let isBotOwner = false; // 봇 개발자 여부 (로그인 시 설정됨)
-
-function selectServer(id, name, role){
+// ── 서버 선택 후 실제 데이터 로드 ──
+async function selectServer(id, name, role){
   currentServerRole = role;
+  currentGuildId = id;
   document.getElementById('panelServerSelect').style.display = 'none';
   document.getElementById('panelContent').style.display = 'block';
   document.getElementById('selectedServerName').textContent = name;
 
   const badge = document.getElementById('permBadge');
-  // 봇 오너일 경우 배지에 별도 표시
-  if(isBotOwner){
-    badge.textContent = '봇 오너';
-    badge.className = 'panel-perm-badge role-owner';
-  } else {
-    badge.textContent = roleLabel[role] || role;
-    badge.className = 'panel-perm-badge ' + (roleClass[role] || 'role-member');
-  }
+  if(isBotOwner){ badge.textContent = '봇 오너'; badge.className = 'panel-perm-badge role-owner'; }
+  else { badge.textContent = roleLabel[role] || role; badge.className = 'panel-perm-badge ' + (roleClass[role] || 'role-member'); }
 
-  const canWrite  = isBotOwner || role === 'owner' || role === 'admin';
-  const canOwner  = isBotOwner; // 봇 오너만 가능한 기능
+  const canWrite = isBotOwner || role === 'owner' || role === 'admin';
+  const canOwner = isBotOwner;
 
-  // 읽기전용 안내 (서버관리자 미만)
   document.getElementById('readonlyNotice').style.display = canWrite ? 'none' : 'block';
-
-  // 오너 전용 안내 (서버관리자 이상이지만 봇 오너 아닐 때)
   const ownerNotice = document.getElementById('ownerOnlyNotice');
   if(ownerNotice) ownerNotice.style.display = (!canOwner && canWrite) ? 'block' : 'none';
-
   const serverOwnerNotice = document.getElementById('serverOwnerNotice');
   if(serverOwnerNotice) serverOwnerNotice.style.display = (!canOwner && canWrite) ? 'block' : 'none';
 
-  // 서버관리자 이상 권한 버튼 (경고, 티켓, 서버설정 등)
   document.querySelectorAll('.panel-write-ctrl').forEach(el => {
-    const enable = canWrite;
-    el.disabled = !enable;
-    el.style.opacity = enable ? '' : '0.35';
-    el.style.pointerEvents = enable ? '' : 'none';
+    el.disabled = !canWrite; el.style.opacity = canWrite ? '' : '0.35'; el.style.pointerEvents = canWrite ? '' : 'none';
   });
-
-  // 봇 오너 전용 버튼 (포인트 지급/차감 등)
   document.querySelectorAll('.panel-owner-ctrl').forEach(el => {
-    el.disabled = !canOwner;
-    el.style.opacity = canOwner ? '' : '0.35';
-    el.style.pointerEvents = canOwner ? '' : 'none';
-    // 오너 전용임을 tooltip으로 표시
-    if(!canOwner) el.title = '봇 오너 전용 기능이에요';
-    else el.title = '';
+    el.disabled = !canOwner; el.style.opacity = canOwner ? '' : '0.35'; el.style.pointerEvents = canOwner ? '' : 'none';
+    el.title = canOwner ? '' : '봇 오너 전용 기능이에요';
   });
 
-  // 패널 탭 초기화
+  // 탭 초기화 및 데이터 로드
   document.querySelectorAll('#panelContent .cat-tab').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.ptab-panel').forEach(p=>p.classList.remove('active'));
   document.querySelector('#panelContent .cat-tab[data-ptab="ticket"]').classList.add('active');
   document.getElementById('ptab-ticket').classList.add('active');
+
+  await loadPanelData(id);
+}
+
+// ── 패널 데이터 전체 로드 ──
+async function loadPanelData(guildId){
+  await Promise.all([
+    loadTickets(guildId),
+    loadWarnings(guildId),
+    loadPoints(),
+    loadGuildSettings(guildId)
+  ]);
+}
+
+// ── 티켓 탭 로드 ──
+async function loadTickets(guildId){
+  const list = document.querySelector('#ptab-ticket .ticket-list');
+  if(!list) return;
+  list.innerHTML = `<div style="color:var(--ink-faint);font-size:13px;padding:10px;">불러오는 중...</div>`;
+
+  const { data, error } = await sb.from('tickets').select('*').eq('guild_id', guildId).order('created_at', {ascending: false});
+  if(error || !data){ list.innerHTML = `<div style="color:var(--ink-faint);font-size:13px;">티켓 데이터를 불러오지 못했어요.</div>`; return; }
+
+  const open = data.filter(t => t.status === 'open').length;
+  const closed = data.filter(t => t.status === 'closed').length;
+
+  document.querySelector('#ptab-ticket .pstat-num:nth-child(1)') && (document.querySelectorAll('#ptab-ticket .pstat-num')[0].textContent = data.length);
+  document.querySelectorAll('#ptab-ticket .pstat-num')[1] && (document.querySelectorAll('#ptab-ticket .pstat-num')[1].textContent = open);
+  document.querySelectorAll('#ptab-ticket .pstat-num')[2] && (document.querySelectorAll('#ptab-ticket .pstat-num')[2].textContent = closed);
+
+  if(data.length === 0){ list.innerHTML = `<div style="color:var(--ink-faint);font-size:13px;padding:10px;">아직 티켓이 없어요.</div>`; return; }
+
+  list.innerHTML = data.map(t => {
+    const date = new Date(t.created_at).toLocaleDateString('ko-KR');
+    const isOpen = t.status === 'open';
+    const canWrite = isBotOwner || currentServerRole === 'owner' || currentServerRole === 'admin';
+    return `
+    <div class="ticket-row ${isOpen ? 'open-t' : 'closed-t'}" data-ticket-id="${t.id}">
+      <div class="ticket-icon">${isOpen ? '🎫' : '🎟'}</div>
+      <div class="ticket-info">
+        <div class="ticket-title">#${String(t.id).padStart(3,'0')} — ${t.title}</div>
+        <div class="ticket-meta">${t.author_name || t.author_id} · ${date}</div>
+        ${t.body ? `<div class="ticket-meta" style="margin-top:4px;color:var(--ink-dim);">${t.body}</div>` : ''}
+      </div>
+      <span class="ticket-status ${isOpen ? 'open-s' : 'closed-s'}">${isOpen ? '열림' : '닫힘'}</span>
+      <button class="btn-close-ticket panel-write-ctrl" onclick="closeTicketDB(this,'${t.id}')" ${!isOpen || !canWrite ? 'disabled' : ''} ${!isOpen ? 'style="opacity:.35"' : ''}>닫기</button>
+    </div>`;
+  }).join('');
+}
+
+// ── 경고 탭 로드 ──
+async function loadWarnings(guildId){
+  const list = document.querySelector('#ptab-warn-panel .ticket-list');
+  if(!list) return;
+  list.innerHTML = `<div style="color:var(--ink-faint);font-size:13px;padding:10px;">불러오는 중...</div>`;
+
+  const { data, error } = await sb.from('user_warnings').select('*').eq('guild_id', guildId).order('count', {ascending: false});
+  if(error || !data){ list.innerHTML = `<div style="color:var(--ink-faint);font-size:13px;">경고 데이터를 불러오지 못했어요.</div>`; return; }
+
+  const stat = document.querySelector('#ptab-warn-panel .pstat-num');
+  if(stat) stat.textContent = data.length;
+
+  if(data.length === 0){ list.innerHTML = `<div style="color:var(--ink-faint);font-size:13px;padding:10px;">경고 보유 유저가 없어요.</div>`; return; }
+
+  const canWrite = isBotOwner || currentServerRole === 'owner' || currentServerRole === 'admin';
+  list.innerHTML = data.map(w => `
+    <div class="ticket-row open-t">
+      <div class="ticket-icon">⚠️</div>
+      <div class="ticket-info">
+        <div class="ticket-title">${w.user_id}</div>
+        <div class="ticket-meta">경고 ${w.count}개 보유</div>
+      </div>
+      <span class="ticket-status open-s">주의</span>
+      <button class="btn-close-ticket panel-write-ctrl" ${!canWrite ? 'disabled style="opacity:.35"' : ''} onclick="alert('봇 연동 후 경고 제거 기능이 활성화돼요.')">제거</button>
+    </div>`).join('');
+}
+
+// ── 포인트 탭 로드 ──
+async function loadPoints(){
+  const list = document.querySelector('#ptab-point-panel .ticket-list');
+  if(!list) return;
+  list.innerHTML = `<div style="color:var(--ink-faint);font-size:13px;padding:10px;">불러오는 중...</div>`;
+
+  const { data, error } = await sb.from('user_points').select('*').order('points', {ascending: false}).limit(20);
+  if(error || !data){ list.innerHTML = `<div style="color:var(--ink-faint);font-size:13px;">포인트 데이터를 불러오지 못했어요.</div>`; return; }
+
+  const total = data.reduce((s, r) => s + r.points, 0);
+  const stat = document.querySelector('#ptab-point-panel .pstat-num');
+  if(stat) stat.textContent = total.toLocaleString();
+
+  if(data.length === 0){ list.innerHTML = `<div style="color:var(--ink-faint);font-size:13px;padding:10px;">포인트 데이터가 없어요.</div>`; return; }
+
+  const canOwner = isBotOwner;
+  list.innerHTML = data.map(r => `
+    <div class="ticket-row open-t">
+      <div class="ticket-icon">💰</div>
+      <div class="ticket-info">
+        <div class="ticket-title">${r.user_id}</div>
+        <div class="ticket-meta">보유 포인트: ${r.points.toLocaleString()}P</div>
+      </div>
+      <div style="display:flex;gap:6px;">
+        <button class="btn-close-ticket panel-owner-ctrl" ${!canOwner ? 'disabled style="opacity:.35"' : ''} onclick="alert('봇 연동 후 활성화돼요.')">지급</button>
+        <button class="btn-close-ticket panel-owner-ctrl" ${!canOwner ? 'disabled style="opacity:.35"' : ''} onclick="alert('봇 연동 후 활성화돼요.')">차감</button>
+      </div>
+    </div>`).join('');
+}
+
+// ── 서버설정 탭 로드 ──
+async function loadGuildSettings(guildId){
+  const { data } = await sb.from('guild_settings').select('*').eq('guild_id', guildId).single();
+  if(!data) return;
+
+  const canWrite = isBotOwner || currentServerRole === 'owner' || currentServerRole === 'admin';
+  const fieldMap = [
+    ['📢', '부스트 알림 채널',    data.boost_channel],
+    ['📝', '경고 로그 채널',      data.warn_log_channel],
+    ['🏷', '별명 변경 로그 채널', data.nickname_log_channel],
+    ['💬', '포인트 채널',         data.point_channel],
+    ['🎮', '게임 로비 카테고리',  data.game_category],
+    ['📚', '학교(학습 채널)',     data.school_channel],
+  ];
+  const grid = document.querySelector('#ptab-server-panel .server-setting-grid');
+  if(!grid) return;
+  const cards = grid.querySelectorAll('.setting-card');
+  fieldMap.forEach(([, , val], i) => {
+    if(cards[i]) {
+      const valEl = cards[i].querySelector('.setting-val');
+      if(valEl) valEl.textContent = val ? `<#${val}>` : '미설정';
+    }
+  });
+}
+
+// ── 티켓 닫기 (DB 반영) ──
+async function closeTicketDB(btn, ticketId){
+  if(!isBotOwner && currentServerRole !== 'owner' && currentServerRole !== 'admin') return;
+  const { error } = await sb.from('tickets').update({ status: 'closed', closed_at: new Date().toISOString() }).eq('id', ticketId);
+  if(error){ alert('티켓 닫기 실패: ' + error.message); return; }
+  const row = btn.closest('.ticket-row');
+  row.classList.remove('open-t'); row.classList.add('closed-t');
+  row.querySelector('.ticket-status').className = 'ticket-status closed-s';
+  row.querySelector('.ticket-status').textContent = '닫힘';
+  row.querySelector('.ticket-icon').textContent = '🎟';
+  btn.disabled = true; btn.style.opacity = '0.35';
+  await loadTickets(currentGuildId);
+}
+
+// ── 새 티켓 모달 ──
+function openNewTicketModal(){
+  if(!isBotOwner && currentServerRole !== 'owner' && currentServerRole !== 'admin') return;
+  document.getElementById('ticketTitleInput').value = '';
+  document.getElementById('ticketBodyInput').value = '';
+  document.getElementById('ticketModal').style.display = 'flex';
+}
+function closeModal(e){
+  if(e.target === document.getElementById('ticketModal')){
+    document.getElementById('ticketModal').style.display = 'none';
+  }
+}
+
+// ── 티켓 제출 (DB 저장) ──
+async function submitTicket(){
+  const title = document.getElementById('ticketTitleInput').value.trim();
+  const body  = document.getElementById('ticketBodyInput').value.trim();
+  if(!title){ alert('제목을 입력해주세요.'); return; }
+
+  const { data: session } = await sb.auth.getSession();
+  const user = session?.session?.user;
+  const authorId   = user?.user_metadata?.provider_id || user?.id || 'unknown';
+  const authorName = user?.user_metadata?.full_name || user?.user_metadata?.name || 'unknown';
+
+  const { error } = await sb.from('tickets').insert({
+    guild_id: currentGuildId,
+    title, body,
+    author_id:   authorId,
+    author_name: authorName,
+    status: 'open'
+  });
+
+  if(error){ alert('티켓 생성 실패: ' + error.message); return; }
+  document.getElementById('ticketModal').style.display = 'none';
+  await loadTickets(currentGuildId);
 }
 
 function backToServerSelect(){
   document.getElementById('panelServerSelect').style.display = 'block';
   document.getElementById('panelContent').style.display = 'none';
   currentServerRole = null;
+  currentGuildId = null;
 }
 
 // 패널 탭 전환
@@ -1547,63 +1743,24 @@ document.addEventListener('click', e => {
   tab.classList.add('active');
   const target = document.getElementById('ptab-' + tab.dataset.ptab);
   if(target) target.classList.add('active');
+  // 탭 전환 시 해당 데이터 새로고침
+  if(currentGuildId){
+    if(tab.dataset.ptab === 'ticket')      loadTickets(currentGuildId);
+    if(tab.dataset.ptab === 'warn-panel')  loadWarnings(currentGuildId);
+    if(tab.dataset.ptab === 'point-panel') loadPoints();
+    if(tab.dataset.ptab === 'server-panel') loadGuildSettings(currentGuildId);
+  }
 });
 
-// 티켓 닫기
-function closeTicket(btn){
-  if(currentServerRole !== 'owner' && currentServerRole !== 'admin') return;
-  const row = btn.closest('.ticket-row');
-  row.classList.remove('open-t');
-  row.classList.add('closed-t');
-  row.querySelector('.ticket-status').className = 'ticket-status closed-s';
-  row.querySelector('.ticket-status').textContent = '닫힘';
-  row.querySelector('.ticket-icon').textContent = '🎟';
-  btn.disabled = true;
-}
-
-// 새 티켓 모달
-function openNewTicketModal(){
-  if(currentServerRole !== 'owner' && currentServerRole !== 'admin') return;
-  document.getElementById('ticketTitleInput').value = '';
-  document.getElementById('ticketBodyInput').value = '';
-  document.getElementById('ticketModal').style.display = 'flex';
-}
-function closeModal(e){
-  if(e.target === document.getElementById('ticketModal')){
-    document.getElementById('ticketModal').style.display = 'none';
-  }
-}
-function submitTicket(){
-  const title = document.getElementById('ticketTitleInput').value.trim();
-  if(!title){ alert('제목을 입력해주세요.'); return; }
-  const list = document.querySelector('#ptab-ticket .ticket-list');
-  const rows = list.querySelectorAll('.ticket-row');
-  const num = String(rows.length).padStart(3,'0');
-  const today = new Date().toLocaleDateString('ko-KR',{year:'numeric',month:'2-digit',day:'2-digit'}).replace(/ /g,'').replace(/\./g,'.').slice(0,-1);
-  const row = document.createElement('div');
-  row.className = 'ticket-row open-t';
-  row.innerHTML = `
-    <div class="ticket-icon">🎫</div>
-    <div class="ticket-info">
-      <div class="ticket-title">#${num} — ${title}</div>
-      <div class="ticket-meta">${document.getElementById('userName').textContent} · ${today}</div>
-    </div>
-    <span class="ticket-status open-s">열림</span>
-    <button class="btn-close-ticket panel-write-ctrl" onclick="closeTicket(this)">닫기</button>`;
-  list.appendChild(row);
-  document.getElementById('ticketModal').style.display = 'none';
-}
-
-// 로그인 시 패널 메뉴 표시, 서버 목록 렌더링
-function showPanelMenu(user){
+// 로그인 시 패널 메뉴 표시
+function showPanelMenu(user, providerToken){
   const navPanel = document.getElementById('navPanel');
   if(navPanel) navPanel.style.display = 'flex';
-  renderServerList(user);
+  renderServerList(user, providerToken);
 }
 function hidePanelMenu(){
   const navPanel = document.getElementById('navPanel');
   if(navPanel) navPanel.style.display = 'none';
-  // 패널 페이지 선택 중이면 홈으로 이동
   if(document.getElementById('page-panel').classList.contains('active')){
     document.querySelectorAll('.nav-item[data-page]').forEach(b=>b.classList.remove('active'));
     document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -1668,7 +1825,7 @@ const userAvatar = document.getElementById('userAvatar');
 const userName = document.getElementById('userName');
 const userTag = document.getElementById('userTag');
 
-function renderLoggedIn(user){
+function renderLoggedIn(user, providerToken){
   loginBtn.style.display = 'none';
   userCard.style.display = 'flex';
   const meta = user.user_metadata || {};
@@ -1681,7 +1838,7 @@ function renderLoggedIn(user){
   } else {
     userAvatar.innerHTML = '🐶';
   }
-  showPanelMenu(user);
+  showPanelMenu(user, providerToken);
 }
 function renderLoggedOut(){
   loginBtn.style.display = 'flex';
@@ -1701,13 +1858,13 @@ logoutBtn.addEventListener('click', async ()=>{
 });
 
 sb.auth.onAuthStateChange((_event, session)=>{
-  if(session && session.user){ renderLoggedIn(session.user); }
+  if(session && session.user){ renderLoggedIn(session.user, session.provider_token); }
   else { renderLoggedOut(); }
 });
 
 // Check existing session on load
 sb.auth.getSession().then(({data})=>{
-  if(data.session && data.session.user){ renderLoggedIn(data.session.user); }
+  if(data.session && data.session.user){ renderLoggedIn(data.session.user, data.session.provider_token); }
   else { renderLoggedOut(); }
 });
 
