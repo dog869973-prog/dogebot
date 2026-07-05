@@ -1651,27 +1651,138 @@ async function loadPoints(){
 
 // ── 서버설정 탭 로드 ──
 async function loadGuildSettings(guildId){
-  const { data } = await sb.from('guild_settings').select('*').eq('guild_id', guildId).single();
-  if(!data) return;
+  const [{ data: gSet }, { data: channels }] = await Promise.all([
+    sb.from('guild_settings').select('*').eq('guild_id', guildId).single(),
+    sb.from('guild_channels').select('*').eq('guild_id', guildId).order('channel_name')
+  ]);
 
-  const canWrite = isBotOwner || currentServerRole === 'owner' || currentServerRole === 'admin';
-  const fieldMap = [
-    ['📢', '부스트 알림 채널',    data.boost_channel],
-    ['📝', '경고 로그 채널',      data.warn_log_channel],
-    ['🏷', '별명 변경 로그 채널', data.nickname_log_channel],
-    ['💬', '포인트 채널',         data.point_channel],
-    ['🎮', '게임 로비 카테고리',  data.game_category],
-    ['📚', '학교(학습 채널)',     data.school_channel],
+  // 채널 목록 캐시
+  window._cachedChannels = channels || [];
+  window._cachedGuildId  = guildId;
+
+  const settingDefs = [
+    { key:'boost_channel',        icon:'📢', label:'부스트 알림 채널',    type:'text' },
+    { key:'warn_log_channel',     icon:'📝', label:'경고 로그 채널',       type:'text' },
+    { key:'nickname_log_channel', icon:'🏷', label:'별명 변경 로그 채널',  type:'text' },
+    { key:'point_channel',        icon:'💬', label:'포인트 채널',           type:'text' },
+    { key:'game_category',        icon:'🎮', label:'게임 로비 카테고리',    type:'category' },
+    { key:'school_channel',       icon:'📚', label:'학교(학습 채널)',       type:'text' },
+    { key:'ticket_channel',       icon:'🎫', label:'티켓 알림 채널',        type:'text' },
   ];
+
   const grid = document.querySelector('#ptab-server-panel .server-setting-grid');
   if(!grid) return;
-  const cards = grid.querySelectorAll('.setting-card');
-  fieldMap.forEach(([, , val], i) => {
-    if(cards[i]) {
-      const valEl = cards[i].querySelector('.setting-val');
-      if(valEl) valEl.textContent = val ? `<#${val}>` : '미설정';
-    }
+  const canWrite = isBotOwner || currentServerRole === 'owner' || currentServerRole === 'admin';
+
+  grid.innerHTML = settingDefs.map(def => {
+    const val = gSet?.[def.key] || null;
+    const chName = val ? (channels?.find(c => c.channel_id === val)?.channel_name || `<#${val}>`) : '미설정';
+    return `
+    <div class="setting-card">
+      <div class="setting-icon">${def.icon}</div>
+      <div class="setting-label">${def.label}</div>
+      <div class="setting-val" id="sval_${def.key}">${chName}</div>
+      <button class="setting-btn panel-write-ctrl"
+        ${!canWrite ? 'disabled' : ''}
+        onclick="openChannelModal('${def.key}','${def.label}','${def.type}')">설정</button>
+    </div>`;
+  }).join('');
+
+  // 봇 오너 전용 섹션
+  const ownerSection = document.querySelector('#ptab-server-panel .owner-only-notice');
+  if(ownerSection) ownerSection.style.display = (!isBotOwner && canWrite) ? 'block' : 'none';
+}
+
+// ── 채널 선택 모달 열기 ──
+function openChannelModal(settingKey, label, type){
+  const channels = window._cachedChannels || [];
+  const filtered = type === 'category'
+    ? channels.filter(c => c.channel_type === 4)
+    : channels.filter(c => c.channel_type === 0);
+
+  // 모달 HTML 동적 생성
+  let existing = document.getElementById('channelSelectModal');
+  if(existing) existing.remove();
+
+  const modal = document.createElement('div');
+  modal.id = 'channelSelectModal';
+  modal.className = 'modal-backdrop';
+  modal.style.display = 'flex';
+  modal.onclick = e => { if(e.target === modal) modal.remove(); };
+
+  const options = filtered.length > 0
+    ? filtered.map(c => `
+        <div class="ch-option" onclick="applyChannelSetting('${settingKey}','${c.channel_id}','${c.channel_name.replace(/'/g,"\\'")}')">
+          <span style="color:var(--ink-faint);margin-right:6px;">${c.channel_type === 4 ? '📁' : '#'}</span>
+          ${c.channel_name}
+          ${c.category_name ? `<span style="color:var(--ink-faint);font-size:11px;margin-left:6px;">(${c.category_name})</span>` : ''}
+        </div>`).join('')
+    : `<div style="color:var(--ink-faint);font-size:13px;padding:12px;">채널 목록이 없어요. 봇이 시작된 후 잠시 기다려보세요.</div>`;
+
+  modal.innerHTML = `
+    <div class="modal-box" style="max-height:70vh;overflow:hidden;display:flex;flex-direction:column;">
+      <div class="modal-title">📋 ${label} 설정</div>
+      <input class="modal-input" id="chSearchInput" placeholder="채널 검색..." oninput="filterChannelOptions(this.value)" style="margin-bottom:8px;">
+      <div id="chOptionList" style="overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:4px;">
+        ${options}
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px;">
+        <button class="modal-cancel" onclick="document.getElementById('channelSelectModal').remove()">취소</button>
+        <button class="modal-cancel" style="color:#ff8d8d;border-color:rgba(255,90,90,.3);"
+          onclick="applyChannelSetting('${settingKey}',null,null)">설정 해제</button>
+      </div>
+    </div>`;
+
+  // 채널 목록 스타일 동적 추가
+  if(!document.getElementById('chOptStyle')){
+    const s = document.createElement('style');
+    s.id = 'chOptStyle';
+    s.textContent = `.ch-option{padding:9px 12px;border-radius:8px;cursor:pointer;font-size:13.5px;color:var(--ink-dim);border:1px solid transparent;}.ch-option:hover{background:rgba(255,138,31,.1);color:var(--ink);border-color:rgba(255,138,31,.3);}`;
+    document.head.appendChild(s);
+  }
+
+  document.body.appendChild(modal);
+}
+
+function filterChannelOptions(query){
+  const items = document.querySelectorAll('#chOptionList .ch-option');
+  items.forEach(el => {
+    el.style.display = el.textContent.toLowerCase().includes(query.toLowerCase()) ? '' : 'none';
   });
+}
+
+// ── 채널 설정 저장 (Supabase 직접 업데이트) ──
+async function applyChannelSetting(settingKey, channelId, channelName){
+  document.getElementById('channelSelectModal')?.remove();
+
+  const updateObj = { guild_id: window._cachedGuildId, updated_at: new Date().toISOString() };
+  updateObj[settingKey] = channelId;
+
+  const { error } = await sb.from('guild_settings').upsert(updateObj, { onConflict: 'guild_id' });
+
+  if(error){ alert('저장 실패: ' + error.message); return; }
+
+  // 화면 즉시 업데이트
+  const valEl = document.getElementById('sval_' + settingKey);
+  if(valEl) valEl.textContent = channelName ? `#${channelName}` : '미설정';
+
+  // 성공 토스트
+  showToast(channelName ? `✅ #${channelName} 으로 설정했어요!` : '✅ 설정을 해제했어요.');
+}
+
+// ── 토스트 메시지 ──
+function showToast(msg){
+  let toast = document.getElementById('panelToast');
+  if(!toast){
+    toast = document.createElement('div');
+    toast.id = 'panelToast';
+    toast.style.cssText = 'position:fixed;bottom:24px;right:24px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 18px;font-size:13px;color:var(--ink);z-index:100;box-shadow:0 8px 20px rgba(0,0,0,.4);transition:opacity .3s;';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.style.opacity = '1';
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => { toast.style.opacity = '0'; }, 2500);
 }
 
 // ── 티켓 닫기 (DB 반영) ──
