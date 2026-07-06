@@ -1444,61 +1444,86 @@ let currentGuildId = null;
 let isBotOwner = false;
 let currentProviderToken = null; // Discord access token
 
-// ── 서버 목록 로드 (Discord API + Supabase 교차 확인) ──
+// ── 서버 목록 로드 ──
 async function renderServerList(user, providerToken){
   const list = document.getElementById('serverList');
   if(!list) return;
 
+  // provider_token 저장 (새로고침 후에도 유지)
+  if(providerToken) sessionStorage.setItem('dc_token', providerToken);
+  const token = providerToken || sessionStorage.getItem('dc_token');
+
   isBotOwner = user && (user.id === BOT_OWNER_ID);
-  currentProviderToken = providerToken || null;
+  currentProviderToken = token;
 
   list.innerHTML = `<div style="color:var(--ink-faint);font-size:13px;padding:10px;">서버 목록 불러오는 중...</div>`;
 
   try {
-    // 1) 도지봇이 등록된 서버 목록 (Supabase acknowledged 테이블)
-    const { data: ackRows } = await sb.from('acknowledged').select('guild_id').eq('done', true);
-    const botGuildIds = new Set((ackRows || []).map(r => r.guild_id));
+    // 봇이 들어간 서버 목록 (guild_settings에서 — 봇 시작 시 자동 저장)
+    const { data: botGuilds } = await sb.from('guild_settings').select('guild_id,guild_name,guild_icon').not('guild_name','is',null);
+    const botMap = {};
+    (botGuilds || []).forEach(g => { botMap[g.guild_id] = g; });
 
-    // 2) 유저가 속한 디스코드 서버 목록 (Discord API)
-    let discordGuilds = [];
-    if(currentProviderToken){
-      const res = await fetch('https://discord.com/api/users/@me/guilds', {
-        headers: { Authorization: `Bearer ${currentProviderToken}` }
-      });
-      if(res.ok) discordGuilds = await res.json();
-    }
-
-    // 3) 교차 — 봇이 있는 서버 + 유저도 있는 서버
-    const myGuilds = isBotOwner
-      ? discordGuilds.filter(g => botGuildIds.has(g.id))
-      : discordGuilds.filter(g => botGuildIds.has(g.id));
-
-    if(myGuilds.length === 0){
-      list.innerHTML = `<div style="color:var(--ink-faint);font-size:13px;padding:10px;">도지봇이 초대된 서버가 없거나, 아직 라이선스 계약(/도지봇)이 완료되지 않은 서버예요.</div>`;
+    if(Object.keys(botMap).length === 0){
+      list.innerHTML = `<div style="color:var(--ink-faint);font-size:13px;padding:10px;">봇이 들어간 서버가 아직 Supabase에 등록되지 않았어요.<br>봇을 재시작하면 자동으로 등록돼요.</div>`;
       return;
     }
 
-    // 4) 권한 계산 (서버 오너이거나 MANAGE_GUILD 권한)
-    list.innerHTML = myGuilds.map(g => {
-      const isGuildOwner = g.owner === true;
-      const hasManage = (parseInt(g.permissions || '0') & 0x20) !== 0;
-      let role = 'member';
-      if(isBotOwner || isGuildOwner) role = 'owner';
-      else if(hasManage) role = 'admin';
+    // 유저의 Discord 서버 목록 (token 있을 때)
+    let userGuildMap = {};
+    if(token){
+      try {
+        const res = await fetch('https://discord.com/api/users/@me/guilds', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if(res.ok){
+          const guilds = await res.json();
+          guilds.forEach(g => { userGuildMap[g.id] = g; });
+        }
+      } catch {}
+    }
 
-      const iconUrl = g.icon
-        ? `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.png?size=64`
-        : null;
-      const iconHtml = iconUrl
-        ? `<img src="${iconUrl}" style="width:42px;height:42px;border-radius:12px;object-fit:cover;">`
+    // 표시할 서버 결정
+    let displayGuilds;
+    if(isBotOwner){
+      // 봇 오너: 봇이 있는 모든 서버
+      displayGuilds = Object.values(botMap).map(g => ({
+        id: g.guild_id, name: g.guild_name, icon: g.guild_icon, role: 'owner'
+      }));
+    } else if(Object.keys(userGuildMap).length > 0){
+      // 일반 유저: 봇 서버 ∩ 내 서버
+      displayGuilds = Object.values(botMap)
+        .filter(g => userGuildMap[g.guild_id])
+        .map(g => {
+          const dg = userGuildMap[g.guild_id];
+          const isOwner2 = dg?.owner === true;
+          const hasManage = (parseInt(dg?.permissions || '0') & 0x20) !== 0;
+          const role = isOwner2 ? 'owner' : hasManage ? 'admin' : 'member';
+          return { id: g.guild_id, name: g.guild_name, icon: g.guild_icon, role };
+        });
+    } else {
+      // token 없음 → 봇 서버 전체 표시 (권한은 member로)
+      displayGuilds = Object.values(botMap).map(g => ({
+        id: g.guild_id, name: g.guild_name, icon: g.guild_icon, role: 'member'
+      }));
+    }
+
+    if(displayGuilds.length === 0){
+      list.innerHTML = `<div style="color:var(--ink-faint);font-size:13px;padding:10px;">도지봇이 초대된 서버가 없거나, 공통 서버가 없어요.</div>`;
+      return;
+    }
+
+    list.innerHTML = displayGuilds.map(g => {
+      const iconHtml = g.icon
+        ? `<img src="${g.icon}" style="width:42px;height:42px;border-radius:12px;object-fit:cover;flex:none;">`
         : `<div class="server-icon">🐶</div>`;
-
+      const effectiveRole = isBotOwner ? 'owner' : g.role;
       return `
-      <div class="server-card" onclick="selectServer('${g.id}','${g.name.replace(/'/g,"\\'")}','${role}')">
+      <div class="server-card" onclick="selectServer('${g.id}','${(g.name||'').replace(/'/g,"\\'")}','${effectiveRole}')">
         ${iconHtml}
         <div>
-          <div class="server-name">${g.name}</div>
-          <span class="server-role ${roleClass[role]}">${isBotOwner ? '봇 오너' : roleLabel[role]}</span>
+          <div class="server-name">${g.name || g.id}</div>
+          <span class="server-role ${roleClass[effectiveRole]}">${isBotOwner ? '봇 오너' : roleLabel[effectiveRole]}</span>
         </div>
       </div>`;
     }).join('');
