@@ -1231,12 +1231,12 @@ footer{
       <!-- 새 티켓 모달 -->
       <div class="modal-backdrop" id="ticketModal" style="display:none;" onclick="closeModal(event)">
         <div class="modal-box">
-          <div class="modal-title">🎫 새 티켓 작성</div>
-          <input class="modal-input" id="ticketTitleInput" placeholder="티켓 제목을 입력하세요" maxlength="50">
-          <textarea class="modal-textarea" id="ticketBodyInput" placeholder="문의 내용을 입력하세요" rows="4"></textarea>
+          <div class="modal-title" data-i18n="modalNewTicket">🎫 새 티켓 작성</div>
+          <input class="modal-input" id="ticketTitleInput" data-i18n-placeholder="modalTitlePh" placeholder="티켓 제목을 입력하세요" maxlength="50">
+          <textarea class="modal-textarea" id="ticketBodyInput" data-i18n-placeholder="modalBodyPh" placeholder="문의 내용을 입력하세요" rows="4"></textarea>
           <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:4px;">
-            <button class="modal-cancel" onclick="document.getElementById('ticketModal').style.display='none'">취소</button>
-            <button class="modal-submit" onclick="submitTicket()">제출</button>
+            <button class="modal-cancel" onclick="document.getElementById('ticketModal').style.display='none'" data-i18n="btnCancel">취소</button>
+            <button class="modal-submit" onclick="submitTicket()" data-i18n="btnSubmit">제출</button>
           </div>
         </div>
       </div>
@@ -1252,6 +1252,310 @@ const i18n = {
     brandTitle:"도지봇 | DOGE BOT", search:"검색", settings:"설정",
     navHome:"홈메뉴", navIntro:"도지봇 소개", navInvite:"도지봇 초대", navTerms:"도지봇 이용약관", navPrivacy:"개인정보처리방침", navQna:"QnA",
     loginBtn:"디스코드로 로그인", logoutBtn:"로그아웃",
+    heroLead:"도지봇은 디스코드에서 필요한 커뮤니티용 봇으로, 다양한 기능과 정보를 제공합니다.",
+    whyTitle:"도지봇의 특징",
+    why1Title:"실시간 소통", why1Body:"지속적인 업데이트와 활발한 유저 소통을 통해 커뮤니티에 꼭 맞게 설계되었습니다.",
+    why2Title:"계속되는 연구", why2Body:"2025년부터 개발을 시작해 지금까지도 새로운 기능을 연구하고 있습니다.",
+    why3Title:"충실한 컨셉", why3Body:"신식 기능을 꾸준히 추가하면서도 도지(Doge) 컨셉에 충실하도록 설계 중입니다.",
+    introP1:"도지봇은 디스코드 서버 운영에 필요한 다양한 기능을 한곳에 모은 커뮤니티 전용 봇입니다.",
+    introP2:"멤버 관리, 알림, 미니게임 등 서버 분위기를 살리는 기능들을 지속적으로 추가하고 있으며, 사용자 피드백을 반영해 매주 업데이트되고 있습니다.",
+    introP3:"앞으로도 도지(Doge) 특유의 유쾌한 컨셉을 잃지 않으면서, 실제로 유용한 커뮤니티 도구로 발전시켜 나갈 예정입니다.",
+    inviteHeadline:"내 서버에 도지봇 데려오기", inviteBody:"버튼 한 번이면 도지봇이 여러분의 디스코드 서버에 합류합니다.", inviteBtn:"디스코드에 초대하기",
+    termsArt1:"제1조 (목적)", termsP1:"본 약관은 도지봇이 제공하는 서비스의 이용 조건 및 절차에 관한 사항을 규정함을 목적으로 합니다.",
+    termsArt2:"제2조 (서비스 이용)", termsP2:"이용자는 디스코드 계정으로 로그인하여 서비스를 이용할 수 있으며, 관련 법령 및 디스코드 이용약관을 준수해야 합니다.",
+    termsArt3:"제3조 (책임 제한)", termsP3:"도지봇은 무료로 제공되는 서비스이며, 예기치 못한 오류나 일시적 장애에 대해 별도의 보상을 하지 않습니다.",
+    privP1:"도지봇은 서비스 제공을 위해 디스코드 로그인 시 제공되는 최소한의 정보(닉네임, 디스코드 ID, 프로필 이미지)만을 수집합니다.",
+    privP2:"수집된 정보는 서비스 운영 목적 외에는 사용되지 않으며, 이용자가 원할 경우 언제든지 연동 해제 및 정보 삭제를 요청할 수 있습니다.",
+    privP3:"제3자에게 개인정보를 제공하지 않으며, 관련 법령에 따라 안전하게 보관 및 관리합니다.",
+    q1:"도지봇은 무료인가요?", a1:"네, 도지봇의 모든 기본 기능은 무료로 제공됩니다.",
+    q2:"로그인은 어떻게 하나요?", a2:"왼쪽 사이드바 하단의 디스코드로 로그인 버튼을 눌러 디스코드 계정으로 간편하게 로그인할 수 있습니다.",
+    q3:"기능 추가 요청은 어디서 하나요?", a3:"공식 디스코드 서버 내 건의 채널을 통해 언제든지 요청해 주세요.",
+    footer:"© 2025 도지봇 | DOGE BOT. All rights reserved.",
+    // 관리패널
+    navPanel:"관리패널",
+    panelSelectTitle:"🐶 관리할 서버를 선택해주세요",
+    panelSelectDesc:"도지봇이 초대된 서버만 표시돼요. 권한에 따라 수정 가능 범위가 달라져요.",
+    btnBackServer:"← 서버 목록",
+    readonlyNotice:"👀 이 서버에서는 읽기만 가능해요. 수정하려면 최상위 역할 이상의 권한이 필요해요.",
+    ownerOnlyNotice:"👑 포인트 지급/차감은 봇 오너 전용 기능이에요. 서버장·최상위역할이어도 이 기능은 사용할 수 없어요.",
+    serverOwnerNotice:"👑 아래 항목은 봇 오너 전용이에요. 서버장·최상위역할이어도 사용할 수 없어요.",
+    tabTicket:"🎫 티켓", tabWarn:"⚠️ 경고", tabPoint:"💰 포인트", tabServer:"🛠 서버설정",
+    ticketTotal:"전체 티켓", ticketOpen:"열린 티켓", ticketClosed:"닫힌 티켓",
+    btnNewTicket:"+ 새 티켓", statusOpen:"열림", statusClosed:"닫힘", statusWarn:"주의",
+    btnClose:"닫기", btnRemove:"제거", btnGrant:"지급", btnDeduct:"차감", btnSet:"설정", btnExec:"실행", btnChange:"변경",
+    noTickets:"아직 티켓이 없어요.", noWarnings:"경고 보유 유저가 없어요.", noPoints:"포인트 데이터가 없어요.",
+    warnTotal:"경고 보유 유저", pointTotal:"총 유통 포인트",
+    serverChannelTitle:"🛠 서버 채널 설정", serverChannelDesc:"(서버장/최상위역할 이상)",
+    botOwnerTitle:"👑 봇 오너 전용", botOwnerDesc:"(봇 개발자만 가능)",
+    labelInstantReg:"즉시등록", descInstantReg:"라이선스 계약을 즉시 완료해요",
+    labelDeregister:"등록해제", descDeregister:"이 서버의 라이선스 승인을 해제해요",
+    labelChangePw:"비밀번호 변경", descChangePw:"최상위 역할 관리자 비밀번호를 변경해요",
+    sBoost:"부스트 알림 채널", sWarnLog:"경고 로그 채널", sNickLog:"별명 변경 로그 채널",
+    sPoint:"포인트 채널", sGame:"게임 로비 카테고리", sSchool:"학교(학습 채널)", sTicket:"티켓 알림 채널",
+    modalNewTicket:"🎫 새 티켓 작성", modalTitlePh:"티켓 제목을 입력하세요", modalBodyPh:"문의 내용을 입력하세요",
+    btnCancel:"취소", btnSubmit:"제출", btnUnset:"설정 해제", chSearchPh:"채널 검색...",
+    loading:"불러오는 중...", roleOwner:"오너", roleAdmin:"최상위역할", roleMember:"일반 멤버", roleBotOwner:"봇 오너",
+    toastSaved:"으로 설정했어요!", toastUnset:"설정을 해제했어요.", unset:"미설정",
+    panelNoBot:"봇이 들어간 서버가 아직 Supabase에 등록되지 않았어요. 봇을 재시작하면 자동으로 등록돼요.",
+    panelNoCommon:"도지봇이 초대된 공통 서버가 없어요.",
+    panelLoadErr:"서버 목록을 불러오지 못했어요."
+  },
+  en: {
+    brandTitle:"DOGE BOT", search:"Search", settings:"Settings",
+    navHome:"Home", navIntro:"About Doge Bot", navInvite:"Invite Doge Bot", navTerms:"Terms of Service", navPrivacy:"Privacy Policy", navQna:"QnA",
+    loginBtn:"Log in with Discord", logoutBtn:"Log out",
+    heroLead:"Doge Bot is the community bot your Discord server needs, packed with features and useful info.",
+    whyTitle:"What makes Doge Bot different",
+    why1Title:"Active community", why1Body:"Built around steady updates and real engagement with users, made for thriving communities.",
+    why2Title:"Always evolving", why2Body:"In development since 2025 and still being actively researched and improved.",
+    why3Title:"True to the concept", why3Body:"New features keep arriving without losing the playful Doge spirit at its core.",
+    introP1:"Doge Bot brings together everything a Discord server needs in one dedicated community bot.",
+    introP2:"Member management, alerts, mini-games and more are added regularly, with weekly updates shaped by user feedback.",
+    introP3:"Going forward, it'll keep its cheerful Doge identity while growing into a genuinely useful community tool.",
+    inviteHeadline:"Bring Doge Bot to your server", inviteBody:"One click and Doge Bot joins your Discord server.", inviteBtn:"Invite to Discord",
+    termsArt1:"Article 1 (Purpose)", termsP1:"These terms set out the conditions and procedures for using the services provided by Doge Bot.",
+    termsArt2:"Article 2 (Using the service)", termsP2:"Users may sign in with their Discord account, and must follow applicable laws and Discord's own Terms of Service.",
+    termsArt3:"Article 3 (Limitation of liability)", termsP3:"Doge Bot is provided free of charge, and no compensation is offered for unexpected errors or temporary outages.",
+    privP1:"Doge Bot only collects the minimal information provided at Discord login (nickname, Discord ID, profile image) needed to run the service.",
+    privP2:"Collected data is never used beyond operating the service, and users may request disconnection or deletion of their data at any time.",
+    privP3:"Personal data is never shared with third parties, and is stored and managed securely in line with applicable law.",
+    q1:"Is Doge Bot free?", a1:"Yes, all of Doge Bot's core features are free to use.",
+    q2:"How do I log in?", a2:"Click the 'Log in with Discord' button at the bottom of the sidebar to sign in with your Discord account.",
+    q3:"Where can I request a new feature?", a3:"Feel free to suggest one anytime in the suggestions channel of our official Discord server.",
+    footer:"© 2025 Doge Bot. All rights reserved.",
+    navPanel:"Admin Panel",
+    panelSelectTitle:"🐶 Select a server to manage",
+    panelSelectDesc:"Only servers with Doge Bot are shown. Your edit permissions depend on your role.",
+    btnBackServer:"← Server list",
+    readonlyNotice:"👀 You can only view this server. You need at least a top role to make changes.",
+    ownerOnlyNotice:"👑 Point grant/deduct is a bot-owner-only feature and cannot be used by server admins.",
+    serverOwnerNotice:"👑 The items below are bot-owner only and cannot be used by server admins.",
+    tabTicket:"🎫 Tickets", tabWarn:"⚠️ Warnings", tabPoint:"💰 Points", tabServer:"🛠 Server Settings",
+    ticketTotal:"Total tickets", ticketOpen:"Open", ticketClosed:"Closed",
+    btnNewTicket:"+ New ticket", statusOpen:"Open", statusClosed:"Closed", statusWarn:"Warning",
+    btnClose:"Close", btnRemove:"Remove", btnGrant:"Grant", btnDeduct:"Deduct", btnSet:"Set", btnExec:"Run", btnChange:"Change",
+    noTickets:"No tickets yet.", noWarnings:"No users with warnings.", noPoints:"No point data.",
+    warnTotal:"Users with warnings", pointTotal:"Total points in circulation",
+    serverChannelTitle:"🛠 Server Channel Settings", serverChannelDesc:"(Server owner / top role and above)",
+    botOwnerTitle:"👑 Bot Owner Only", botOwnerDesc:"(Bot developer only)",
+    labelInstantReg:"Instant Register", descInstantReg:"Complete the license agreement immediately",
+    labelDeregister:"Deregister", descDeregister:"Revoke this server's license approval",
+    labelChangePw:"Change Password", descChangePw:"Change the top-role admin password",
+    sBoost:"Boost alert channel", sWarnLog:"Warning log channel", sNickLog:"Nickname change log channel",
+    sPoint:"Point channel", sGame:"Game lobby category", sSchool:"School (study channel)", sTicket:"Ticket alert channel",
+    modalNewTicket:"🎫 New Ticket", modalTitlePh:"Enter a ticket title", modalBodyPh:"Describe your issue",
+    btnCancel:"Cancel", btnSubmit:"Submit", btnUnset:"Clear setting", chSearchPh:"Search channels...",
+    loading:"Loading...", roleOwner:"Owner", roleAdmin:"Top Role", roleMember:"Member", roleBotOwner:"Bot Owner",
+    toastSaved:"has been set!", toastUnset:"Setting cleared.", unset:"Not set",
+    panelNoBot:"No servers have been registered in Supabase yet. Restart the bot to register automatically.",
+    panelNoCommon:"No common servers with Doge Bot found.",
+    panelLoadErr:"Failed to load server list."
+  },
+  ja: {
+    brandTitle:"ドージボット | DOGE BOT", search:"検索", settings:"設定",
+    navHome:"ホーム", navIntro:"ドージボット紹介", navInvite:"ドージボット招待", navTerms:"利用規約", navPrivacy:"プライバシーポリシー", navQna:"QnA",
+    loginBtn:"Discordでログイン", logoutBtn:"ログアウト",
+    heroLead:"ドージボットはDiscordコミュニティに必要な機能と情報を提供するボットです。",
+    whyTitle:"ドージボットの特徴",
+    why1Title:"活発な交流", why1Body:"継続的なアップデートとユーザーとの活発な交流により、コミュニティに最適化されています。",
+    why2Title:"進化を続ける", why2Body:"2025年から開発を開始し、現在も新機能の研究を続けています。",
+    why3Title:"コンセプトを大切に", why3Body:"新機能を追加しながらも、ドージらしい遊び心のあるコンセプトを大切にしています。",
+    introP1:"ドージボットはDiscordサーバー運営に必要な機能を一つにまとめたコミュニティ専用ボットです。",
+    introP2:"メンバー管理、通知、ミニゲームなどを継続的に追加し、ユーザーのフィードバックを反映して毎週アップデートしています。",
+    introP3:"今後もドージらしい楽しさを保ちながら、実用的なコミュニティツールへと発展させていきます。",
+    inviteHeadline:"サーバーにドージボットを招待", inviteBody:"ボタン一つでドージボットがあなたのDiscordサーバーに参加します。", inviteBtn:"Discordに招待する",
+    termsArt1:"第1条（目的）", termsP1:"本規約はドージボットが提供するサービスの利用条件および手続きを定めることを目的とします。",
+    termsArt2:"第2条（サービスの利用）", termsP2:"利用者はDiscordアカウントでログインしてサービスを利用でき、関連法令およびDiscord利用規約を遵守する必要があります。",
+    termsArt3:"第3条（責任の制限）", termsP3:"ドージボットは無料で提供されるサービスであり、予期しないエラーや一時的な障害について補償は行いません。",
+    privP1:"ドージボットはサービス提供のため、Discordログイン時に提供される最小限の情報（ニックネーム、Discord ID、プロフィール画像）のみを収集します。",
+    privP2:"収集された情報はサービス運営目的以外には使用されず、利用者はいつでも連携解除や情報削除を要求できます。",
+    privP3:"第三者に個人情報を提供することはなく、関連法令に従い安全に保管・管理します。",
+    q1:"ドージボットは無料ですか？", a1:"はい、ドージボットの基本機能はすべて無料でご利用いただけます。",
+    q2:"ログイン方法は？", a2:"サイドバー下部の「Discordでログイン」ボタンから簡単にログインできます。",
+    q3:"機能追加のリクエストはどこで？", a3:"公式Discordサーバーの提案チャンネルからいつでもご要望をお寄せください。",
+    footer:"© 2025 ドージボット | DOGE BOT. All rights reserved.",
+    navPanel:"管理パネル",
+    panelSelectTitle:"🐶 管理するサーバーを選択してください",
+    panelSelectDesc:"ドージボットが招待されたサーバーのみ表示されます。権限によって編集範囲が異なります。",
+    btnBackServer:"← サーバー一覧",
+    readonlyNotice:"👀 このサーバーでは閲覧のみ可能です。編集には最上位ロール以上の権限が必要です。",
+    ownerOnlyNotice:"👑 ポイント付与/差引はBotオーナー専用機能です。サーバー管理者でも使用できません。",
+    serverOwnerNotice:"👑 以下の項目はBotオーナー専用です。サーバー管理者でも使用できません。",
+    tabTicket:"🎫 チケット", tabWarn:"⚠️ 警告", tabPoint:"💰 ポイント", tabServer:"🛠 サーバー設定",
+    ticketTotal:"全チケット", ticketOpen:"オープン", ticketClosed:"クローズ",
+    btnNewTicket:"+ 新規チケット", statusOpen:"オープン", statusClosed:"クローズ", statusWarn:"警告",
+    btnClose:"閉じる", btnRemove:"削除", btnGrant:"付与", btnDeduct:"差引", btnSet:"設定", btnExec:"実行", btnChange:"変更",
+    noTickets:"チケットはまだありません。", noWarnings:"警告保有ユーザーはいません。", noPoints:"ポイントデータがありません。",
+    warnTotal:"警告保有ユーザー", pointTotal:"総流通ポイント",
+    serverChannelTitle:"🛠 サーバーチャンネル設定", serverChannelDesc:"(サーバー管理者以上)",
+    botOwnerTitle:"👑 Botオーナー専用", botOwnerDesc:"(Bot開発者のみ)",
+    labelInstantReg:"即時登録", descInstantReg:"ライセンス契約を即時完了します",
+    labelDeregister:"登録解除", descDeregister:"このサーバーのライセンス承認を解除します",
+    labelChangePw:"パスワード変更", descChangePw:"最上位ロール管理者パスワードを変更します",
+    sBoost:"ブースト通知チャンネル", sWarnLog:"警告ログチャンネル", sNickLog:"ニックネーム変更ログ",
+    sPoint:"ポイントチャンネル", sGame:"ゲームロビーカテゴリ", sSchool:"学校(学習チャンネル)", sTicket:"チケット通知チャンネル",
+    modalNewTicket:"🎫 新規チケット作成", modalTitlePh:"チケットタイトルを入力", modalBodyPh:"問い合わせ内容を入力",
+    btnCancel:"キャンセル", btnSubmit:"送信", btnUnset:"設定解除", chSearchPh:"チャンネルを検索...",
+    loading:"読み込み中...", roleOwner:"オーナー", roleAdmin:"最上位ロール", roleMember:"一般メンバー", roleBotOwner:"Botオーナー",
+    toastSaved:"に設定しました！", toastUnset:"設定を解除しました。", unset:"未設定",
+    panelNoBot:"Supabaseにサーバーがまだ登録されていません。Botを再起動すると自動登録されます。",
+    panelNoCommon:"共通サーバーが見つかりません。",
+    panelLoadErr:"サーバー一覧の読み込みに失敗しました。"
+  },
+  zh: {
+    brandTitle:"狗狗机器人 | DOGE BOT", search:"搜索", settings:"设置",
+    navHome:"主页", navIntro:"机器人介绍", navInvite:"邀请机器人", navTerms:"使用条款", navPrivacy:"隐私政策", navQna:"常见问题",
+    loginBtn:"使用Discord登录", logoutBtn:"退出登录",
+    heroLead:"DOGE BOT 是 Discord 社区不可或缺的机器人，提供丰富的功能与信息。",
+    whyTitle:"为什么选择 DOGE BOT",
+    why1Title:"活跃互动", why1Body:"持续更新并与用户保持活跃互动，专为社区量身打造。",
+    why2Title:"持续进化", why2Body:"自2025年开始开发，至今仍在不断研究新功能。",
+    why3Title:"坚持初心", why3Body:"不断添加新功能的同时，始终保持狗狗（Doge）的趣味精神。",
+    introP1:"DOGE BOT 将 Discord 服务器运营所需的各种功能集于一身，是专为社区打造的机器人。",
+    introP2:"持续添加成员管理、提醒、小游戏等功能，并根据用户反馈每周更新。",
+    introP3:"未来将在保持狗狗趣味特色的同时，发展成真正实用的社区工具。",
+    inviteHeadline:"把 DOGE BOT 带入你的服务器", inviteBody:"只需一键，DOGE BOT 即可加入你的 Discord 服务器。", inviteBtn:"邀请加入 Discord",
+    termsArt1:"第一条（目的）", termsP1:"本条款旨在规定使用 DOGE BOT 所提供服务的条件及程序。",
+    termsArt2:"第二条（服务使用）", termsP2:"用户可使用 Discord 账号登录使用服务，并须遵守相关法律法规及 Discord 使用条款。",
+    termsArt3:"第三条（责任限制）", termsP3:"DOGE BOT 为免费提供的服务，对意外错误或临时故障不提供额外赔偿。",
+    privP1:"DOGE BOT 仅收集 Discord 登录时提供的最少必要信息（昵称、Discord ID、头像）。",
+    privP2:"所收集信息仅用于服务运营，用户可随时申请解除关联或删除信息。",
+    privP3:"我们不会向第三方提供个人信息，并依据相关法律安全保管与管理。",
+    q1:"DOGE BOT 是免费的吗？", a1:"是的，DOGE BOT 的所有基础功能均免费提供。",
+    q2:"如何登录？", a2:"点击侧边栏底部的「使用Discord登录」按钮即可轻松登录。",
+    q3:"在哪里可以提出功能建议？", a3:"欢迎随时在官方 Discord 服务器的建议频道提出。",
+    footer:"© 2025 DOGE BOT. All rights reserved.",
+    navPanel:"管理面板",
+    panelSelectTitle:"🐶 请选择要管理的服务器",
+    panelSelectDesc:"仅显示已邀请 DOGE BOT 的服务器。可编辑范围因权限而异。",
+    btnBackServer:"← 服务器列表",
+    readonlyNotice:"👀 您在此服务器中仅有查看权限，需要最高角色以上权限才能修改。",
+    ownerOnlyNotice:"👑 积分发放/扣除为Bot所有者专属功能，服务器管理员也无法使用。",
+    serverOwnerNotice:"👑 以下项目为Bot所有者专属，服务器管理员也无法使用。",
+    tabTicket:"🎫 工单", tabWarn:"⚠️ 警告", tabPoint:"💰 积分", tabServer:"🛠 服务器设置",
+    ticketTotal:"全部工单", ticketOpen:"待处理", ticketClosed:"已关闭",
+    btnNewTicket:"+ 新建工单", statusOpen:"待处理", statusClosed:"已关闭", statusWarn:"警告",
+    btnClose:"关闭", btnRemove:"移除", btnGrant:"发放", btnDeduct:"扣除", btnSet:"设置", btnExec:"执行", btnChange:"更改",
+    noTickets:"暂无工单。", noWarnings:"暂无警告用户。", noPoints:"暂无积分数据。",
+    warnTotal:"警告持有用户", pointTotal:"总流通积分",
+    serverChannelTitle:"🛠 服务器频道设置", serverChannelDesc:"(服务器主/最高角色以上)",
+    botOwnerTitle:"👑 Bot所有者专属", botOwnerDesc:"(仅Bot开发者可用)",
+    labelInstantReg:"立即注册", descInstantReg:"立即完成许可证协议",
+    labelDeregister:"取消注册", descDeregister:"撤销此服务器的许可证审批",
+    labelChangePw:"更改密码", descChangePw:"更改最高角色管理员密码",
+    sBoost:"加速通知频道", sWarnLog:"警告日志频道", sNickLog:"昵称变更日志频道",
+    sPoint:"积分频道", sGame:"游戏大厅分类", sSchool:"学校(学习频道)", sTicket:"工单通知频道",
+    modalNewTicket:"🎫 新建工单", modalTitlePh:"请输入工单标题", modalBodyPh:"请描述您的问题",
+    btnCancel:"取消", btnSubmit:"提交", btnUnset:"清除设置", chSearchPh:"搜索频道...",
+    loading:"加载中...", roleOwner:"所有者", roleAdmin:"最高角色", roleMember:"普通成员", roleBotOwner:"Bot所有者",
+    toastSaved:"已设置！", toastUnset:"设置已清除。", unset:"未设置",
+    panelNoBot:"服务器尚未注册到 Supabase，重启Bot后会自动注册。",
+    panelNoCommon:"未找到与 DOGE BOT 共同的服务器。",
+    panelLoadErr:"服务器列表加载失败。"
+  },
+  fr: {
+    brandTitle:"DOGE BOT", search:"Rechercher", settings:"Paramètres",
+    navHome:"Accueil", navIntro:"À propos de Doge Bot", navInvite:"Inviter Doge Bot", navTerms:"Conditions d'utilisation", navPrivacy:"Politique de confidentialité", navQna:"FAQ",
+    loginBtn:"Se connecter avec Discord", logoutBtn:"Se déconnecter",
+    heroLead:"Doge Bot est le bot communautaire indispensable pour votre serveur Discord, avec de nombreuses fonctionnalités et informations.",
+    whyTitle:"Ce qui distingue Doge Bot",
+    why1Title:"Communauté active", why1Body:"Conçu pour les communautés grâce à des mises à jour régulières et un vrai dialogue avec les utilisateurs.",
+    why2Title:"En constante évolution", why2Body:"En développement depuis 2025, avec de nouvelles fonctionnalités toujours à l'étude.",
+    why3Title:"Fidèle à l'esprit", why3Body:"De nouvelles fonctionnalités arrivent sans jamais perdre l'esprit ludique de Doge.",
+    introP1:"Doge Bot rassemble en un seul endroit toutes les fonctionnalités utiles à la gestion d'un serveur Discord.",
+    introP2:"Gestion des membres, notifications, mini-jeux et plus sont ajoutés régulièrement, avec des mises à jour hebdomadaires basées sur les retours des utilisateurs.",
+    introP3:"Il continuera d'évoluer en un outil communautaire vraiment utile, tout en gardant son esprit Doge si particulier.",
+    inviteHeadline:"Ajoutez Doge Bot à votre serveur", inviteBody:"Un seul clic suffit pour que Doge Bot rejoigne votre serveur Discord.", inviteBtn:"Inviter sur Discord",
+    termsArt1:"Article 1 (Objet)", termsP1:"Les présentes conditions définissent les modalités et procédures d'utilisation des services fournis par Doge Bot.",
+    termsArt2:"Article 2 (Utilisation du service)", termsP2:"Les utilisateurs peuvent se connecter avec leur compte Discord et doivent respecter la législation en vigueur ainsi que les conditions d'utilisation de Discord.",
+    termsArt3:"Article 3 (Limitation de responsabilité)", termsP3:"Doge Bot est un service gratuit ; aucune compensation n'est accordée en cas d'erreur imprévue ou d'interruption temporaire.",
+    privP1:"Doge Bot ne collecte que les informations minimales fournies lors de la connexion Discord (pseudo, identifiant Discord, photo de profil).",
+    privP2:"Les données collectées ne sont jamais utilisées en dehors du fonctionnement du service, et l'utilisateur peut demander à tout moment la déconnexion ou la suppression de ses données.",
+    privP3:"Aucune donnée personnelle n'est partagée avec des tiers ; elles sont conservées et gérées en toute sécurité conformément à la loi.",
+    q1:"Doge Bot est-il gratuit ?", a1:"Oui, toutes les fonctionnalités essentielles de Doge Bot sont gratuites.",
+    q2:"Comment se connecter ?", a2:"Cliquez sur le bouton « Se connecter avec Discord » en bas de la barre latérale pour vous connecter facilement.",
+    q3:"Où proposer une nouvelle fonctionnalité ?", a3:"N'hésitez pas à faire vos suggestions sur le salon dédié de notre serveur Discord officiel.",
+    footer:"© 2025 Doge Bot. Tous droits réservés.",
+    navPanel:"Panneau d'admin",
+    panelSelectTitle:"🐶 Sélectionnez un serveur à gérer",
+    panelSelectDesc:"Seuls les serveurs où Doge Bot est présent sont affichés. Les droits de modification dépendent de votre rôle.",
+    btnBackServer:"← Liste des serveurs",
+    readonlyNotice:"👀 Vous pouvez uniquement consulter ce serveur. Modifiez avec un rôle supérieur.",
+    ownerOnlyNotice:"👑 L'attribution/déduction de points est réservée au propriétaire du bot, même les admins ne peuvent pas l'utiliser.",
+    serverOwnerNotice:"👑 Les éléments ci-dessous sont réservés au propriétaire du bot.",
+    tabTicket:"🎫 Tickets", tabWarn:"⚠️ Avertissements", tabPoint:"💰 Points", tabServer:"🛠 Paramètres",
+    ticketTotal:"Total tickets", ticketOpen:"Ouverts", ticketClosed:"Fermés",
+    btnNewTicket:"+ Nouveau ticket", statusOpen:"Ouvert", statusClosed:"Fermé", statusWarn:"Avertissement",
+    btnClose:"Fermer", btnRemove:"Supprimer", btnGrant:"Attribuer", btnDeduct:"Déduire", btnSet:"Définir", btnExec:"Exécuter", btnChange:"Modifier",
+    noTickets:"Aucun ticket pour l'instant.", noWarnings:"Aucun utilisateur averti.", noPoints:"Aucune donnée de points.",
+    warnTotal:"Utilisateurs avertis", pointTotal:"Total des points en circulation",
+    serverChannelTitle:"🛠 Paramètres des salons", serverChannelDesc:"(Propriétaire / rôle supérieur)",
+    botOwnerTitle:"👑 Propriétaire du bot uniquement", botOwnerDesc:"(Développeur du bot seulement)",
+    labelInstantReg:"Enregistrement immédiat", descInstantReg:"Finaliser le contrat de licence immédiatement",
+    labelDeregister:"Désenregistrer", descDeregister:"Révoquer l'approbation de licence de ce serveur",
+    labelChangePw:"Changer le mot de passe", descChangePw:"Modifier le mot de passe admin du rôle supérieur",
+    sBoost:"Salon d'alerte boost", sWarnLog:"Salon logs d'avertissement", sNickLog:"Salon logs de pseudo",
+    sPoint:"Salon des points", sGame:"Catégorie lobby de jeu", sSchool:"École (salon d'étude)", sTicket:"Salon d'alerte tickets",
+    modalNewTicket:"🎫 Nouveau ticket", modalTitlePh:"Entrez un titre de ticket", modalBodyPh:"Décrivez votre problème",
+    btnCancel:"Annuler", btnSubmit:"Envoyer", btnUnset:"Effacer", chSearchPh:"Rechercher un salon...",
+    loading:"Chargement...", roleOwner:"Propriétaire", roleAdmin:"Rôle supérieur", roleMember:"Membre", roleBotOwner:"Propriétaire du bot",
+    toastSaved:"a été défini !", toastUnset:"Paramètre effacé.", unset:"Non défini",
+    panelNoBot:"Aucun serveur n'est encore enregistré dans Supabase. Redémarrez le bot pour l'enregistrer automatiquement.",
+    panelNoCommon:"Aucun serveur commun avec Doge Bot trouvé.",
+    panelLoadErr:"Échec du chargement de la liste des serveurs."
+  },
+  ru: {
+    brandTitle:"DOGE BOT", search:"Поиск", settings:"Настройки",
+    navHome:"Главная", navIntro:"О Doge Bot", navInvite:"Пригласить Doge Bot", navTerms:"Условия использования", navPrivacy:"Политика конфиденциальности", navQna:"Вопросы и ответы",
+    loginBtn:"Войти через Discord", logoutBtn:"Выйти",
+    heroLead:"Doge Bot — незаменимый бот для вашего Discord-сообщества с множеством функций и полезной информации.",
+    whyTitle:"Чем хорош Doge Bot",
+    why1Title:"Живое общение", why1Body:"Регулярные обновления и активное общение с пользователями делают бота идеальным для сообществ.",
+    why2Title:"Постоянное развитие", why2Body:"Разработка ведётся с 2025 года, и новые функции исследуются до сих пор.",
+    why3Title:"Верность концепции", why3Body:"Новые функции добавляются регулярно, но дух Doge остаётся неизменным.",
+    introP1:"Doge Bot объединяет в одном месте все функции, нужные для управления Discord-сервером.",
+    introP2:"Управление участниками, уведомления, мини-игры и многое другое регулярно добавляются, а еженедельные обновления основаны на отзывах пользователей.",
+    introP3:"В будущем бот сохранит весёлый дух Doge, развиваясь при этом в по-настоящему полезный инструмент сообщества.",
+    inviteHeadline:"Добавьте Doge Bot на свой сервер", inviteBody:"Одно нажатие — и Doge Bot присоединится к вашему Discord-серверу.", inviteBtn:"Пригласить в Discord",
+    termsArt1:"Статья 1 (Цель)", termsP1:"Настоящие условия определяют порядок и правила использования сервисов Doge Bot.",
+    termsArt2:"Статья 2 (Использование сервиса)", termsP2:"Пользователи могут входить через аккаунт Discord и обязаны соблюдать законодательство и условия использования Discord.",
+    termsArt3:"Статья 3 (Ограничение ответственности)", termsP3:"Doge Bot предоставляется бесплатно, и компенсация за непредвиденные ошибки или временные сбои не предусмотрена.",
+    privP1:"Doge Bot собирает только минимально необходимые данные, предоставляемые при входе через Discord (никнейм, Discord ID, изображение профиля).",
+    privP2:"Собранные данные используются исключительно для работы сервиса, и пользователь может в любой момент запросить отключение или удаление данных.",
+    privP3:"Личные данные не передаются третьим лицам и хранятся в безопасности в соответствии с законодательством.",
+    q1:"Doge Bot бесплатен?", a1:"Да, все основные функции Doge Bot доступны бесплатно.",
+    q2:"Как войти в аккаунт?", a2:"Нажмите кнопку «Войти через Discord» внизу боковой панели, чтобы быстро войти через свой аккаунт.",
+    q3:"Где предложить новую функцию?", a3:"Оставляйте предложения в канале для идей на нашем официальном Discord-сервере.",
+    footer:"© 2025 Doge Bot. Все права защищены.",
+    navPanel:"Панель управления",
+    panelSelectTitle:"🐶 Выберите сервер для управления",
+    panelSelectDesc:"Отображаются только серверы с Doge Bot. Права на редактирование зависят от вашей роли.",
+    btnBackServer:"← Список серверов",
+    readonlyNotice:"👀 На этом сервере доступен только просмотр. Для изменений нужна роль высшего уровня.",
+    ownerOnlyNotice:"👑 Выдача/списание очков — функция только для владельца бота, недоступная даже администраторам.",
+    serverOwnerNotice:"👑 Элементы ниже доступны только владельцу бота.",
+    tabTicket:"🎫 Тикеты", tabWarn:"⚠️ Предупреждения", tabPoint:"💰 Очки", tabServer:"🛠 Настройки",
+    ticketTotal:"Всего тикетов", ticketOpen:"Открытые", ticketClosed:"Закрытые",
+    btnNewTicket:"+ Новый тикет", statusOpen:"Открыт", statusClosed:"Закрыт", statusWarn:"Предупреждение",
+    btnClose:"Закрыть", btnRemove:"Удалить", btnGrant:"Выдать", btnDeduct:"Списать", btnSet:"Настроить", btnExec:"Выполнить", btnChange:"Изменить",
+    noTickets:"Тикетов пока нет.", noWarnings:"Нет пользователей с предупреждениями.", noPoints:"Нет данных об очках.",
+    warnTotal:"Пользователи с предупреждениями", pointTotal:"Всего очков в обращении",
+    serverChannelTitle:"🛠 Настройки каналов сервера", serverChannelDesc:"(Владелец / высший роль и выше)",
+    botOwnerTitle:"👑 Только для владельца бота", botOwnerDesc:"(Только разработчик бота)",
+    labelInstantReg:"Мгновенная регистрация", descInstantReg:"Немедленно завершить лицензионное соглашение",
+    labelDeregister:"Отменить регистрацию", descDeregister:"Отозвать лицензию сервера",
+    labelChangePw:"Изменить пароль", descChangePw:"Изменить пароль администратора высшей роли",
+    sBoost:"Канал уведомлений о бусте", sWarnLog:"Канал логов предупреждений", sNickLog:"Канал логов смены ника",
+    sPoint:"Канал очков", sGame:"Категория лобби игры", sSchool:"Школа (канал обучения)", sTicket:"Канал уведомлений тикетов",
+    modalNewTicket:"🎫 Новый тикет", modalTitlePh:"Введите заголовок тикета", modalBodyPh:"Опишите вашу проблему",
+    btnCancel:"Отмена", btnSubmit:"Отправить", btnUnset:"Сбросить", chSearchPh:"Поиск канала...",
+    loading:"Загрузка...", roleOwner:"Владелец", roleAdmin:"Высший роль", roleMember:"Участник", roleBotOwner:"Владелец бота",
+    toastSaved:"установлен!", toastUnset:"Настройка сброшена.", unset:"Не задан",
+    panelNoBot:"Серверы ещё не зарегистрированы в Supabase. Перезапустите бота для автоматической регистрации.",
+    panelNoCommon:"Общих серверов с Doge Bot не найдено.",
+    panelLoadErr:"Не удалось загрузить список серверов."
+  }
+};
     heroLead:"도지봇은 디스코드에서 필요한 커뮤니티용 봇으로, 다양한 기능과 정보를 제공합니다.",
     whyTitle:"도지봇의 특징",
     why1Title:"실시간 소통", why1Body:"지속적인 업데이트와 활발한 유저 소통을 통해 커뮤니티에 꼭 맞게 설계되었습니다.",
@@ -1411,6 +1715,90 @@ function applyLang(lang){
   document.querySelectorAll('.lang-opt').forEach(o=>{
     o.classList.toggle('active', o.dataset.lang === lang);
   });
+  // 패널이 열려있으면 실시간으로 다시 렌더링
+  applyPanelLang(dict);
+}
+
+// 현재 언어 번역값 가져오는 헬퍼
+function t(key){ return i18n[currentLang]?.[key] || i18n['ko'][key] || key; }
+
+// 패널 텍스트 언어 반영
+function applyPanelLang(dict){
+  if(!dict) dict = i18n[currentLang];
+
+  // 관리패널 navPanel
+  const navPanel = document.getElementById('navPanel');
+  if(navPanel){ const sp = navPanel.querySelector('span[data-i18n="navPanel"]'); if(sp) sp.textContent = dict.navPanel || '관리패널'; }
+
+  // 서버 선택 화면
+  const selTitle = document.querySelector('.server-select-title');
+  if(selTitle) selTitle.textContent = dict.panelSelectTitle || selTitle.textContent;
+  const selDesc = document.querySelector('#panelServerSelect p');
+  if(selDesc) selDesc.textContent = dict.panelSelectDesc || selDesc.textContent;
+
+  // 뒤로 버튼
+  const backBtn = document.querySelector('.btn-back-server');
+  if(backBtn) backBtn.textContent = dict.btnBackServer || backBtn.textContent;
+
+  // 읽기전용 안내
+  const roNotice = document.getElementById('readonlyNotice');
+  if(roNotice) roNotice.textContent = dict.readonlyNotice || roNotice.textContent;
+  const owNotice = document.getElementById('ownerOnlyNotice');
+  if(owNotice) owNotice.textContent = dict.ownerOnlyNotice || owNotice.textContent;
+  const soNotice = document.getElementById('serverOwnerNotice');
+  if(soNotice) soNotice.textContent = dict.serverOwnerNotice || soNotice.textContent;
+
+  // 탭 레이블
+  const tabMap = { ticket:'tabTicket', 'warn-panel':'tabWarn', 'point-panel':'tabPoint', 'server-panel':'tabServer' };
+  document.querySelectorAll('#panelContent .cat-tab[data-ptab]').forEach(tab => {
+    const key = tabMap[tab.dataset.ptab];
+    if(key && dict[key]) tab.textContent = dict[key];
+  });
+
+  // 권한 배지
+  const permBadge = document.getElementById('permBadge');
+  if(permBadge && currentServerRole){
+    if(isBotOwner) permBadge.textContent = dict.roleBotOwner || '봇 오너';
+    else permBadge.textContent = dict['role' + (currentServerRole.charAt(0).toUpperCase() + currentServerRole.slice(1))] || permBadge.textContent;
+  }
+
+  // 통계 라벨
+  const statLabels = document.querySelectorAll('#ptab-ticket .pstat-label');
+  if(statLabels[0]) statLabels[0].textContent = dict.ticketTotal || statLabels[0].textContent;
+  if(statLabels[1]) statLabels[1].textContent = dict.ticketOpen  || statLabels[1].textContent;
+  if(statLabels[2]) statLabels[2].textContent = dict.ticketClosed|| statLabels[2].textContent;
+  const warnStat = document.querySelector('#ptab-warn-panel .pstat-label');
+  if(warnStat) warnStat.textContent = dict.warnTotal || warnStat.textContent;
+  const ptStat = document.querySelector('#ptab-point-panel .pstat-label');
+  if(ptStat) ptStat.textContent = dict.pointTotal || ptStat.textContent;
+
+  // 새 티켓 버튼
+  const newTicketBtn = document.querySelector('.btn-new-ticket');
+  if(newTicketBtn) newTicketBtn.textContent = dict.btnNewTicket || newTicketBtn.textContent;
+
+  // 서버설정 탭 제목
+  const svrTitle = document.querySelector('#ptab-server-panel .section-title');
+  if(svrTitle && dict.serverChannelTitle){
+    svrTitle.innerHTML = `${dict.serverChannelTitle} <span style="font-size:12px;color:var(--ink-faint);font-family:inherit;font-weight:400;">${dict.serverChannelDesc||''}</span>`;
+  }
+
+  // 봇오너 전용 섹션 제목
+  const ownerTitle = document.querySelector('#ptab-server-panel .section-title:last-of-type');
+  if(ownerTitle && dict.botOwnerTitle){
+    ownerTitle.innerHTML = `${dict.botOwnerTitle} <span style="font-size:12px;color:var(--ink-faint);font-family:inherit;font-weight:400;">${dict.botOwnerDesc||''}</span>`;
+  }
+
+  // 서버설정 카드들 (설정 버튼)
+  document.querySelectorAll('#ptab-server-panel .setting-btn').forEach(btn=>{
+    btn.textContent = dict.btnSet || btn.textContent;
+  });
+
+  // 티켓 목록 내 버튼/상태 텍스트
+  document.querySelectorAll('#ptab-ticket .ticket-status.open-s').forEach(el=>{ el.textContent = dict.statusOpen || el.textContent; });
+  document.querySelectorAll('#ptab-ticket .ticket-status.closed-s').forEach(el=>{ el.textContent = dict.statusClosed || el.textContent; });
+  document.querySelectorAll('#ptab-ticket .btn-close-ticket:not([disabled])').forEach(el=>{ el.textContent = dict.btnClose || el.textContent; });
+  document.querySelectorAll('#ptab-warn-panel .ticket-status').forEach(el=>{ el.textContent = dict.statusWarn || el.textContent; });
+  document.querySelectorAll('#ptab-warn-panel .btn-close-ticket').forEach(el=>{ if(el.textContent.trim()==='제거'||el.textContent.trim()==='Remove'||el.textContent.trim()==='削除'||el.textContent.trim()==='移除'||el.textContent.trim()==='Supprimer'||el.textContent.trim()==='Удалить') el.textContent = dict.btnRemove||el.textContent; });
 }
 
 // Settings / language dropdown
@@ -1442,7 +1830,16 @@ const roleClass = { owner:'role-owner', admin:'role-admin', member:'role-member'
 let currentServerRole = null;
 let currentGuildId = null;
 let isBotOwner = false;
-let currentProviderToken = null; // Discord access token
+let currentProviderToken = null;
+
+// Supabase user.id는 내부 UUID라 Discord ID와 달라요.
+// 실제 Discord ID는 user_metadata.provider_id 에 있어요.
+function getDiscordId(user){
+  return user?.user_metadata?.provider_id
+    || user?.identities?.[0]?.id
+    || user?.id
+    || null;
+} // Discord access token
 
 // ── 서버 목록 로드 ──
 async function renderServerList(user, providerToken){
@@ -1453,10 +1850,10 @@ async function renderServerList(user, providerToken){
   if(providerToken) sessionStorage.setItem('dc_token', providerToken);
   const token = providerToken || sessionStorage.getItem('dc_token');
 
-  isBotOwner = user && (user.id === BOT_OWNER_ID);
+  isBotOwner = getDiscordId(user) === BOT_OWNER_ID;
   currentProviderToken = token;
 
-  list.innerHTML = `<div style="color:var(--ink-faint);font-size:13px;padding:10px;">서버 목록 불러오는 중...</div>`;
+  list.innerHTML = `<div style="color:var(--ink-faint);font-size:13px;padding:10px;">' + t('loading') + '</div>`;
 
   try {
     // 봇이 들어간 서버 목록 (guild_settings에서 — 봇 시작 시 자동 저장)
@@ -1465,7 +1862,7 @@ async function renderServerList(user, providerToken){
     (botGuilds || []).forEach(g => { botMap[g.guild_id] = g; });
 
     if(Object.keys(botMap).length === 0){
-      list.innerHTML = `<div style="color:var(--ink-faint);font-size:13px;padding:10px;">봇이 들어간 서버가 아직 Supabase에 등록되지 않았어요.<br>봇을 재시작하면 자동으로 등록돼요.</div>`;
+      list.innerHTML = `<div style="color:var(--ink-faint);font-size:13px;padding:10px;">${t('panelNoBot')}</div>`;
       return;
     }
 
@@ -1529,7 +1926,7 @@ async function renderServerList(user, providerToken){
     }).join('');
 
   } catch(e){
-    list.innerHTML = `<div style="color:var(--ink-faint);font-size:13px;padding:10px;">서버 목록을 불러오지 못했어요. (${e.message})</div>`;
+    list.innerHTML = `<div style="color:var(--ink-faint);font-size:13px;padding:10px;">${t('panelLoadErr')} (${e.message})</div>`;
   }
 }
 
@@ -1593,26 +1990,26 @@ async function loadTickets(guildId){
   const open = data.filter(t => t.status === 'open').length;
   const closed = data.filter(t => t.status === 'closed').length;
 
-  document.querySelector('#ptab-ticket .pstat-num:nth-child(1)') && (document.querySelectorAll('#ptab-ticket .pstat-num')[0].textContent = data.length);
+  document.querySelectorAll('#ptab-ticket .pstat-num')[0] && (document.querySelectorAll('#ptab-ticket .pstat-num')[0].textContent = data.length);
   document.querySelectorAll('#ptab-ticket .pstat-num')[1] && (document.querySelectorAll('#ptab-ticket .pstat-num')[1].textContent = open);
   document.querySelectorAll('#ptab-ticket .pstat-num')[2] && (document.querySelectorAll('#ptab-ticket .pstat-num')[2].textContent = closed);
 
-  if(data.length === 0){ list.innerHTML = `<div style="color:var(--ink-faint);font-size:13px;padding:10px;">아직 티켓이 없어요.</div>`; return; }
+  if(data.length === 0){ list.innerHTML = `<div style="color:var(--ink-faint);font-size:13px;padding:10px;">${t('noTickets')}</div>`; return; }
 
-  list.innerHTML = data.map(t => {
-    const date = new Date(t.created_at).toLocaleDateString('ko-KR');
-    const isOpen = t.status === 'open';
+  list.innerHTML = data.map(ticket => {
+    const date = new Date(ticket.created_at).toLocaleDateString('ko-KR');
+    const isOpen = ticket.status === 'open';
     const canWrite = isBotOwner || currentServerRole === 'owner' || currentServerRole === 'admin';
     return `
-    <div class="ticket-row ${isOpen ? 'open-t' : 'closed-t'}" data-ticket-id="${t.id}">
+    <div class="ticket-row ${isOpen ? 'open-t' : 'closed-t'}" data-ticket-id="${ticket.id}">
       <div class="ticket-icon">${isOpen ? '🎫' : '🎟'}</div>
       <div class="ticket-info">
-        <div class="ticket-title">#${String(t.id).padStart(3,'0')} — ${t.title}</div>
-        <div class="ticket-meta">${t.author_name || t.author_id} · ${date}</div>
-        ${t.body ? `<div class="ticket-meta" style="margin-top:4px;color:var(--ink-dim);">${t.body}</div>` : ''}
+        <div class="ticket-title">#${String(ticket.id).padStart(3,'0')} — ${ticket.title}</div>
+        <div class="ticket-meta">${ticket.author_name || ticket.author_id} · ${date}</div>
+        ${ticket.body ? `<div class="ticket-meta" style="margin-top:4px;color:var(--ink-dim);">${ticket.body}</div>` : ''}
       </div>
-      <span class="ticket-status ${isOpen ? 'open-s' : 'closed-s'}">${isOpen ? '열림' : '닫힘'}</span>
-      <button class="btn-close-ticket panel-write-ctrl" onclick="closeTicketDB(this,'${t.id}')" ${!isOpen || !canWrite ? 'disabled' : ''} ${!isOpen ? 'style="opacity:.35"' : ''}>닫기</button>
+      <span class="ticket-status ${isOpen ? 'open-s' : 'closed-s'}">${isOpen ? t('statusOpen') : t('statusClosed')}</span>
+      <button class="btn-close-ticket panel-write-ctrl" onclick="closeTicketDB(this,'${ticket.id}')" ${!isOpen || !canWrite ? 'disabled' : ''} ${!isOpen ? 'style="opacity:.35"' : ''}>${t('btnClose')}</button>
     </div>`;
   }).join('');
 }
@@ -1629,7 +2026,7 @@ async function loadWarnings(guildId){
   const stat = document.querySelector('#ptab-warn-panel .pstat-num');
   if(stat) stat.textContent = data.length;
 
-  if(data.length === 0){ list.innerHTML = `<div style="color:var(--ink-faint);font-size:13px;padding:10px;">경고 보유 유저가 없어요.</div>`; return; }
+  if(data.length === 0){ list.innerHTML = `<div style="color:var(--ink-faint);font-size:13px;padding:10px;">${t('noWarnings')}</div>`; return; }
 
   const canWrite = isBotOwner || currentServerRole === 'owner' || currentServerRole === 'admin';
   list.innerHTML = data.map(w => `
@@ -1637,10 +2034,10 @@ async function loadWarnings(guildId){
       <div class="ticket-icon">⚠️</div>
       <div class="ticket-info">
         <div class="ticket-title">${w.user_id}</div>
-        <div class="ticket-meta">경고 ${w.count}개 보유</div>
+        <div class="ticket-meta">${w.count}${t('warnTotal').includes('경고') ? '개 보유' : ''}</div>
       </div>
-      <span class="ticket-status open-s">주의</span>
-      <button class="btn-close-ticket panel-write-ctrl" ${!canWrite ? 'disabled style="opacity:.35"' : ''} onclick="alert('봇 연동 후 경고 제거 기능이 활성화돼요.')">제거</button>
+      <span class="ticket-status open-s">${t('statusWarn')}</span>
+      <button class="btn-close-ticket panel-write-ctrl" ${!canWrite ? 'disabled style="opacity:.35"' : ''} onclick="alert('봇 연동 후 경고 제거 기능이 활성화돼요.')">${t('btnRemove')}</button>
     </div>`).join('');
 }
 
@@ -1657,7 +2054,7 @@ async function loadPoints(){
   const stat = document.querySelector('#ptab-point-panel .pstat-num');
   if(stat) stat.textContent = total.toLocaleString();
 
-  if(data.length === 0){ list.innerHTML = `<div style="color:var(--ink-faint);font-size:13px;padding:10px;">포인트 데이터가 없어요.</div>`; return; }
+  if(data.length === 0){ list.innerHTML = `<div style="color:var(--ink-faint);font-size:13px;padding:10px;">${t('noPoints')}</div>`; return; }
 
   const canOwner = isBotOwner;
   list.innerHTML = data.map(r => `
@@ -1665,11 +2062,11 @@ async function loadPoints(){
       <div class="ticket-icon">💰</div>
       <div class="ticket-info">
         <div class="ticket-title">${r.user_id}</div>
-        <div class="ticket-meta">보유 포인트: ${r.points.toLocaleString()}P</div>
+        <div class="ticket-meta">${r.points.toLocaleString()}P</div>
       </div>
       <div style="display:flex;gap:6px;">
-        <button class="btn-close-ticket panel-owner-ctrl" ${!canOwner ? 'disabled style="opacity:.35"' : ''} onclick="alert('봇 연동 후 활성화돼요.')">지급</button>
-        <button class="btn-close-ticket panel-owner-ctrl" ${!canOwner ? 'disabled style="opacity:.35"' : ''} onclick="alert('봇 연동 후 활성화돼요.')">차감</button>
+        <button class="btn-close-ticket panel-owner-ctrl" ${!canOwner ? 'disabled style="opacity:.35"' : ''} onclick="alert('봇 연동 후 활성화돼요.')">${t('btnGrant')}</button>
+        <button class="btn-close-ticket panel-owner-ctrl" ${!canOwner ? 'disabled style="opacity:.35"' : ''} onclick="alert('봇 연동 후 활성화돼요.')">${t('btnDeduct')}</button>
       </div>
     </div>`).join('');
 }
@@ -1686,13 +2083,13 @@ async function loadGuildSettings(guildId){
   window._cachedGuildId  = guildId;
 
   const settingDefs = [
-    { key:'boost_channel',        icon:'📢', label:'부스트 알림 채널',    type:'text' },
-    { key:'warn_log_channel',     icon:'📝', label:'경고 로그 채널',       type:'text' },
-    { key:'nickname_log_channel', icon:'🏷', label:'별명 변경 로그 채널',  type:'text' },
-    { key:'point_channel',        icon:'💬', label:'포인트 채널',           type:'text' },
-    { key:'game_category',        icon:'🎮', label:'게임 로비 카테고리',    type:'category' },
-    { key:'school_channel',       icon:'📚', label:'학교(학습 채널)',       type:'text' },
-    { key:'ticket_channel',       icon:'🎫', label:'티켓 알림 채널',        type:'text' },
+    { key:'boost_channel',        icon:'📢', label:t('sBoost'),   type:'text' },
+    { key:'warn_log_channel',     icon:'📝', label:t('sWarnLog'), type:'text' },
+    { key:'nickname_log_channel', icon:'🏷', label:t('sNickLog'), type:'text' },
+    { key:'point_channel',        icon:'💬', label:t('sPoint'),   type:'text' },
+    { key:'game_category',        icon:'🎮', label:t('sGame'),    type:'category' },
+    { key:'school_channel',       icon:'📚', label:t('sSchool'),  type:'text' },
+    { key:'ticket_channel',       icon:'🎫', label:t('sTicket'),  type:'text' },
   ];
 
   const grid = document.querySelector('#ptab-server-panel .server-setting-grid');
@@ -1701,7 +2098,7 @@ async function loadGuildSettings(guildId){
 
   grid.innerHTML = settingDefs.map(def => {
     const val = gSet?.[def.key] || null;
-    const chName = val ? (channels?.find(c => c.channel_id === val)?.channel_name || `<#${val}>`) : '미설정';
+    const chName = val ? (channels?.find(c => c.channel_id === val)?.channel_name || `<#${val}>`) : t('unset');
     return `
     <div class="setting-card">
       <div class="setting-icon">${def.icon}</div>
@@ -1709,7 +2106,7 @@ async function loadGuildSettings(guildId){
       <div class="setting-val" id="sval_${def.key}">${chName}</div>
       <button class="setting-btn panel-write-ctrl"
         ${!canWrite ? 'disabled' : ''}
-        onclick="openChannelModal('${def.key}','${def.label}','${def.type}')">설정</button>
+        onclick="openChannelModal('${def.key}','${def.label}','${def.type}')">${t('btnSet')}</button>
     </div>`;
   }).join('');
 
@@ -1742,19 +2139,19 @@ function openChannelModal(settingKey, label, type){
           ${c.channel_name}
           ${c.category_name ? `<span style="color:var(--ink-faint);font-size:11px;margin-left:6px;">(${c.category_name})</span>` : ''}
         </div>`).join('')
-    : `<div style="color:var(--ink-faint);font-size:13px;padding:12px;">채널 목록이 없어요. 봇이 시작된 후 잠시 기다려보세요.</div>`;
+    : `<div style="color:var(--ink-faint);font-size:13px;padding:12px;">${t('loading')}</div>`;
 
   modal.innerHTML = `
     <div class="modal-box" style="max-height:70vh;overflow:hidden;display:flex;flex-direction:column;">
-      <div class="modal-title">📋 ${label} 설정</div>
-      <input class="modal-input" id="chSearchInput" placeholder="채널 검색..." oninput="filterChannelOptions(this.value)" style="margin-bottom:8px;">
+      <div class="modal-title">📋 ${label}</div>
+      <input class="modal-input" id="chSearchInput" placeholder="${t('chSearchPh')}" oninput="filterChannelOptions(this.value)" style="margin-bottom:8px;">
       <div id="chOptionList" style="overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:4px;">
         ${options}
       </div>
       <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px;">
-        <button class="modal-cancel" onclick="document.getElementById('channelSelectModal').remove()">취소</button>
+        <button class="modal-cancel" onclick="document.getElementById('channelSelectModal').remove()">${t('btnCancel')}</button>
         <button class="modal-cancel" style="color:#ff8d8d;border-color:rgba(255,90,90,.3);"
-          onclick="applyChannelSetting('${settingKey}',null,null)">설정 해제</button>
+          onclick="applyChannelSetting('${settingKey}',null,null)">${t('btnUnset')}</button>
       </div>
     </div>`;
 
@@ -1789,10 +2186,10 @@ async function applyChannelSetting(settingKey, channelId, channelName){
 
   // 화면 즉시 업데이트
   const valEl = document.getElementById('sval_' + settingKey);
-  if(valEl) valEl.textContent = channelName ? `#${channelName}` : '미설정';
+  if(valEl) valEl.textContent = channelName ? `#${channelName}` : t('unset');
 
   // 성공 토스트
-  showToast(channelName ? `✅ #${channelName} 으로 설정했어요!` : '✅ 설정을 해제했어요.');
+  showToast(channelName ? `✅ #${channelName} ${t('toastSaved')}` : `✅ ${t('toastUnset')}`);
 }
 
 // ── 토스트 메시지 ──
@@ -1845,7 +2242,7 @@ async function submitTicket(){
 
   const { data: session } = await sb.auth.getSession();
   const user = session?.session?.user;
-  const authorId   = user?.user_metadata?.provider_id || user?.id || 'unknown';
+  const authorId   = getDiscordId(user) || 'unknown';
   const authorName = user?.user_metadata?.full_name || user?.user_metadata?.name || 'unknown';
 
   const { error } = await sb.from('tickets').insert({
