@@ -848,6 +848,47 @@ footer{
   cursor:pointer;
   font-family:'Noto Sans KR','Inter',sans-serif;
 }
+/* ── 프리셋 패널 모바일 대응 ── */
+@media (max-width: 860px) and (orientation: portrait){
+  #presetFormView > div > div:first-child { grid-template-columns: 1fr !important; }
+  #discordPreview, #discordWelcomePreview { max-width: 100% !important; }
+}
+
+/* ── 프리셋 폼 ── */
+.preset-form-grid{ display:grid; grid-template-columns:1fr 1fr; gap:20px; align-items:start; }
+@media(max-width:900px){ .preset-form-grid{ grid-template-columns:1fr; } }
+.preset-form-side,.preset-preview-side{ display:flex; flex-direction:column; gap:14px; }
+.preset-field-group{ display:flex; flex-direction:column; gap:6px; }
+.preset-label{ font-size:13px; font-weight:700; color:var(--ink-dim); }
+.preview-section-label{ font-size:11px; font-weight:700; color:var(--ink-faint); letter-spacing:.5px; text-transform:uppercase; }
+
+/* ── Discord 임베드 미리보기 ── */
+.dc-embed-wrap{ background:#313338; border-radius:8px; overflow:hidden; }
+.dc-embed{ display:flex; padding:12px 12px 12px 0; }
+.dc-embed-inner{ border-left:4px solid #FF8A1F; padding:6px 12px; flex:1; min-width:0; }
+.dc-embed-title{ color:#fff; font-weight:700; font-size:14px; margin-bottom:6px; line-height:1.3; }
+.dc-embed-desc{ color:#dbdee1; font-size:13px; line-height:1.6; white-space:pre-wrap; word-break:break-word; }
+.dc-embed-desc strong{ color:#fff; font-weight:700; }
+.dc-embed-desc em{ font-style:italic; }
+.dc-embed-desc code{ background:#1e1f22; border-radius:3px; padding:1px 4px; font-family:monospace; font-size:12px; }
+.dc-embed-footer{ color:#949ba4; font-size:11px; margin-top:8px; }
+.dc-btn-preview{ padding:0 12px 12px; display:flex; gap:8px; }
+.dc-btn-mock{ background:#248046; color:#fff; font-size:13px; font-weight:600; padding:7px 14px; border-radius:3px; }
+.dc-btn-danger{ background:#da373c; }
+
+/* ── 프리셋 카드 ── */
+.preset-card{ background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:14px 16px; display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+.preset-card-accent{ width:6px; align-self:stretch; border-radius:3px; flex:none; }
+.preset-card-info{ flex:1; min-width:0; }
+.preset-card-name{ font-weight:700; font-size:14px; color:var(--ink); }
+.preset-card-sub{ font-size:12px; color:var(--ink-faint); margin-top:3px; }
+.preset-card-btns{ display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
+.btn-preset-action{ background:var(--panel-2); border:1px solid var(--line); color:var(--ink-dim); border-radius:7px; padding:6px 11px; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit; white-space:nowrap; }
+.btn-preset-action:hover{ color:var(--ink); border-color:rgba(255,138,31,.4); }
+.btn-preset-post{ background:rgba(36,128,70,.15); border-color:rgba(36,128,70,.4); color:#3ba55d; }
+.btn-preset-post:hover{ background:rgba(36,128,70,.25); }
+.btn-preset-del{ }
+.btn-preset-del:hover{ background:rgba(255,90,90,.1); color:#ff8d8d; border-color:rgba(255,90,90,.3); }
 </style>
 </head>
 <body>
@@ -1108,6 +1149,8 @@ footer{
           <button class="cat-tab" data-ptab="warn-panel">⚠️ 경고</button>
           <button class="cat-tab" data-ptab="point-panel">💰 포인트</button>
           <button class="cat-tab" data-ptab="server-panel">🛠 서버설정</button>
+          <button class="cat-tab" data-ptab="preset">📋 프리셋</button>
+          <button class="cat-tab" data-ptab="preset-panel">📋 티켓 프리셋</button>
         </div>
 
         <!-- 티켓 -->
@@ -1228,6 +1271,179 @@ footer{
         </div>
       </div>
 
+        <!-- 📋 티켓 프리셋 패널 -->
+        <div class="ptab-panel" id="ptab-preset-panel">
+
+          <!-- 목록 화면 -->
+          <div id="presetListView">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+              <div style="font-family:'Jua',sans-serif;font-size:16px;color:var(--doge-gold);">📋 티켓 프리셋</div>
+              <button class="btn-new-ticket panel-write-ctrl" onclick="showPresetForm()">+ 새 프리셋</button>
+            </div>
+            <div class="ticket-list" id="presetList">
+              <div style="color:var(--ink-faint);font-size:13px;padding:10px;">불러오는 중...</div>
+            </div>
+          </div>
+
+          <!-- 생성/수정 폼 화면 -->
+          <div id="presetFormView" style="display:none;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--line);">
+              <button class="btn-back-server" onclick="hidePresetForm()">← 목록</button>
+              <div style="font-family:'Jua',sans-serif;font-size:16px;color:var(--doge-gold);" id="presetFormTitle">새 프리셋 만들기</div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+              <!-- 왼쪽: 입력 폼 -->
+              <div style="display:flex;flex-direction:column;gap:12px;">
+                <div>
+                  <label style="font-size:12px;color:var(--ink-faint);display:block;margin-bottom:4px;">프리셋 이름 (관리용)</label>
+                  <input class="modal-input" id="pf_name" placeholder="예: 일반 문의" style="width:100%;box-sizing:border-box;" oninput="updatePreview()">
+                </div>
+                <div>
+                  <label style="font-size:12px;color:var(--ink-faint);display:block;margin-bottom:4px;">임베드 제목</label>
+                  <input class="modal-input" id="pf_title" placeholder="📩 문의하기" style="width:100%;box-sizing:border-box;" oninput="updatePreview()">
+                </div>
+                <div>
+                  <label style="font-size:12px;color:var(--ink-faint);display:block;margin-bottom:4px;">임베드 내용 <span style="color:var(--doge-orange);">(마크다운 가능)</span></label>
+                  <textarea class="modal-textarea" id="pf_desc" rows="5" style="width:100%;box-sizing:border-box;resize:vertical;" placeholder="버튼을 눌러 티켓을 열어주세요.&#10;&#10;**문의 전 확인사항**&#10;- 중복 문의 금지" oninput="updatePreview()"></textarea>
+                </div>
+                <div>
+                  <label style="font-size:12px;color:var(--ink-faint);display:block;margin-bottom:4px;">환영 메시지 <span style="color:var(--doge-orange);">(티켓 채널 열렸을 때, 마크다운 가능)</span></label>
+                  <textarea class="modal-textarea" id="pf_welcome" rows="3" style="width:100%;box-sizing:border-box;resize:vertical;" placeholder="티켓이 열렸습니다. 잠시 후 관리자가 올 수 있으니 대기해주세요." oninput="updatePreview()"></textarea>
+                </div>
+                <div>
+                  <label style="font-size:12px;color:var(--ink-faint);display:block;margin-bottom:4px;">임베드 색상 (HEX)</label>
+                  <div style="display:flex;gap:8px;align-items:center;">
+                    <input type="color" id="pf_color_picker" value="#FF8A1F" oninput="document.getElementById('pf_color').value=this.value.replace('#','');updatePreview()" style="width:40px;height:36px;border:none;background:none;cursor:pointer;padding:0;">
+                    <input class="modal-input" id="pf_color" placeholder="FF8A1F" value="FF8A1F" maxlength="6" style="flex:1;" oninput="document.getElementById('pf_color_picker').value='#'+this.value;updatePreview()">
+                  </div>
+                </div>
+                <input type="hidden" id="pf_id">
+                <div style="display:flex;gap:8px;margin-top:4px;">
+                  <button class="modal-submit" style="flex:1;" onclick="savePreset()">💾 저장</button>
+                  <button class="modal-cancel" onclick="hidePresetForm()">취소</button>
+                </div>
+              </div>
+
+              <!-- 오른쪽: 실시간 미리보기 -->
+              <div>
+                <div style="font-size:12px;color:var(--ink-faint);margin-bottom:8px;">👁 실시간 미리보기</div>
+                <!-- 임베드 미리보기 -->
+                <div id="discordPreview" style="background:#2b2d31;border-radius:4px;padding:12px 16px;border-left:4px solid #FF8A1F;max-width:420px;">
+                  <div id="pv_title" style="font-weight:700;color:#fff;font-size:15px;margin-bottom:6px;">📩 문의하기</div>
+                  <div id="pv_desc" style="color:#dbdee1;font-size:14px;line-height:1.6;white-space:pre-wrap;"></div>
+                  <div style="margin-top:10px;">
+                    <div style="display:inline-block;background:#248046;color:#fff;font-size:13px;font-weight:600;padding:5px 14px;border-radius:3px;cursor:default;">🎫 티켓 열기</div>
+                  </div>
+                </div>
+                <!-- 환영 메시지 미리보기 -->
+                <div style="font-size:12px;color:var(--ink-faint);margin:14px 0 8px;">📨 환영 메시지 미리보기</div>
+                <div id="discordWelcomePreview" style="background:#2b2d31;border-radius:4px;padding:12px 16px;border-left:4px solid #FF8A1F;max-width:420px;">
+                  <div id="pv_welcome" style="color:#dbdee1;font-size:14px;line-height:1.6;white-space:pre-wrap;">티켓이 열렸습니다. 잠시 후 관리자가 올 수 있으니 대기해주세요.</div>
+                  <div style="margin-top:10px;">
+                    <div style="display:inline-block;background:#da373c;color:#fff;font-size:13px;font-weight:600;padding:5px 14px;border-radius:3px;cursor:default;">🔒 티켓 닫기</div>
+                  </div>
+                </div>
+
+                <!-- 채널 게시 (수정 모드일 때만) -->
+                <div id="postToChannelSection" style="display:none;margin-top:16px;border-top:1px solid var(--line);padding-top:14px;">
+                  <div style="font-size:12px;color:var(--ink-faint);margin-bottom:8px;">📢 채널에 게시하기</div>
+                  <div style="display:flex;gap:8px;">
+                    <select id="postChannelSelect" class="modal-input" style="flex:1;">
+                      <option value="">채널 선택...</option>
+                    </select>
+                    <button class="btn-new-ticket" onclick="postPresetToChannel()" style="white-space:nowrap;">게시</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      <!-- 프리셋 탭 -->
+      <div class="ptab-panel" id="ptab-preset">
+
+        <!-- 리스트 뷰 -->
+        <div id="presetListView">
+          <div class="panel-toolbar" style="margin-bottom:14px;">
+            <div class="panel-stat"><span class="pstat-num" id="presetCount">0</span><span class="pstat-label">등록된 프리셋</span></div>
+            <button class="btn-new-ticket panel-write-ctrl" onclick="showPresetForm()">+ 새 프리셋</button>
+          </div>
+          <div id="presetList"><div style="color:var(--ink-faint);font-size:13px;padding:10px;">불러오는 중...</div></div>
+        </div>
+
+        <!-- 폼 뷰 (생성/수정) -->
+        <div id="presetFormView" style="display:none;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--line);">
+            <button class="btn-back-server" onclick="cancelPresetForm()">← 목록</button>
+            <div style="font-family:'Jua',sans-serif;font-size:16px;color:var(--ink);" id="presetFormTitle">새 프리셋 만들기</div>
+          </div>
+
+          <div class="preset-form-grid">
+            <!-- 왼쪽: 입력 폼 -->
+            <div class="preset-form-side">
+              <div class="preset-field-group">
+                <label class="preset-label">프리셋 이름 <span style="color:var(--doge-orange)">*</span></label>
+                <input class="modal-input" id="pf_name" placeholder="예) 일반 문의" maxlength="50" oninput="updateEmbedPreview()">
+              </div>
+              <div class="preset-field-group">
+                <label class="preset-label">임베드 제목 <span style="color:var(--doge-orange)">*</span></label>
+                <input class="modal-input" id="pf_title" placeholder="예) 📩 문의하기" maxlength="100" oninput="updateEmbedPreview()">
+              </div>
+              <div class="preset-field-group">
+                <label class="preset-label">임베드 내용 <small style="color:var(--ink-faint);">마크다운 지원 (**굵게**, *기울임*, `코드`)</small></label>
+                <textarea class="modal-textarea" id="pf_desc" rows="6" placeholder="버튼을 눌러 티켓을 열어주세요.&#10;&#10;**문의 전 확인사항**&#10;- 중복 문의 금지" oninput="updateEmbedPreview()"></textarea>
+              </div>
+              <div class="preset-field-group">
+                <label class="preset-label">티켓 열렸을 때 환영 메시지 <small style="color:var(--ink-faint);">마크다운 지원</small></label>
+                <textarea class="modal-textarea" id="pf_welcome" rows="4" placeholder="티켓이 열렸습니다. 잠시 후 관리자가 올 수 있으니 대기해주세요." oninput="updateWelcomePreview()"></textarea>
+              </div>
+              <div class="preset-field-group">
+                <label class="preset-label">임베드 색상</label>
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <input type="color" id="pf_color" value="#FF8A1F" oninput="updateEmbedPreview()" style="width:44px;height:36px;border:none;border-radius:8px;cursor:pointer;background:none;">
+                  <input class="modal-input" id="pf_color_hex" placeholder="FF8A1F" maxlength="6" style="width:110px;" oninput="syncColorFromHex()">
+                  <span style="font-size:12px;color:var(--ink-faint);">HEX 코드 또는 색상표에서 선택</span>
+                </div>
+              </div>
+              <div style="display:flex;gap:8px;margin-top:8px;">
+                <button class="modal-submit panel-write-ctrl" onclick="savePreset()">💾 저장</button>
+                <button class="modal-cancel" onclick="cancelPresetForm()">취소</button>
+              </div>
+            </div>
+
+            <!-- 오른쪽: 미리보기 -->
+            <div class="preset-preview-side">
+              <div class="preview-section-label">👁 임베드 미리보기</div>
+              <div class="dc-embed-wrap">
+                <div class="dc-embed" id="embedPreviewBox">
+                  <div class="dc-embed-inner">
+                    <div class="dc-embed-title" id="prev_title">임베드 제목</div>
+                    <div class="dc-embed-desc" id="prev_desc">임베드 내용이 여기 표시됩니다.</div>
+                    <div class="dc-embed-footer" id="prev_footer">프리셋: 프리셋 이름</div>
+                  </div>
+                </div>
+                <div class="dc-btn-preview">
+                  <div class="dc-btn-mock">🎫 티켓 열기</div>
+                </div>
+              </div>
+
+              <div class="preview-section-label" style="margin-top:18px;">📨 환영 메시지 미리보기</div>
+              <div class="dc-embed-wrap">
+                <div class="dc-embed" id="welcomePreviewBox">
+                  <div class="dc-embed-inner">
+                    <div class="dc-embed-desc" id="prev_welcome">티켓이 열렸습니다. 잠시 후 관리자가 올 수 있으니 대기해주세요.</div>
+                  </div>
+                </div>
+                <div class="dc-btn-preview">
+                  <div class="dc-btn-mock dc-btn-danger">🔒 티켓 닫기</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- 새 티켓 모달 -->
       <div class="modal-backdrop" id="ticketModal" style="display:none;" onclick="closeModal(event)">
         <div class="modal-box">
@@ -1279,7 +1495,7 @@ const i18n = {
     readonlyNotice:"👀 이 서버에서는 읽기만 가능해요. 수정하려면 최상위 역할 이상의 권한이 필요해요.",
     ownerOnlyNotice:"👑 포인트 지급/차감은 봇 오너 전용 기능이에요. 서버장·최상위역할이어도 이 기능은 사용할 수 없어요.",
     serverOwnerNotice:"👑 아래 항목은 봇 오너 전용이에요. 서버장·최상위역할이어도 사용할 수 없어요.",
-    tabTicket:"🎫 티켓", tabWarn:"⚠️ 경고", tabPoint:"💰 포인트", tabServer:"🛠 서버설정",
+    tabTicket:"🎫 티켓", tabWarn:"⚠️ 경고", tabPoint:"💰 포인트", tabServer:"🛠 서버설정", tabPreset:"📋 프리셋",
     ticketTotal:"전체 티켓", ticketOpen:"열린 티켓", ticketClosed:"닫힌 티켓",
     btnNewTicket:"+ 새 티켓", statusOpen:"열림", statusClosed:"닫힘", statusWarn:"주의",
     btnClose:"닫기", btnRemove:"제거", btnGrant:"지급", btnDeduct:"차감", btnSet:"설정", btnExec:"실행", btnChange:"변경",
@@ -1330,7 +1546,7 @@ const i18n = {
     readonlyNotice:"👀 You can only view this server. You need at least a top role to make changes.",
     ownerOnlyNotice:"👑 Point grant/deduct is a bot-owner-only feature and cannot be used by server admins.",
     serverOwnerNotice:"👑 The items below are bot-owner only and cannot be used by server admins.",
-    tabTicket:"🎫 Tickets", tabWarn:"⚠️ Warnings", tabPoint:"💰 Points", tabServer:"🛠 Server Settings",
+    tabTicket:"🎫 Tickets", tabWarn:"⚠️ Warnings", tabPoint:"💰 Points", tabServer:"🛠 Server Settings", tabPreset:"📋 Presets",
     ticketTotal:"Total tickets", ticketOpen:"Open", ticketClosed:"Closed",
     btnNewTicket:"+ New ticket", statusOpen:"Open", statusClosed:"Closed", statusWarn:"Warning",
     btnClose:"Close", btnRemove:"Remove", btnGrant:"Grant", btnDeduct:"Deduct", btnSet:"Set", btnExec:"Run", btnChange:"Change",
@@ -1381,7 +1597,7 @@ const i18n = {
     readonlyNotice:"👀 このサーバーでは閲覧のみ可能です。編集には最上位ロール以上の権限が必要です。",
     ownerOnlyNotice:"👑 ポイント付与/差引はBotオーナー専用機能です。サーバー管理者でも使用できません。",
     serverOwnerNotice:"👑 以下の項目はBotオーナー専用です。サーバー管理者でも使用できません。",
-    tabTicket:"🎫 チケット", tabWarn:"⚠️ 警告", tabPoint:"💰 ポイント", tabServer:"🛠 サーバー設定",
+    tabTicket:"🎫 チケット", tabWarn:"⚠️ 警告", tabPoint:"💰 ポイント", tabServer:"🛠 サーバー設定", tabPreset:"📋 プリセット",
     ticketTotal:"全チケット", ticketOpen:"オープン", ticketClosed:"クローズ",
     btnNewTicket:"+ 新規チケット", statusOpen:"オープン", statusClosed:"クローズ", statusWarn:"警告",
     btnClose:"閉じる", btnRemove:"削除", btnGrant:"付与", btnDeduct:"差引", btnSet:"設定", btnExec:"実行", btnChange:"変更",
@@ -1432,7 +1648,7 @@ const i18n = {
     readonlyNotice:"👀 您在此服务器中仅有查看权限，需要最高角色以上权限才能修改。",
     ownerOnlyNotice:"👑 积分发放/扣除为Bot所有者专属功能，服务器管理员也无法使用。",
     serverOwnerNotice:"👑 以下项目为Bot所有者专属，服务器管理员也无法使用。",
-    tabTicket:"🎫 工单", tabWarn:"⚠️ 警告", tabPoint:"💰 积分", tabServer:"🛠 服务器设置",
+    tabTicket:"🎫 工单", tabWarn:"⚠️ 警告", tabPoint:"💰 积分", tabServer:"🛠 服务器设置", tabPreset:"📋 预设",
     ticketTotal:"全部工单", ticketOpen:"待处理", ticketClosed:"已关闭",
     btnNewTicket:"+ 新建工单", statusOpen:"待处理", statusClosed:"已关闭", statusWarn:"警告",
     btnClose:"关闭", btnRemove:"移除", btnGrant:"发放", btnDeduct:"扣除", btnSet:"设置", btnExec:"执行", btnChange:"更改",
@@ -1483,7 +1699,7 @@ const i18n = {
     readonlyNotice:"👀 Vous pouvez uniquement consulter ce serveur. Modifiez avec un rôle supérieur.",
     ownerOnlyNotice:"👑 L'attribution/déduction de points est réservée au propriétaire du bot, même les admins ne peuvent pas l'utiliser.",
     serverOwnerNotice:"👑 Les éléments ci-dessous sont réservés au propriétaire du bot.",
-    tabTicket:"🎫 Tickets", tabWarn:"⚠️ Avertissements", tabPoint:"💰 Points", tabServer:"🛠 Paramètres",
+    tabTicket:"🎫 Tickets", tabWarn:"⚠️ Avertissements", tabPoint:"💰 Points", tabServer:"🛠 Paramètres", tabPreset:"📋 Préréglages",
     ticketTotal:"Total tickets", ticketOpen:"Ouverts", ticketClosed:"Fermés",
     btnNewTicket:"+ Nouveau ticket", statusOpen:"Ouvert", statusClosed:"Fermé", statusWarn:"Avertissement",
     btnClose:"Fermer", btnRemove:"Supprimer", btnGrant:"Attribuer", btnDeduct:"Déduire", btnSet:"Définir", btnExec:"Exécuter", btnChange:"Modifier",
@@ -1534,7 +1750,7 @@ const i18n = {
     readonlyNotice:"👀 На этом сервере доступен только просмотр. Для изменений нужна роль высшего уровня.",
     ownerOnlyNotice:"👑 Выдача/списание очков — функция только для владельца бота, недоступная даже администраторам.",
     serverOwnerNotice:"👑 Элементы ниже доступны только владельцу бота.",
-    tabTicket:"🎫 Тикеты", tabWarn:"⚠️ Предупреждения", tabPoint:"💰 Очки", tabServer:"🛠 Настройки",
+    tabTicket:"🎫 Тикеты", tabWarn:"⚠️ Предупреждения", tabPoint:"💰 Очки", tabServer:"🛠 Настройки", tabPreset:"📋 Шаблоны",
     ticketTotal:"Всего тикетов", ticketOpen:"Открытые", ticketClosed:"Закрытые",
     btnNewTicket:"+ Новый тикет", statusOpen:"Открыт", statusClosed:"Закрыт", statusWarn:"Предупреждение",
     btnClose:"Закрыть", btnRemove:"Удалить", btnGrant:"Выдать", btnDeduct:"Списать", btnSet:"Настроить", btnExec:"Выполнить", btnChange:"Изменить",
@@ -1556,6 +1772,199 @@ const i18n = {
     panelLoadErr:"Не удалось загрузить список серверов."
   }
 };
+
+// ── 프리셋 관리 JS ──
+
+let editingPresetId = null;
+
+// 마크다운 → HTML 변환 (미리보기용)
+function renderMarkdown(text){
+  if(!text) return '';
+  return text
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g,'<em>$1</em>')
+    .replace(/`(.+?)`/g,'<code>$1</code>')
+    .replace(/\n/g,'<br>');
+}
+
+function hexToNum(hex){ return parseInt((hex||'FF8A1F').replace('#',''), 16) || 0xFF8A1F; }
+
+// 색상표 ↔ HEX 입력 동기
+function syncColorFromHex(){
+  const hex = document.getElementById('pf_color_hex').value.replace('#','');
+  if(/^[0-9A-Fa-f]{6}$/.test(hex)){
+    document.getElementById('pf_color').value = '#'+hex;
+  }
+  updateEmbedPreview();
+}
+
+// 임베드 미리보기 업데이트
+function updateEmbedPreview(){
+  const title   = document.getElementById('pf_title')?.value || '임베드 제목';
+  const desc    = document.getElementById('pf_desc')?.value  || '임베드 내용';
+  const name    = document.getElementById('pf_name')?.value  || '프리셋 이름';
+  const colorPicker = document.getElementById('pf_color');
+  const color   = colorPicker?.value || '#FF8A1F';
+
+  // HEX 입력칸 동기
+  const hexIn = document.getElementById('pf_color_hex');
+  if(hexIn && document.activeElement !== hexIn) hexIn.value = color.replace('#','');
+
+  // 색상 반영
+  const inner = document.getElementById('embedPreviewBox')?.querySelector('.dc-embed-inner');
+  if(inner) inner.style.borderLeftColor = color;
+
+  const prevTitle = document.getElementById('prev_title');
+  const prevDesc  = document.getElementById('prev_desc');
+  const prevFoot  = document.getElementById('prev_footer');
+  if(prevTitle) prevTitle.innerHTML = renderMarkdown(title);
+  if(prevDesc)  prevDesc.innerHTML  = renderMarkdown(desc);
+  if(prevFoot)  prevFoot.textContent = `프리셋: ${name}`;
+}
+
+function updateWelcomePreview(){
+  const welcome = document.getElementById('pf_welcome')?.value || '티켓이 열렸습니다. 잠시 후 관리자가 올 수 있으니 대기해주세요.';
+  const prev = document.getElementById('prev_welcome');
+  if(prev) prev.innerHTML = renderMarkdown(welcome);
+}
+
+// 프리셋 목록 로드
+async function loadPresets(guildId){
+  const listEl = document.getElementById('presetList');
+  const countEl = document.getElementById('presetCount');
+  if(!listEl) return;
+
+  const { data, error } = await sb.from('ticket_presets').select('*').eq('guild_id', guildId).order('created_at');
+  if(countEl) countEl.textContent = data?.length || 0;
+
+  if(error || !data || data.length === 0){
+    listEl.innerHTML = `<div style="color:var(--ink-faint);font-size:13px;padding:10px;">등록된 프리셋이 없어요. "+ 새 프리셋" 버튼으로 만들어보세요.</div>`;
+    return;
+  }
+
+  const canWrite = isBotOwner || currentServerRole === 'owner' || currentServerRole === 'admin';
+  listEl.innerHTML = data.map(p => {
+    const color = '#' + (p.color || 'FF8A1F');
+    return `
+    <div class="preset-card">
+      <div class="preset-card-accent" style="background:${color};"></div>
+      <div class="preset-card-info">
+        <div class="preset-card-name">${p.name}</div>
+        <div class="preset-card-sub">${p.embed_title}</div>
+      </div>
+      <div class="preset-card-btns">
+        <button class="btn-preset-action btn-preset-post panel-write-ctrl" ${!canWrite?'disabled style="opacity:.35"':''} onclick="openPostChannelModal(${p.id})">📤 게시</button>
+        <button class="btn-preset-action panel-write-ctrl" ${!canWrite?'disabled style="opacity:.35"':''} onclick="showPresetForm(${JSON.stringify(p).replace(/"/g,'&quot;')})">✏️ 수정</button>
+        <button class="btn-preset-action btn-preset-del panel-write-ctrl" ${!canWrite?'disabled style="opacity:.35"':''} onclick="deletePreset(${p.id},'${p.name.replace(/'/g,"\\'")}')">🗑</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// 폼 보기
+function showPresetForm(preset = null){
+  editingPresetId = preset?.id || null;
+  document.getElementById('presetListView').style.display = 'none';
+  document.getElementById('presetFormView').style.display = 'block';
+  document.getElementById('presetFormTitle').textContent = preset ? `✏️ 프리셋 수정: ${preset.name}` : '새 프리셋 만들기';
+
+  document.getElementById('pf_name').value    = preset?.name          || '';
+  document.getElementById('pf_title').value   = preset?.embed_title   || '';
+  document.getElementById('pf_desc').value    = preset?.embed_desc    || '';
+  document.getElementById('pf_welcome').value = preset?.welcome_message|| '';
+  const color = '#' + (preset?.color || 'FF8A1F');
+  document.getElementById('pf_color').value   = color;
+  document.getElementById('pf_color_hex').value = color.replace('#','');
+
+  updateEmbedPreview();
+  updateWelcomePreview();
+}
+
+function cancelPresetForm(){
+  document.getElementById('presetListView').style.display = 'block';
+  document.getElementById('presetFormView').style.display = 'none';
+  editingPresetId = null;
+}
+
+// 저장
+async function savePreset(){
+  const name    = document.getElementById('pf_name').value.trim();
+  const title   = document.getElementById('pf_title').value.trim();
+  const desc    = document.getElementById('pf_desc').value.trim();
+  const welcome = document.getElementById('pf_welcome').value.trim() || '티켓이 열렸습니다. 잠시 후 관리자가 올 수 있으니 대기해주세요.';
+  const color   = document.getElementById('pf_color').value.replace('#','');
+
+  if(!name||!title||!desc){ alert('이름, 제목, 내용은 필수예요.'); return; }
+
+  const payload = { guild_id:currentGuildId, name, embed_title:title, embed_desc:desc, welcome_message:welcome, color };
+  let error;
+  if(editingPresetId){
+    ({ error } = await sb.from('ticket_presets').update({...payload, updated_at:new Date().toISOString()}).eq('id', editingPresetId));
+  } else {
+    ({ error } = await sb.from('ticket_presets').insert(payload));
+  }
+
+  if(error){ alert('저장 실패: '+error.message); return; }
+  showToast(editingPresetId ? '✅ 프리셋이 수정됐어요!' : '✅ 프리셋이 생성됐어요!');
+  cancelPresetForm();
+  await loadPresets(currentGuildId);
+}
+
+// 삭제
+async function deletePreset(id, name){
+  if(!confirm(`"${name}" 프리셋을 삭제할까요?`)) return;
+  const { error } = await sb.from('ticket_presets').delete().eq('id', id);
+  if(error){ alert('삭제 실패: '+error.message); return; }
+  showToast('✅ 프리셋이 삭제됐어요.');
+  await loadPresets(currentGuildId);
+}
+
+// 채널 선택 후 게시
+let pendingPostPresetId = null;
+function openPostChannelModal(presetId){
+  pendingPostPresetId = presetId;
+  const channels = (window._cachedChannels||[]).filter(c=>c.channel_type===0);
+
+  let existing = document.getElementById('postChannelModal');
+  if(existing) existing.remove();
+
+  const modal = document.createElement('div');
+  modal.id = 'postChannelModal';
+  modal.className = 'modal-backdrop';
+  modal.style.display = 'flex';
+  modal.onclick = e=>{ if(e.target===modal) modal.remove(); };
+
+  const opts = channels.length > 0
+    ? channels.map(c=>`<div class="ch-option" onclick="postPresetToChannel(${presetId},'${c.channel_id}','${c.channel_name.replace(/'/g,"\\'")}')"># ${c.channel_name}${c.category_name?` <span style="color:var(--ink-faint);font-size:11px;">(${c.category_name})</span>`:''}</div>`).join('')
+    : `<div style="color:var(--ink-faint);font-size:13px;padding:12px;">채널 목록이 없어요. 봇을 재시작해보세요.</div>`;
+
+  modal.innerHTML = `
+    <div class="modal-box" style="max-height:65vh;overflow:hidden;display:flex;flex-direction:column;">
+      <div class="modal-title">📤 채널에 게시하기</div>
+      <input class="modal-input" placeholder="채널 검색..." oninput="this.nextElementSibling.querySelectorAll('.ch-option').forEach(el=>el.style.display=el.textContent.toLowerCase().includes(this.value.toLowerCase())?'':'none')" style="margin-bottom:8px;">
+      <div style="overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:4px;">${opts}</div>
+      <div style="display:flex;justify-content:flex-end;margin-top:10px;">
+        <button class="modal-cancel" onclick="document.getElementById('postChannelModal').remove()">취소</button>
+      </div>
+    </div>`;
+
+  if(!document.getElementById('chOptStyle')){
+    const s=document.createElement('style');s.id='chOptStyle';
+    s.textContent='.ch-option{padding:9px 12px;border-radius:8px;cursor:pointer;font-size:13.5px;color:var(--ink-dim);}.ch-option:hover{background:rgba(255,138,31,.1);color:var(--ink);}';
+    document.head.appendChild(s);
+  }
+  document.body.appendChild(modal);
+}
+
+async function postPresetToChannel(presetId, channelId, channelName){
+  document.getElementById('postChannelModal')?.remove();
+  const { error } = await sb.from('pending_posts').insert({
+    guild_id: currentGuildId, channel_id: channelId, preset_id: presetId, status:'pending'
+  });
+  if(error){ alert('게시 요청 실패: '+error.message); return; }
+  showToast(`✅ #${channelName} 에 게시 요청했어요. 봇이 30초 내로 전송해요!`);
+}
 
 let currentLang = 'ko';
 
@@ -1608,7 +2017,7 @@ function applyPanelLang(dict){
   if(soNotice) soNotice.textContent = dict.serverOwnerNotice || soNotice.textContent;
 
   // 탭 레이블
-  const tabMap = { ticket:'tabTicket', 'warn-panel':'tabWarn', 'point-panel':'tabPoint', 'server-panel':'tabServer' };
+  const tabMap = { ticket:'tabTicket', 'warn-panel':'tabWarn', 'point-panel':'tabPoint', 'server-panel':'tabServer', preset:'tabPreset' };
   document.querySelectorAll('#panelContent .cat-tab[data-ptab]').forEach(tab => {
     const key = tabMap[tab.dataset.ptab];
     if(key && dict[key]) tab.textContent = dict[key];
@@ -1833,7 +2242,8 @@ async function loadPanelData(guildId){
     loadTickets(guildId),
     loadWarnings(guildId),
     loadPoints(),
-    loadGuildSettings(guildId)
+    loadGuildSettings(guildId),
+    loadPresets(guildId)
   ]);
 }
 
@@ -2137,10 +2547,11 @@ document.addEventListener('click', e => {
   if(target) target.classList.add('active');
   // 탭 전환 시 해당 데이터 새로고침
   if(currentGuildId){
-    if(tab.dataset.ptab === 'ticket')      loadTickets(currentGuildId);
-    if(tab.dataset.ptab === 'warn-panel')  loadWarnings(currentGuildId);
-    if(tab.dataset.ptab === 'point-panel') loadPoints();
+    if(tab.dataset.ptab === 'ticket')       loadTickets(currentGuildId);
+    if(tab.dataset.ptab === 'warn-panel')   loadWarnings(currentGuildId);
+    if(tab.dataset.ptab === 'point-panel')  loadPoints();
     if(tab.dataset.ptab === 'server-panel') loadGuildSettings(currentGuildId);
+    if(tab.dataset.ptab === 'preset')       loadPresets(currentGuildId);
   }
 });
 
