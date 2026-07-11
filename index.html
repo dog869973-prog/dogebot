@@ -1877,6 +1877,30 @@ function showPresetForm(preset = null){
   document.getElementById('pf_color').value   = color;
   document.getElementById('pf_color_hex').value = color.replace('#','');
 
+  // 실시간 미리보기 이벤트 리스너 (한국어 IME 포함)
+  const embedIds = ['pf_name','pf_title','pf_desc','pf_color'];
+  embedIds.forEach(id => {
+    const el = document.getElementById(id);
+    if(!el) return;
+    // 기존 리스너 제거 후 재등록
+    el.removeEventListener('input',          updateEmbedPreview);
+    el.removeEventListener('compositionend', updateEmbedPreview);
+    el.removeEventListener('keyup',          updateEmbedPreview);
+    el.addEventListener('input',          updateEmbedPreview);
+    el.addEventListener('compositionend', updateEmbedPreview);
+    el.addEventListener('keyup',          updateEmbedPreview);
+  });
+  const welcomeEl = document.getElementById('pf_welcome');
+  if(welcomeEl){
+    welcomeEl.removeEventListener('input',          updateWelcomePreview);
+    welcomeEl.removeEventListener('compositionend', updateWelcomePreview);
+    welcomeEl.removeEventListener('keyup',          updateWelcomePreview);
+    welcomeEl.addEventListener('input',          updateWelcomePreview);
+    welcomeEl.addEventListener('compositionend', updateWelcomePreview);
+    welcomeEl.addEventListener('keyup',          updateWelcomePreview);
+  }
+
+  // 초기 미리보기 렌더링
   updateEmbedPreview();
   updateWelcomePreview();
 }
