@@ -918,6 +918,16 @@ footer{
 .search-result-item:hover{ background:rgba(255,138,31,.08); color:var(--ink); }
 
 .greeting-section{ background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:18px; }
+
+/* ── 레벨링 토글 행 ── */
+.level-toggle-row{
+  display:flex; align-items:center; justify-content:space-between; gap:14px;
+  padding:14px 0; border-bottom:1px solid var(--line);
+}
+.level-toggle-row:last-child{ border-bottom:none; }
+.level-toggle-title{ font-size:14px; font-weight:700; color:var(--ink); }
+.level-toggle-desc{ font-size:12.5px; color:var(--ink-faint); margin-top:4px; line-height:1.5; }
+.level-toggle-info{ flex:1; min-width:0; }
 </style>
 </head>
 <body>
@@ -1180,6 +1190,8 @@ footer{
           <button class="cat-tab" data-ptab="server-panel">🛠 서버설정</button>
           <button class="cat-tab" data-ptab="preset">📋 프리셋</button>
           <button class="cat-tab" data-ptab="greeting">👋 인사</button>
+          <button class="cat-tab" data-ptab="leveling">📊 레벨링</button>
+          <button class="cat-tab" data-ptab="verify">✅ 인증</button>
         </div>
 
         <!-- 티켓 -->
@@ -1491,6 +1503,92 @@ footer{
         </div>
       </div>
 
+      <!-- 레벨링 탭 -->
+      <div class="ptab-panel" id="ptab-leveling">
+        <div class="greeting-section">
+          <div style="font-family:'Jua',sans-serif;font-size:17px;color:var(--doge-gold);margin-bottom:14px;">📊 레벨링 설정</div>
+          <p style="font-size:13px;color:var(--ink-faint);margin:0 0 18px;">채팅으로 경험치를 얻어 레벨업하는 시스템의 알림과 획득 여부를 서버 전체에 대해 켜고 끌 수 있어요.</p>
+
+          <div class="level-toggle-row">
+            <div class="level-toggle-info">
+              <div class="level-toggle-title">🎉 레벨업 메시지</div>
+              <div class="level-toggle-desc">레벨업 했을 때 채팅창에 "레벨업!" 메시지를 보낼지 설정해요.</div>
+            </div>
+            <label class="toggle-wrap">
+              <input type="checkbox" id="level_msg_enabled" class="panel-write-ctrl" onchange="saveLevelSetting('levelup_msg_enabled', this.checked)">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="level-toggle-row">
+            <div class="level-toggle-info">
+              <div class="level-toggle-title">✨ 경험치 획득</div>
+              <div class="level-toggle-desc">유저들이 채팅으로 경험치(XP)를 얻을지 설정해요. 끄면 레벨업 자체가 멈춰요.</div>
+            </div>
+            <label class="toggle-wrap">
+              <input type="checkbox" id="level_xp_enabled" class="panel-write-ctrl" onchange="saveLevelSetting('xp_gain_enabled', this.checked)">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- 인증 탭 -->
+      <div class="ptab-panel" id="ptab-verify">
+        <div class="preset-form-grid">
+          <!-- 왼쪽: 입력 폼 -->
+          <div class="preset-form-side">
+            <div class="preset-field-group">
+              <label class="preset-label">임베드 제목 <span style="color:var(--doge-orange)">*</span></label>
+              <input class="modal-input" id="vf_title" placeholder="✅ 인증" maxlength="100">
+            </div>
+            <div class="preset-field-group">
+              <label class="preset-label">임베드 내용 <small style="color:var(--ink-faint);">마크다운 지원</small></label>
+              <textarea class="modal-textarea" id="vf_desc" rows="6" placeholder="아래 버튼을 눌러 인증을 완료해주세요."></textarea>
+            </div>
+            <div class="preset-field-group">
+              <label class="preset-label">임베드 색상</label>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <input type="color" id="vf_color" value="#57F287" style="width:44px;height:36px;border:none;border-radius:8px;cursor:pointer;background:none;">
+                <input class="modal-input" id="vf_color_hex" placeholder="57F287" maxlength="6" style="width:110px;" oninput="syncVerifyColor()">
+              </div>
+            </div>
+            <div class="preset-field-group">
+              <label class="preset-label">버튼 텍스트</label>
+              <input class="modal-input" id="vf_btn_label" placeholder="인증하기" maxlength="80">
+            </div>
+            <div class="preset-field-group">
+              <label class="preset-label">🎁 지급할 역할 <span style="color:var(--doge-orange)">*</span></label>
+              <div class="search-dropdown">
+                <input class="modal-input" id="vf_role_search" placeholder="역할 이름 검색..." oninput="onVerifyRoleSearch(this.value)">
+              </div>
+              <div class="selected-chips" id="vfRoleChip"></div>
+            </div>
+            <button class="modal-submit panel-write-ctrl" onclick="saveVerifySettings()">💾 저장</button>
+          </div>
+
+          <!-- 오른쪽: 미리보기 -->
+          <div class="preset-preview-side">
+            <div class="preview-section-label">👁 임베드 미리보기</div>
+            <div class="dc-embed-wrap">
+              <div class="dc-embed" id="verifyPreviewEmbed">
+                <div class="dc-embed-inner" id="verifyPreviewInner">
+                  <div class="dc-embed-title" id="vfPrevTitle">✅ 인증</div>
+                  <div class="dc-embed-desc" id="vfPrevDesc">아래 버튼을 눌러 인증을 완료해주세요.</div>
+                </div>
+              </div>
+              <div class="dc-btn-preview">
+                <div class="dc-btn-mock" id="vfPrevBtn">인증하기</div>
+              </div>
+            </div>
+            <p style="font-size:12px;color:var(--ink-faint);margin-top:14px;">
+              저장 후 디스코드에서 <code>/인증</code> 명령어를 사용하면 이 임베드가 채널에 게시돼요.<br>
+              버튼을 누른 유저에게는 자동으로 지정된 역할이 지급돼요.
+            </p>
+          </div>
+        </div>
+      </div>
+
       <!-- 새 티켓 모달 -->
       <div class="modal-backdrop" id="ticketModal" style="display:none;" onclick="closeModal(event)">
         <div class="modal-box">
@@ -1542,7 +1640,7 @@ const i18n = {
     readonlyNotice:"👀 이 서버에서는 읽기만 가능해요. 수정하려면 최상위 역할 이상의 권한이 필요해요.",
     ownerOnlyNotice:"👑 포인트 지급/차감은 봇 오너 전용 기능이에요. 서버장·최상위역할이어도 이 기능은 사용할 수 없어요.",
     serverOwnerNotice:"👑 아래 항목은 봇 오너 전용이에요. 서버장·최상위역할이어도 사용할 수 없어요.",
-    tabTicket:"🎫 티켓", tabWarn:"⚠️ 경고", tabPoint:"💰 포인트", tabServer:"🛠 서버설정", tabPreset:"📋 프리셋", tabGreeting:"👋 인사",
+    tabTicket:"🎫 티켓", tabWarn:"⚠️ 경고", tabPoint:"💰 포인트", tabServer:"🛠 서버설정", tabPreset:"📋 프리셋", tabGreeting:"👋 인사", tabLeveling:"📊 레벨링", tabVerify:"✅ 인증",
     ticketTotal:"전체 티켓", ticketOpen:"열린 티켓", ticketClosed:"닫힌 티켓",
     btnNewTicket:"+ 새 티켓", statusOpen:"열림", statusClosed:"닫힘", statusWarn:"주의",
     btnClose:"닫기", btnRemove:"제거", btnGrant:"지급", btnDeduct:"차감", btnSet:"설정", btnExec:"실행", btnChange:"변경",
@@ -1593,7 +1691,7 @@ const i18n = {
     readonlyNotice:"👀 You can only view this server. You need at least a top role to make changes.",
     ownerOnlyNotice:"👑 Point grant/deduct is a bot-owner-only feature and cannot be used by server admins.",
     serverOwnerNotice:"👑 The items below are bot-owner only and cannot be used by server admins.",
-    tabTicket:"🎫 Tickets", tabWarn:"⚠️ Warnings", tabPoint:"💰 Points", tabServer:"🛠 Server Settings", tabPreset:"📋 Presets", tabGreeting:"👋 Greeting",
+    tabTicket:"🎫 Tickets", tabWarn:"⚠️ Warnings", tabPoint:"💰 Points", tabServer:"🛠 Server Settings", tabPreset:"📋 Presets", tabGreeting:"👋 Greeting", tabLeveling:"📊 Leveling", tabVerify:"✅ Verify",
     ticketTotal:"Total tickets", ticketOpen:"Open", ticketClosed:"Closed",
     btnNewTicket:"+ New ticket", statusOpen:"Open", statusClosed:"Closed", statusWarn:"Warning",
     btnClose:"Close", btnRemove:"Remove", btnGrant:"Grant", btnDeduct:"Deduct", btnSet:"Set", btnExec:"Run", btnChange:"Change",
@@ -1644,7 +1742,7 @@ const i18n = {
     readonlyNotice:"👀 このサーバーでは閲覧のみ可能です。編集には最上位ロール以上の権限が必要です。",
     ownerOnlyNotice:"👑 ポイント付与/差引はBotオーナー専用機能です。サーバー管理者でも使用できません。",
     serverOwnerNotice:"👑 以下の項目はBotオーナー専用です。サーバー管理者でも使用できません。",
-    tabTicket:"🎫 チケット", tabWarn:"⚠️ 警告", tabPoint:"💰 ポイント", tabServer:"🛠 サーバー設定", tabPreset:"📋 プリセット", tabGreeting:"👋 挨拶",
+    tabTicket:"🎫 チケット", tabWarn:"⚠️ 警告", tabPoint:"💰 ポイント", tabServer:"🛠 サーバー設定", tabPreset:"📋 プリセット", tabGreeting:"👋 挨拶", tabLeveling:"📊 レベリング", tabVerify:"✅ 認証",
     ticketTotal:"全チケット", ticketOpen:"オープン", ticketClosed:"クローズ",
     btnNewTicket:"+ 新規チケット", statusOpen:"オープン", statusClosed:"クローズ", statusWarn:"警告",
     btnClose:"閉じる", btnRemove:"削除", btnGrant:"付与", btnDeduct:"差引", btnSet:"設定", btnExec:"実行", btnChange:"変更",
@@ -1695,7 +1793,7 @@ const i18n = {
     readonlyNotice:"👀 您在此服务器中仅有查看权限，需要最高角色以上权限才能修改。",
     ownerOnlyNotice:"👑 积分发放/扣除为Bot所有者专属功能，服务器管理员也无法使用。",
     serverOwnerNotice:"👑 以下项目为Bot所有者专属，服务器管理员也无法使用。",
-    tabTicket:"🎫 工单", tabWarn:"⚠️ 警告", tabPoint:"💰 积分", tabServer:"🛠 服务器设置", tabPreset:"📋 预设", tabGreeting:"👋 问候",
+    tabTicket:"🎫 工单", tabWarn:"⚠️ 警告", tabPoint:"💰 积分", tabServer:"🛠 服务器设置", tabPreset:"📋 预设", tabGreeting:"👋 问候", tabLeveling:"📊 等级", tabVerify:"✅ 验证",
     ticketTotal:"全部工单", ticketOpen:"待处理", ticketClosed:"已关闭",
     btnNewTicket:"+ 新建工单", statusOpen:"待处理", statusClosed:"已关闭", statusWarn:"警告",
     btnClose:"关闭", btnRemove:"移除", btnGrant:"发放", btnDeduct:"扣除", btnSet:"设置", btnExec:"执行", btnChange:"更改",
@@ -1746,7 +1844,7 @@ const i18n = {
     readonlyNotice:"👀 Vous pouvez uniquement consulter ce serveur. Modifiez avec un rôle supérieur.",
     ownerOnlyNotice:"👑 L'attribution/déduction de points est réservée au propriétaire du bot, même les admins ne peuvent pas l'utiliser.",
     serverOwnerNotice:"👑 Les éléments ci-dessous sont réservés au propriétaire du bot.",
-    tabTicket:"🎫 Tickets", tabWarn:"⚠️ Avertissements", tabPoint:"💰 Points", tabServer:"🛠 Paramètres", tabPreset:"📋 Préréglages", tabGreeting:"👋 Accueil",
+    tabTicket:"🎫 Tickets", tabWarn:"⚠️ Avertissements", tabPoint:"💰 Points", tabServer:"🛠 Paramètres", tabPreset:"📋 Préréglages", tabGreeting:"👋 Accueil", tabLeveling:"📊 Niveaux", tabVerify:"✅ Vérification",
     ticketTotal:"Total tickets", ticketOpen:"Ouverts", ticketClosed:"Fermés",
     btnNewTicket:"+ Nouveau ticket", statusOpen:"Ouvert", statusClosed:"Fermé", statusWarn:"Avertissement",
     btnClose:"Fermer", btnRemove:"Supprimer", btnGrant:"Attribuer", btnDeduct:"Déduire", btnSet:"Définir", btnExec:"Exécuter", btnChange:"Modifier",
@@ -1797,7 +1895,7 @@ const i18n = {
     readonlyNotice:"👀 На этом сервере доступен только просмотр. Для изменений нужна роль высшего уровня.",
     ownerOnlyNotice:"👑 Выдача/списание очков — функция только для владельца бота, недоступная даже администраторам.",
     serverOwnerNotice:"👑 Элементы ниже доступны только владельцу бота.",
-    tabTicket:"🎫 Тикеты", tabWarn:"⚠️ Предупреждения", tabPoint:"💰 Очки", tabServer:"🛠 Настройки", tabPreset:"📋 Шаблоны", tabGreeting:"👋 Приветствие",
+    tabTicket:"🎫 Тикеты", tabWarn:"⚠️ Предупреждения", tabPoint:"💰 Очки", tabServer:"🛠 Настройки", tabPreset:"📋 Шаблоны", tabGreeting:"👋 Приветствие", tabLeveling:"📊 Уровни", tabVerify:"✅ Верификация",
     ticketTotal:"Всего тикетов", ticketOpen:"Открытые", ticketClosed:"Закрытые",
     btnNewTicket:"+ Новый тикет", statusOpen:"Открыт", statusClosed:"Закрыт", statusWarn:"Предупреждение",
     btnClose:"Закрыть", btnRemove:"Удалить", btnGrant:"Выдать", btnDeduct:"Списать", btnSet:"Настроить", btnExec:"Выполнить", btnChange:"Изменить",
@@ -1972,6 +2070,140 @@ async function loadGreetingSettings(guildId){
   setColor('farewell', data?.farewell_color);
 
   updateGreetingPreview();
+}
+
+/* ══════════ 레벨링 설정 ══════════ */
+
+async function loadLevelSettings(guildId){
+  const { data } = await sb.from('level_settings').select('*').eq('guild_id', guildId).single();
+  const msgEl = document.getElementById('level_msg_enabled');
+  const xpEl  = document.getElementById('level_xp_enabled');
+  if(msgEl) msgEl.checked = data?.levelup_msg_enabled !== false; // 기본값: 켜짐
+  if(xpEl)  xpEl.checked  = data?.xp_gain_enabled !== false;      // 기본값: 켜짐
+}
+
+async function saveLevelSetting(key, value){
+  const payload = { guild_id: currentGuildId };
+  payload[key] = value;
+  const { error } = await sb.from('level_settings').upsert(payload, { onConflict: 'guild_id' });
+  if(error){ alert('저장 실패: ' + error.message); return; }
+  showToast(`✅ ${key === 'levelup_msg_enabled' ? '레벨업 메시지' : '경험치 획득'}가 ${value ? '켜졌어요!' : '꺼졌어요!'}`);
+}
+
+/* ══════════ 인증 설정 ══════════ */
+
+let verifyRole = null; // { id, name, color }
+let verifyPreviewInterval = null;
+
+function syncVerifyColor(){
+  const hex = document.getElementById('vf_color_hex').value.replace('#','');
+  if(/^[0-9A-Fa-f]{6}$/.test(hex)) document.getElementById('vf_color').value = '#' + hex;
+}
+
+function updateVerifyPreview(){
+  const title = document.getElementById('vf_title')?.value || '✅ 인증';
+  const desc  = document.getElementById('vf_desc')?.value  || '아래 버튼을 눌러 인증을 완료해주세요.';
+  const color = document.getElementById('vf_color')?.value || '#57F287';
+  const btnLabel = document.getElementById('vf_btn_label')?.value || '인증하기';
+
+  const hexIn = document.getElementById('vf_color_hex');
+  if(hexIn && document.activeElement !== hexIn) hexIn.value = color.replace('#','');
+
+  const inner = document.getElementById('verifyPreviewInner');
+  if(inner) inner.style.borderLeftColor = color;
+
+  const t = document.getElementById('vfPrevTitle');
+  const d = document.getElementById('vfPrevDesc');
+  const b = document.getElementById('vfPrevBtn');
+  if(t) t.innerHTML = renderMarkdown(title);
+  if(d) d.innerHTML = renderMarkdown(desc);
+  if(b) b.textContent = btnLabel;
+}
+
+function renderVerifyRoleChip(){
+  const cont = document.getElementById('vfRoleChip');
+  if(!cont) return;
+  if(!verifyRole){ cont.innerHTML = ''; return; }
+  cont.innerHTML = `<div class="sel-chip">
+    <span class="dot" style="background:${verifyRole.color||'var(--ink-faint)'}"></span>
+    <span>@<b>${verifyRole.name}</b></span>
+    <span class="remove" onclick="verifyRole=null;renderVerifyRoleChip();">×</span>
+  </div>`;
+}
+
+function onVerifyRoleSearch(q){
+  q = (q||'').toLowerCase();
+  let el = document.getElementById('vf_role_search_results');
+  if(!el){
+    el = document.createElement('div');
+    el.id = 'vf_role_search_results';
+    el.className = 'search-results';
+    document.getElementById('vf_role_search')?.parentElement?.appendChild(el);
+  }
+  if(!q){ el.classList.remove('show'); return; }
+
+  const matches = _cachedRoles.filter(r => r.role_name.toLowerCase().includes(q)).slice(0, 15);
+  el.innerHTML = matches.map(r => {
+    const c = r.role_color || '#999';
+    return `<div class="search-result-item" onclick="selectVerifyRole('${r.role_id}','${r.role_name.replace(/'/g,"\\'")}','${c}')">
+      <span style="width:10px;height:10px;border-radius:50%;background:${c};flex:none;display:inline-block;"></span>
+      @${r.role_name}
+    </div>`;
+  }).join('') || '<div style="padding:8px 12px;color:var(--ink-faint);font-size:13px;">검색 결과 없음</div>';
+  el.classList.add('show');
+}
+
+function selectVerifyRole(id, name, color){
+  verifyRole = { id, name, color };
+  renderVerifyRoleChip();
+  const inp = document.getElementById('vf_role_search');
+  if(inp) inp.value = '';
+  document.getElementById('vf_role_search_results')?.classList.remove('show');
+}
+
+async function loadVerifySettings(guildId){
+  await loadRolesForSearch();
+
+  const { data } = await sb.from('verify_settings').select('*').eq('guild_id', guildId).single();
+
+  document.getElementById('vf_title').value      = data?.embed_title  || '✅ 인증';
+  document.getElementById('vf_desc').value       = data?.embed_desc   || '아래 버튼을 눌러 인증을 완료해주세요.';
+  document.getElementById('vf_btn_label').value  = data?.button_label || '인증하기';
+  const color = '#' + (data?.color || '57F287').replace('#','');
+  document.getElementById('vf_color').value      = color;
+  document.getElementById('vf_color_hex').value  = color.replace('#','');
+
+  verifyRole = data?.role_id ? { id: data.role_id, name: data.role_name || data.role_id, color: null } : null;
+  renderVerifyRoleChip();
+
+  updateVerifyPreview();
+  if(verifyPreviewInterval) clearInterval(verifyPreviewInterval);
+  verifyPreviewInterval = setInterval(() => {
+    if(document.getElementById('ptab-verify')?.classList.contains('active') !== true){
+      clearInterval(verifyPreviewInterval); verifyPreviewInterval = null; return;
+    }
+    updateVerifyPreview();
+  }, 200);
+}
+
+async function saveVerifySettings(){
+  const title  = document.getElementById('vf_title').value.trim();
+  const desc   = document.getElementById('vf_desc').value.trim();
+  const color  = document.getElementById('vf_color').value.replace('#','');
+  const btnLabel = document.getElementById('vf_btn_label').value.trim() || '인증하기';
+
+  if(!title || !desc){ alert('임베드 제목과 내용은 필수예요.'); return; }
+  if(!verifyRole){ alert('지급할 역할을 선택해주세요.'); return; }
+
+  const payload = {
+    guild_id: currentGuildId,
+    embed_title: title, embed_desc: desc, color,
+    button_label: btnLabel,
+    role_id: verifyRole.id, role_name: verifyRole.name
+  };
+  const { error } = await sb.from('verify_settings').upsert(payload, { onConflict: 'guild_id' });
+  if(error){ alert('저장 실패: ' + error.message); return; }
+  showToast('✅ 인증 설정이 저장됐어요! 디스코드에서 /인증 을 사용해보세요.');
 }
 
 function openGreetingChannelModal(type){
@@ -2331,7 +2563,7 @@ function applyPanelLang(dict){
   if(soNotice) soNotice.textContent = dict.serverOwnerNotice || soNotice.textContent;
 
   // 탭 레이블
-  const tabMap = { ticket:'tabTicket', 'warn-panel':'tabWarn', 'point-panel':'tabPoint', 'server-panel':'tabServer', preset:'tabPreset', greeting:'tabGreeting' };
+  const tabMap = { ticket:'tabTicket', 'warn-panel':'tabWarn', 'point-panel':'tabPoint', 'server-panel':'tabServer', preset:'tabPreset', greeting:'tabGreeting', leveling:'tabLeveling', verify:'tabVerify' };
   document.querySelectorAll('#panelContent .cat-tab[data-ptab]').forEach(tab => {
     const key = tabMap[tab.dataset.ptab];
     if(key && dict[key]) tab.textContent = dict[key];
@@ -2558,7 +2790,9 @@ async function loadPanelData(guildId){
     loadPoints(),
     loadGuildSettings(guildId),
     loadPresets(guildId),
-    loadGreetingSettings(guildId)
+    loadGreetingSettings(guildId),
+    loadLevelSettings(guildId),
+    loadVerifySettings(guildId)
   ]);
 }
 
@@ -2887,6 +3121,8 @@ document.addEventListener('click', e => {
     if(tab.dataset.ptab === 'server-panel') loadGuildSettings(currentGuildId);
     if(tab.dataset.ptab === 'preset')       loadPresets(currentGuildId);
     if(tab.dataset.ptab === 'greeting')     loadGreetingSettings(currentGuildId);
+    if(tab.dataset.ptab === 'leveling')     loadLevelSettings(currentGuildId);
+    if(tab.dataset.ptab === 'verify')       loadVerifySettings(currentGuildId);
   }
 });
 
@@ -3019,3 +3255,4 @@ applyLang('ko');
 </script>
 </body>
 </html>
+         
