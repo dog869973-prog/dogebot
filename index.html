@@ -1423,7 +1423,7 @@ footer{
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
             <div style="font-family:'Jua',sans-serif;font-size:17px;color:var(--doge-gold);">🎉 환영 인사</div>
             <label class="toggle-wrap">
-              <input type="checkbox" id="welcome_enabled" onchange="onGreetingToggle()">
+              <input type="checkbox" id="welcome_enabled" onchange="onGreetingToggle('welcome')">
               <span class="toggle-slider"></span>
             </label>
           </div>
@@ -1466,7 +1466,7 @@ footer{
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
             <div style="font-family:'Jua',sans-serif;font-size:17px;color:var(--doge-gold);">👋 작별 인사</div>
             <label class="toggle-wrap">
-              <input type="checkbox" id="farewell_enabled" onchange="onGreetingToggle()">
+              <input type="checkbox" id="farewell_enabled" onchange="onGreetingToggle('farewell')">
               <span class="toggle-slider"></span>
             </label>
           </div>
@@ -1925,12 +1925,25 @@ let editingPresetId = null;
 // 마크다운 → HTML 변환 (미리보기용)
 function renderMarkdown(text){
   if(!text) return '';
-  return text
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g,'<em>$1</em>')
-    .replace(/`(.+?)`/g,'<code>$1</code>')
-    .replace(/\n/g,'<br>');
+  let t = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+  // 코드블록 (먼저 처리해서 안쪽 마크다운이 오염되지 않게)
+  t = t.replace(/```([\s\S]+?)```/g, (m, code) => `<code style="display:block;padding:6px;white-space:pre-wrap;">${code}</code>`);
+
+  // 헤더 (줄 시작 기준)
+  t = t.replace(/^### (.+)$/gm, '<span style="font-size:1em;font-weight:700;">$1</span>');
+  t = t.replace(/^## (.+)$/gm,  '<span style="font-size:1.15em;font-weight:700;">$1</span>');
+  t = t.replace(/^# (.+)$/gm,   '<span style="font-size:1.3em;font-weight:700;">$1</span>');
+
+  // 굵게+기울임, 굵게, 밑줄, 취소선, 기울임, 인라인 코드
+  t = t.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
+  t = t.replace(/\*\*(.+?)\*\*/g,     '<strong>$1</strong>');
+  t = t.replace(/__(.+?)__/g,         '<u>$1</u>');
+  t = t.replace(/~~(.+?)~~/g,         '<s>$1</s>');
+  t = t.replace(/\*(.+?)\*/g,         '<em>$1</em>');
+  t = t.replace(/`([^`]+?)`/g,        '<code>$1</code>');
+
+  return t.replace(/\n/g,'<br>');
 }
 
 function hexToNum(hex){ return parseInt((hex||'FF8A1F').replace('#',''), 16) || 0xFF8A1F; }
@@ -2024,13 +2037,27 @@ function updateGreetingPreview(){
 
 let greetingPreviewInterval = null;
 
-function onGreetingToggle(){
-  ['welcome','farewell'].forEach(type => {
-    const enabled = document.getElementById(`${type}_enabled`)?.checked;
-    const fields  = document.getElementById(`${type}Fields`);
+function onGreetingToggle(type){
+  // type이 없으면(최초 로드 시) 두 토글 다 UI만 갱신, 저장 안 함
+  const types = type ? [type] : ['welcome','farewell'];
+  types.forEach(t => {
+    const enabled = document.getElementById(`${t}_enabled`)?.checked;
+    const fields  = document.getElementById(`${t}Fields`);
     if(fields) fields.style.display = enabled ? 'flex' : 'none';
   });
   if(!greetingPreviewInterval) greetingPreviewInterval = setInterval(updateGreetingPreview, 300);
+
+  // 사용자가 직접 토글을 눌렀을 때만 즉시 자동저장
+  if(type && currentGuildId){
+    const enabled = document.getElementById(`${type}_enabled`)?.checked || false;
+    sb.from('welcome_settings').upsert(
+      { guild_id: currentGuildId, [`${type}_enabled`]: enabled, updated_at: new Date().toISOString() },
+      { onConflict: 'guild_id' }
+    ).then(({ error }) => {
+      if(error){ alert('저장 실패: ' + error.message); return; }
+      showToast(`✅ ${type==='welcome'?'환영':'작별'} 인사가 ${enabled?'켜졌어요!':'꺼졌어요!'}`);
+    });
+  }
 }
 
 async function loadGreetingSettings(guildId){
@@ -2720,8 +2747,24 @@ async function renderServerList(user, providerToken){
     }
 
     if(displayGuilds.length === 0){
-      list.innerHTML = `<div style="color:var(--ink-faint);font-size:13px;padding:10px;">도지봇이 초대된 서버가 없거나, 공통 서버가 없어요.</div>`;
+      list.innerHTML = `<div style="color:var(--ink-faint);font-size:13px;padding:10px;">${t('panelNoCommon')}</div>`;
       return;
+    }
+
+    // ── 봇이 직접 동기화한 오너/최상위역할 명단으로 권한을 확정 (OAuth 토큰 만료/누락과 무관하게 정확함) ──
+    if(!isBotOwner){
+      try {
+        const myDiscordId = getDiscordId(user);
+        const { data: adminRows } = await sb.from('guild_admins').select('guild_id,role_type').eq('user_id', myDiscordId);
+        const adminMap = {};
+        (adminRows || []).forEach(r => { adminMap[r.guild_id] = r.role_type; });
+        displayGuilds = displayGuilds.map(g => {
+          const confirmed = adminMap[g.id];
+          if(confirmed === 'owner') return { ...g, role: 'owner' };
+          if(confirmed === 'top_role') return { ...g, role: 'admin' };
+          return g;
+        });
+      } catch {}
     }
 
     list.innerHTML = displayGuilds.map(g => {
@@ -3255,4 +3298,4 @@ applyLang('ko');
 </script>
 </body>
 </html>
-         
+                                                 
