@@ -928,6 +928,62 @@ footer{
 .level-toggle-title{ font-size:14px; font-weight:700; color:var(--ink); }
 .level-toggle-desc{ font-size:12.5px; color:var(--ink-faint); margin-top:4px; line-height:1.5; }
 .level-toggle-info{ flex:1; min-width:0; }
+
+/* ── 코드 에디터 ── */
+.ce-toolbar{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:10px; }
+.ce-code-input{
+  width:100%; box-sizing:border-box;
+  min-height:280px; resize:vertical;
+  background:#1e1f22; color:#dbdee1;
+  border:1px solid var(--line); border-radius:10px;
+  padding:14px; font-family:'Consolas','Menlo',monospace; font-size:13.5px;
+  line-height:1.6; tab-size:4;
+}
+.ce-code-input:focus{ outline:none; border-color:rgba(255,138,31,.4); }
+.ce-output-label{ font-size:12px; font-weight:700; color:var(--ink-faint); margin:12px 0 6px; }
+.ce-output{
+  background:#1e1f22; color:#b8c2cc;
+  border:1px solid var(--line); border-radius:10px;
+  padding:14px; font-family:'Consolas','Menlo',monospace; font-size:13px;
+  line-height:1.6; white-space:pre-wrap; word-break:break-word;
+  max-height:260px; overflow-y:auto; margin:0;
+}
+.ce-output.err{ color:#ff8d8d; }
+.ce-output.ok{ color:#8fdc9a; }
+.ce-saved-row{
+  display:flex; align-items:center; gap:10px;
+  background:var(--panel); border:1px solid var(--line); border-radius:10px;
+  padding:10px 14px; margin-bottom:8px;
+}
+.ce-saved-info{ flex:1; min-width:0; font-size:13px; color:var(--ink-dim); }
+.ce-saved-info b{ color:var(--ink); }
+
+/* ── 통계 페이지 ── */
+.stats-summary-grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px,1fr));
+  gap:12px;
+}
+.stats-card{
+  background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+  padding:18px; text-align:center;
+}
+.stats-card-icon{ font-size:24px; margin-bottom:8px; }
+.stats-card-label{ font-size:12px; color:var(--ink-faint); margin-bottom:6px; }
+.stats-card-value{ font-family:'Jua',sans-serif; font-size:20px; color:var(--doge-gold); }
+
+.stats-table-wrap{
+  background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+  overflow-x:auto; margin-top:14px;
+}
+.stats-table{ width:100%; border-collapse:collapse; font-size:13px; white-space:nowrap; }
+.stats-table th{
+  text-align:left; padding:12px 16px; color:var(--ink-faint); font-weight:700; font-size:12px;
+  border-bottom:1px solid var(--line);
+}
+.stats-table td{ padding:12px 16px; color:var(--ink-dim); border-bottom:1px solid var(--line); }
+.stats-table tr:last-child td{ border-bottom:none; }
+.stats-table tr:hover td{ background:rgba(255,138,31,.04); }
 </style>
 </head>
 <body>
@@ -968,8 +1024,10 @@ footer{
       <button class="nav-item" data-page="invite"><span class="ic">☞</span><span data-i18n="navInvite">도지봇 초대</span></button>
       <a class="nav-item" href="https://dog869973-prog.github.io/-dogebot/terms.html" target="_blank" rel="noopener"><span class="ic">♣</span><span data-i18n="navTerms">도지봇 이용약관</span></a>
       <a class="nav-item" href="https://dog869973-prog.github.io/-dogebot/privacy.html" target="_blank" rel="noopener"><span class="ic">♤</span><span data-i18n="navPrivacy">개인정보처리방침</span></a>
+      <button class="nav-item" data-page="stats"><span class="ic">📊</span><span data-i18n="navStats">통계</span></button>
       <button class="nav-item" data-page="qna"><span class="ic">▶</span><span data-i18n="navQna">QnA</span></button>
       <button class="nav-item nav-panel-only" data-page="panel" id="navPanel" style="display:none; margin-top:6px; background:rgba(255,138,31,0.08); border:1px solid rgba(255,138,31,0.3); color:var(--doge-gold);"><span class="ic">⚙</span><span data-i18n="navPanel">관리패널</span></button>
+      <button class="nav-item nav-panel-only" data-page="codeeditor" id="navCodeEditor" style="display:none;"><span class="ic">💻</span><span data-i18n="navCodeEditor">코드문법검사</span></button>
       <button class="nav-item nav-owner-only" data-page="announce" id="navAnnounce" style="display:none;"><span class="ic">📢</span><span data-i18n="navAnnounce">전체공지</span></button>
       <button class="nav-item nav-owner-only" data-page="admin" id="navAdmin" style="display:none;"><span class="ic">🛠️</span><span data-i18n="navAdmin">관리</span></button>
     </nav>
@@ -1139,6 +1197,57 @@ footer{
     <section class="page" id="page-privacy" style="display:none"></section>
 
     <!-- QNA PAGE -->
+    <!-- 통계 페이지 -->
+    <section class="page" id="page-stats">
+      <div class="section-title"><span class="tri">📊</span><span data-i18n="navStats">통계</span></div>
+
+      <div class="stats-summary-grid">
+        <div class="stats-card">
+          <div class="stats-card-icon">🐶</div>
+          <div class="stats-card-label" data-i18n="statsDevDate">도지봇 개발 시작일</div>
+          <div class="stats-card-value">2025년</div>
+        </div>
+        <div class="stats-card">
+          <div class="stats-card-icon">🌐</div>
+          <div class="stats-card-label" data-i18n="statsServerCount">사용중인 서버 수</div>
+          <div class="stats-card-value" id="statTotalGuilds">-</div>
+        </div>
+        <div class="stats-card">
+          <div class="stats-card-icon">👥</div>
+          <div class="stats-card-label" data-i18n="statsMemberCount">전체 이용자 수</div>
+          <div class="stats-card-value" id="statTotalMembers">-</div>
+        </div>
+        <div class="stats-card">
+          <div class="stats-card-icon">💬</div>
+          <div class="stats-card-label" data-i18n="statsMsgCount">누적 메시지 수</div>
+          <div class="stats-card-value" id="statTotalMessages">-</div>
+        </div>
+        <div class="stats-card">
+          <div class="stats-card-icon">⌨️</div>
+          <div class="stats-card-label" data-i18n="statsCmdCount">누적 명령어 사용</div>
+          <div class="stats-card-value" id="statTotalCommands">-</div>
+        </div>
+      </div>
+
+      <div class="section-title" style="font-size:16px;margin-top:24px;" data-i18n="statsByServer">서버별 통계</div>
+      <div class="stats-table-wrap">
+        <table class="stats-table" id="statsTable">
+          <thead>
+            <tr>
+              <th data-i18n="statsColName">서버 이름</th>
+              <th data-i18n="statsColMembers">멤버 수</th>
+              <th data-i18n="statsColCmd">명령어 사용</th>
+              <th data-i18n="statsColMsg">메시지 수</th>
+              <th data-i18n="statsColUpdated">마지막 업데이트</th>
+            </tr>
+          </thead>
+          <tbody id="statsTableBody">
+            <tr><td colspan="5" style="text-align:center;color:var(--ink-faint);padding:20px;" data-i18n="loading">불러오는 중...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
     <section class="page" id="page-qna">
       <div class="section-title"><span class="tri">▶</span><span data-i18n="navQna">QnA</span></div>
 
@@ -1644,6 +1753,80 @@ footer{
       </div>
     </section>
 
+    <!-- 코드 문법검사 페이지 -->
+    <section class="page" id="page-codeeditor">
+      <div class="section-title"><span class="tri">💻</span><span>코드문법검사</span></div>
+      <p style="font-size:12.5px;color:var(--ink-faint);margin:0 0 14px;">실제 인터프리터/컴파일러로 코드를 실행해서 정확한 오류와 줄 번호를 보여드려요. (실행 엔진: Piston, 무료 공개 API)</p>
+
+      <div class="ce-toolbar">
+        <select class="modal-input" id="ce_lang" style="max-width:180px;" onchange="onCodeLangChange()">
+          <option value="python">Python</option>
+          <option value="javascript">JavaScript (Node.js)</option>
+          <option value="java">Java</option>
+          <option value="c">C</option>
+          <option value="cpp">C++</option>
+        </select>
+        <button class="btn-preset-action btn-preset-post" onclick="runCode()" id="ce_run_btn">▶ 실행</button>
+        <button class="btn-preset-action" onclick="stopCode()" id="ce_stop_btn" disabled style="opacity:.35;">⏹ 중지</button>
+        <button class="btn-preset-action" onclick="openSaveCodeModal()">💾 저장</button>
+        <button class="btn-preset-action" onclick="openExportModal()">📤 내보내기</button>
+        <button class="btn-preset-action" onclick="openCodeSettingsModal()" style="margin-left:auto;">⚙ 설정</button>
+      </div>
+
+      <textarea id="ce_code" class="ce-code-input" spellcheck="false" placeholder="여기에 코드를 입력하세요..."></textarea>
+
+      <div class="ce-output-label">📤 실행 결과</div>
+      <pre id="ce_output" class="ce-output">실행 버튼을 누르면 결과가 여기 표시돼요.</pre>
+
+      <div class="ce-output-label" style="margin-top:20px;">💾 저장된 코드</div>
+      <div id="ce_saved_list"><div style="color:var(--ink-faint);font-size:13px;padding:10px;">불러오려면 로그인해주세요.</div></div>
+
+      <!-- 저장 모달 -->
+      <div class="modal-backdrop" id="ceSaveModal" style="display:none;" onclick="if(event.target===this)this.style.display='none'">
+        <div class="modal-box">
+          <div class="modal-title">💾 코드 저장</div>
+          <input class="modal-input" id="ceSaveTitle" placeholder="저장할 이름을 입력하세요" maxlength="60">
+          <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px;">
+            <button class="modal-cancel" onclick="document.getElementById('ceSaveModal').style.display='none'">취소</button>
+            <button class="modal-submit" onclick="saveCodeSnippet()">저장</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 내보내기 모달 -->
+      <div class="modal-backdrop" id="ceExportModal" style="display:none;" onclick="if(event.target===this)this.style.display='none'">
+        <div class="modal-box">
+          <div class="modal-title">📤 내보내기</div>
+          <div id="ceExportChoice" style="display:flex;gap:10px;">
+            <button class="modal-submit" style="flex:1;" onclick="exportToComputer()">💻 컴퓨터에 저장</button>
+            <button class="modal-submit" style="flex:1;" onclick="showExportGuildPicker()">🌐 서버에 저장</button>
+          </div>
+          <div id="ceExportGuildArea" style="display:none;max-height:300px;overflow-y:auto;"></div>
+        </div>
+      </div>
+
+      <!-- 설정 모달 -->
+      <div class="modal-backdrop" id="ceSettingsModal" style="display:none;" onclick="if(event.target===this)this.style.display='none'">
+        <div class="modal-box">
+          <div class="modal-title">⚙ 코드 에디터 설정</div>
+          <div class="level-toggle-row" style="border:none;padding:10px 0;">
+            <div class="level-toggle-info">
+              <div class="level-toggle-title">🩹 자동수정</div>
+              <div class="level-toggle-desc">흔한 오타 몇 가지만 자동으로 고쳐줘요. (완전한 문법 교정은 아니에요)</div>
+            </div>
+            <label class="toggle-wrap">
+              <input type="checkbox" id="ce_autofix_toggle">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <p style="font-size:12px;color:var(--ink-faint);margin:6px 0 0;">표시 언어는 우측 상단 "설정" 버튼에서 사이트 전체 언어로 함께 바뀌어요.</p>
+          <div style="display:flex;justify-content:flex-end;margin-top:10px;">
+            <button class="modal-cancel" onclick="document.getElementById('ceSettingsModal').style.display='none'">닫기</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- 관리 콘솔 페이지 (오너 전용) -->
     <section class="page" id="page-admin">
       <div class="section-title"><span class="tri">🛠️</span><span>관리</span></div>
@@ -1680,7 +1863,11 @@ footer{
 const i18n = {
   ko: {
     brandTitle:"도지봇 | DOGE BOT", search:"검색", settings:"설정",
-    navHome:"홈메뉴", navIntro:"도지봇 소개", navInvite:"도지봇 초대", navTerms:"도지봇 이용약관", navPrivacy:"개인정보처리방침", navQna:"QnA",
+    navHome:"홈메뉴", navIntro:"도지봇 소개", navInvite:"도지봇 초대", navTerms:"도지봇 이용약관", navPrivacy:"개인정보처리방침", navQna:"QnA", navStats:"통계",
+    statsDevDate:"도지봇 개발 시작일", statsServerCount:"사용중인 서버 수", statsMemberCount:"전체 이용자 수",
+    statsMsgCount:"누적 메시지 수", statsCmdCount:"누적 명령어 사용", statsByServer:"서버별 통계",
+    statsColName:"서버 이름", statsColMembers:"멤버 수", statsColCmd:"명령어 사용", statsColMsg:"메시지 수", statsColUpdated:"마지막 업데이트",
+    statsLoadErr:"통계를 불러오지 못했어요.", statsNoData:"아직 통계 데이터가 없어요.", unitPeople:"명", unitTimes:"번", unitCount:"개",
     loginBtn:"디스코드로 로그인", logoutBtn:"로그아웃",
     heroLead:"도지봇은 디스코드에서 필요한 커뮤니티용 봇으로, 다양한 기능과 정보를 제공합니다.",
     whyTitle:"도지봇의 특징",
@@ -1702,7 +1889,7 @@ const i18n = {
     q3:"기능 추가 요청은 어디서 하나요?", a3:"공식 디스코드 서버 내 건의 채널을 통해 언제든지 요청해 주세요.",
     footer:"© 2025 도지봇 | DOGE BOT. All rights reserved.",
     // 관리패널
-    navPanel:"관리패널", navAnnounce:"전체공지", navAdmin:"관리",
+    navPanel:"관리패널", navCodeEditor:"코드문법검사", navAnnounce:"전체공지", navAdmin:"관리",
     panelSelectTitle:"🐶 관리할 서버를 선택해주세요",
     panelSelectDesc:"도지봇이 초대된 서버만 표시돼요. 권한에 따라 수정 가능 범위가 달라져요.",
     btnBackServer:"← 서버 목록",
@@ -1732,7 +1919,11 @@ const i18n = {
   },
   en: {
     brandTitle:"DOGE BOT", search:"Search", settings:"Settings",
-    navHome:"Home", navIntro:"About Doge Bot", navInvite:"Invite Doge Bot", navTerms:"Terms of Service", navPrivacy:"Privacy Policy", navQna:"QnA",
+    navHome:"Home", navIntro:"About Doge Bot", navInvite:"Invite Doge Bot", navTerms:"Terms of Service", navPrivacy:"Privacy Policy", navQna:"QnA", navStats:"Statistics",
+    statsDevDate:"Development Started", statsServerCount:"Servers Using Doge Bot", statsMemberCount:"Total Users",
+    statsMsgCount:"Total Messages", statsCmdCount:"Total Commands Used", statsByServer:"Per-Server Stats",
+    statsColName:"Server Name", statsColMembers:"Members", statsColCmd:"Commands Used", statsColMsg:"Messages", statsColUpdated:"Last Updated",
+    statsLoadErr:"Failed to load statistics.", statsNoData:"No statistics data yet.", unitPeople:"", unitTimes:"", unitCount:"",
     loginBtn:"Log in with Discord", logoutBtn:"Log out",
     heroLead:"Doge Bot is the community bot your Discord server needs, packed with features and useful info.",
     whyTitle:"What makes Doge Bot different",
@@ -1753,7 +1944,7 @@ const i18n = {
     q2:"How do I log in?", a2:"Click the 'Log in with Discord' button at the bottom of the sidebar to sign in with your Discord account.",
     q3:"Where can I request a new feature?", a3:"Feel free to suggest one anytime in the suggestions channel of our official Discord server.",
     footer:"© 2025 Doge Bot. All rights reserved.",
-    navPanel:"Admin Panel", navAnnounce:"Announcements", navAdmin:"Admin",
+    navPanel:"Admin Panel", navCodeEditor:"Code Checker", navAnnounce:"Announcements", navAdmin:"Admin",
     panelSelectTitle:"🐶 Select a server to manage",
     panelSelectDesc:"Only servers with Doge Bot are shown. Your edit permissions depend on your role.",
     btnBackServer:"← Server list",
@@ -1783,7 +1974,11 @@ const i18n = {
   },
   ja: {
     brandTitle:"ドージボット | DOGE BOT", search:"検索", settings:"設定",
-    navHome:"ホーム", navIntro:"ドージボット紹介", navInvite:"ドージボット招待", navTerms:"利用規約", navPrivacy:"プライバシーポリシー", navQna:"QnA",
+    navHome:"ホーム", navIntro:"ドージボット紹介", navInvite:"ドージボット招待", navTerms:"利用規約", navPrivacy:"プライバシーポリシー", navQna:"QnA", navStats:"統計",
+    statsDevDate:"開発開始日", statsServerCount:"利用中のサーバー数", statsMemberCount:"全体利用者数",
+    statsMsgCount:"累積メッセージ数", statsCmdCount:"累積コマンド使用数", statsByServer:"サーバー別統計",
+    statsColName:"サーバー名", statsColMembers:"メンバー数", statsColCmd:"コマンド使用", statsColMsg:"メッセージ数", statsColUpdated:"最終更新",
+    statsLoadErr:"統計を読み込めませんでした。", statsNoData:"まだ統計データがありません。", unitPeople:"名", unitTimes:"回", unitCount:"個",
     loginBtn:"Discordでログイン", logoutBtn:"ログアウト",
     heroLead:"ドージボットはDiscordコミュニティに必要な機能と情報を提供するボットです。",
     whyTitle:"ドージボットの特徴",
@@ -1804,7 +1999,7 @@ const i18n = {
     q2:"ログイン方法は？", a2:"サイドバー下部の「Discordでログイン」ボタンから簡単にログインできます。",
     q3:"機能追加のリクエストはどこで？", a3:"公式Discordサーバーの提案チャンネルからいつでもご要望をお寄せください。",
     footer:"© 2025 ドージボット | DOGE BOT. All rights reserved.",
-    navPanel:"管理パネル", navAnnounce:"全体アナウンス", navAdmin:"管理",
+    navPanel:"管理パネル", navCodeEditor:"コード構文チェック", navAnnounce:"全体アナウンス", navAdmin:"管理",
     panelSelectTitle:"🐶 管理するサーバーを選択してください",
     panelSelectDesc:"ドージボットが招待されたサーバーのみ表示されます。権限によって編集範囲が異なります。",
     btnBackServer:"← サーバー一覧",
@@ -1834,7 +2029,11 @@ const i18n = {
   },
   zh: {
     brandTitle:"狗狗机器人 | DOGE BOT", search:"搜索", settings:"设置",
-    navHome:"主页", navIntro:"机器人介绍", navInvite:"邀请机器人", navTerms:"使用条款", navPrivacy:"隐私政策", navQna:"常见问题",
+    navHome:"主页", navIntro:"机器人介绍", navInvite:"邀请机器人", navTerms:"使用条款", navPrivacy:"隐私政策", navQna:"常见问题", navStats:"统计",
+    statsDevDate:"开发开始日期", statsServerCount:"使用中的服务器数", statsMemberCount:"总用户数",
+    statsMsgCount:"累计消息数", statsCmdCount:"累计命令使用数", statsByServer:"各服务器统计",
+    statsColName:"服务器名称", statsColMembers:"成员数", statsColCmd:"命令使用", statsColMsg:"消息数", statsColUpdated:"最后更新",
+    statsLoadErr:"统计加载失败。", statsNoData:"暂无统计数据。", unitPeople:"人", unitTimes:"次", unitCount:"条",
     loginBtn:"使用Discord登录", logoutBtn:"退出登录",
     heroLead:"DOGE BOT 是 Discord 社区不可或缺的机器人，提供丰富的功能与信息。",
     whyTitle:"为什么选择 DOGE BOT",
@@ -1855,7 +2054,7 @@ const i18n = {
     q2:"如何登录？", a2:"点击侧边栏底部的「使用Discord登录」按钮即可轻松登录。",
     q3:"在哪里可以提出功能建议？", a3:"欢迎随时在官方 Discord 服务器的建议频道提出。",
     footer:"© 2025 DOGE BOT. All rights reserved.",
-    navPanel:"管理面板", navAnnounce:"全体公告", navAdmin:"管理",
+    navPanel:"管理面板", navCodeEditor:"代码语法检查", navAnnounce:"全体公告", navAdmin:"管理",
     panelSelectTitle:"🐶 请选择要管理的服务器",
     panelSelectDesc:"仅显示已邀请 DOGE BOT 的服务器。可编辑范围因权限而异。",
     btnBackServer:"← 服务器列表",
@@ -1885,7 +2084,11 @@ const i18n = {
   },
   fr: {
     brandTitle:"DOGE BOT", search:"Rechercher", settings:"Paramètres",
-    navHome:"Accueil", navIntro:"À propos de Doge Bot", navInvite:"Inviter Doge Bot", navTerms:"Conditions d'utilisation", navPrivacy:"Politique de confidentialité", navQna:"FAQ",
+    navHome:"Accueil", navIntro:"À propos de Doge Bot", navInvite:"Inviter Doge Bot", navTerms:"Conditions d'utilisation", navPrivacy:"Politique de confidentialité", navQna:"FAQ", navStats:"Statistiques",
+    statsDevDate:"Début du développement", statsServerCount:"Serveurs utilisant Doge Bot", statsMemberCount:"Utilisateurs totaux",
+    statsMsgCount:"Messages totaux", statsCmdCount:"Commandes utilisées", statsByServer:"Statistiques par serveur",
+    statsColName:"Nom du serveur", statsColMembers:"Membres", statsColCmd:"Commandes", statsColMsg:"Messages", statsColUpdated:"Dernière mise à jour",
+    statsLoadErr:"Échec du chargement des statistiques.", statsNoData:"Aucune donnée pour l'instant.", unitPeople:"", unitTimes:"", unitCount:"",
     loginBtn:"Se connecter avec Discord", logoutBtn:"Se déconnecter",
     heroLead:"Doge Bot est le bot communautaire indispensable pour votre serveur Discord, avec de nombreuses fonctionnalités et informations.",
     whyTitle:"Ce qui distingue Doge Bot",
@@ -1906,7 +2109,7 @@ const i18n = {
     q2:"Comment se connecter ?", a2:"Cliquez sur le bouton « Se connecter avec Discord » en bas de la barre latérale pour vous connecter facilement.",
     q3:"Où proposer une nouvelle fonctionnalité ?", a3:"N'hésitez pas à faire vos suggestions sur le salon dédié de notre serveur Discord officiel.",
     footer:"© 2025 Doge Bot. Tous droits réservés.",
-    navPanel:"Panneau d'admin", navAnnounce:"Annonce globale", navAdmin:"Administration",
+    navPanel:"Panneau d'admin", navCodeEditor:"Vérif. de code", navAnnounce:"Annonce globale", navAdmin:"Administration",
     panelSelectTitle:"🐶 Sélectionnez un serveur à gérer",
     panelSelectDesc:"Seuls les serveurs où Doge Bot est présent sont affichés. Les droits de modification dépendent de votre rôle.",
     btnBackServer:"← Liste des serveurs",
@@ -1936,7 +2139,11 @@ const i18n = {
   },
   ru: {
     brandTitle:"DOGE BOT", search:"Поиск", settings:"Настройки",
-    navHome:"Главная", navIntro:"О Doge Bot", navInvite:"Пригласить Doge Bot", navTerms:"Условия использования", navPrivacy:"Политика конфиденциальности", navQna:"Вопросы и ответы",
+    navHome:"Главная", navIntro:"О Doge Bot", navInvite:"Пригласить Doge Bot", navTerms:"Условия использования", navPrivacy:"Политика конфиденциальности", navQna:"Вопросы и ответы", navStats:"Статистика",
+    statsDevDate:"Начало разработки", statsServerCount:"Серверов использует Doge Bot", statsMemberCount:"Всего пользователей",
+    statsMsgCount:"Всего сообщений", statsCmdCount:"Использовано команд", statsByServer:"Статистика по серверам",
+    statsColName:"Название сервера", statsColMembers:"Участники", statsColCmd:"Команды", statsColMsg:"Сообщения", statsColUpdated:"Обновлено",
+    statsLoadErr:"Не удалось загрузить статистику.", statsNoData:"Пока нет данных.", unitPeople:"", unitTimes:"", unitCount:"",
     loginBtn:"Войти через Discord", logoutBtn:"Выйти",
     heroLead:"Doge Bot — незаменимый бот для вашего Discord-сообщества с множеством функций и полезной информации.",
     whyTitle:"Чем хорош Doge Bot",
@@ -1957,7 +2164,7 @@ const i18n = {
     q2:"Как войти в аккаунт?", a2:"Нажмите кнопку «Войти через Discord» внизу боковой панели, чтобы быстро войти через свой аккаунт.",
     q3:"Где предложить новую функцию?", a3:"Оставляйте предложения в канале для идей на нашем официальном Discord-сервере.",
     footer:"© 2025 Doge Bot. Все права защищены.",
-    navPanel:"Панель управления", navAnnounce:"Общее объявление", navAdmin:"Управление",
+    navPanel:"Панель управления", navCodeEditor:"Проверка кода", navAnnounce:"Общее объявление", navAdmin:"Управление",
     panelSelectTitle:"🐶 Выберите сервер для управления",
     panelSelectDesc:"Отображаются только серверы с Doge Bot. Права на редактирование зависят от вашей роли.",
     btnBackServer:"← Список серверов",
@@ -2338,6 +2545,378 @@ async function sendGlobalAnnouncement(){
 }
 
 /* ══════════ 관리 콘솔 (오너 전용) ══════════ */
+
+/* ══════════ 코드문법검사 (코드 에디터) ══════════ */
+
+const CE_LANG_META = {
+  python:     { ext: 'py',   pistonName: 'python',     display: 'Python' },
+  javascript: { ext: 'js',   pistonName: 'javascript', display: 'JavaScript' },
+  java:       { ext: 'java', pistonName: 'java',       display: 'Java' },
+  c:          { ext: 'c',    pistonName: 'c',          display: 'C' },
+  cpp:        { ext: 'cpp',  pistonName: 'c++',        display: 'C++' },
+};
+let ceRuntimes = null;     // Piston에서 받아온 언어별 최신 버전 캐시
+let ceAbortCtrl = null;    // 실행 중지를 위한 AbortController
+let ceInitDone = false;
+
+async function initCodeEditor(){
+  if(ceInitDone) return;
+  ceInitDone = true;
+
+  // 저장된 자동수정 설정 불러오기 (로컬)
+  const savedAutofix = localStorage.getItem('ce_autofix') === '1';
+  const toggle = document.getElementById('ce_autofix_toggle');
+  if(toggle){
+    toggle.checked = savedAutofix;
+    toggle.addEventListener('change', () => localStorage.setItem('ce_autofix', toggle.checked ? '1' : '0'));
+  }
+
+  // Piston 런타임 목록 미리 받아두기 (언어별 최신 버전 캐시)
+  try {
+    const res = await fetch('https://emkc.org/api/v2/piston/runtimes');
+    ceRuntimes = await res.json();
+  } catch { ceRuntimes = []; }
+
+  await loadCodeSnippets();
+}
+
+function onCodeLangChange(){
+  const lang = document.getElementById('ce_lang').value;
+  const placeholders = {
+    python: 'print("hello")',
+    javascript: 'console.log("hello")',
+    java: 'public class Main {\n  public static void main(String[] args) {\n    System.out.println("hello");\n  }\n}',
+    c: '#include <stdio.h>\n\nint main() {\n  printf("hello\\n");\n  return 0;\n}',
+    cpp: '#include <iostream>\n\nint main() {\n  std::cout << "hello" << std::endl;\n  return 0;\n}'
+  };
+  const codeEl = document.getElementById('ce_code');
+  if(codeEl && !codeEl.value.trim()) codeEl.value = placeholders[lang] || '';
+}
+
+// 아주 기본적인 오타 자동수정 (완전한 문법 교정 아님)
+const CE_AUTOFIX_MAP = {
+  python: [[/\bpront\(/g,'print('], [/\bimoprt\b/g,'import'], [/\bimprot\b/g,'import'], [/\bflase\b/g,'False'], [/\bture\b/g,'True'], [/\bprnit\(/g,'print(']],
+  javascript: [[/\bconsol\.log\(/g,'console.log('], [/\bfucntion\b/g,'function'], [/\bconsole\.lg\(/g,'console.log(']],
+  java: [[/\bSystem\.out\.pritnln\(/g,'System.out.println('], [/\bSystem\.out\.println\(/g,'System.out.println(']],
+  c: [[/\bprintf\(/g,'printf(']],
+  cpp: [[/\bcuot\b/g,'cout'], [/\bendl;/g,'endl;']]
+};
+function applyAutofix(lang, code){
+  const rules = CE_AUTOFIX_MAP[lang] || [];
+  let fixed = code;
+  rules.forEach(([re, rep]) => { fixed = fixed.replace(re, rep); });
+  return fixed;
+}
+
+async function runCode(){
+  const lang = document.getElementById('ce_lang').value;
+  let code = document.getElementById('ce_code').value;
+  const outEl = document.getElementById('ce_output');
+  const runBtn = document.getElementById('ce_run_btn');
+  const stopBtn = document.getElementById('ce_stop_btn');
+
+  if(!code.trim()){ alert('코드를 입력해주세요.'); return; }
+
+  const autofixOn = document.getElementById('ce_autofix_toggle')?.checked;
+  if(autofixOn){
+    const fixed = applyAutofix(lang, code);
+    if(fixed !== code){ code = fixed; document.getElementById('ce_code').value = fixed; }
+  }
+
+  const meta = CE_LANG_META[lang];
+  const runtime = (ceRuntimes || []).find(r => r.language === meta.pistonName);
+  if(!runtime){ outEl.textContent = '❌ 실행 엔진에서 이 언어를 찾지 못했어요. 잠시 후 다시 시도해주세요.'; outEl.className = 'ce-output err'; return; }
+
+  outEl.textContent = '⏳ 실행 중...';
+  outEl.className = 'ce-output';
+  runBtn.disabled = true; runBtn.style.opacity = '.5';
+  stopBtn.disabled = false; stopBtn.style.opacity = '';
+
+  ceAbortCtrl = new AbortController();
+
+  try {
+    const res = await fetch('https://emkc.org/api/v2/piston/execute', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      signal: ceAbortCtrl.signal,
+      body: JSON.stringify({
+        language: runtime.language,
+        version: runtime.version,
+        files: [{ name: `main.${meta.ext}`, content: code }]
+      })
+    });
+    const data = await res.json();
+
+    const compileErr = data.compile?.stderr || '';
+    const runOut  = data.run?.stdout || '';
+    const runErr  = data.run?.stderr || '';
+
+    if(compileErr || runErr){
+      const errText = compileErr || runErr;
+      const lineMatch = errText.match(/line (\d+)/i) || errText.match(/:(\d+):/);
+      const lineNote = lineMatch ? `🔴 ${lineMatch[1]}번째 줄 부근에서 오류가 발견됐어요.\n\n` : '';
+      outEl.textContent = lineNote + errText + (runOut ? `\n\n--- 출력 ---\n${runOut}` : '');
+      outEl.className = 'ce-output err';
+    } else {
+      outEl.textContent = runOut || '(출력 없음 — 정상적으로 실행됐어요)';
+      outEl.className = 'ce-output ok';
+    }
+  } catch(e){
+    if(e.name === 'AbortError'){
+      outEl.textContent = '⏹ 실행이 중지됐어요.';
+      outEl.className = 'ce-output';
+    } else {
+      outEl.textContent = '❌ 실행 요청에 실패했어요: ' + e.message;
+      outEl.className = 'ce-output err';
+    }
+  } finally {
+    runBtn.disabled = false; runBtn.style.opacity = '';
+    stopBtn.disabled = true; stopBtn.style.opacity = '.35';
+    ceAbortCtrl = null;
+  }
+}
+
+function stopCode(){
+  if(ceAbortCtrl) ceAbortCtrl.abort();
+}
+
+function openSaveCodeModal(){
+  document.getElementById('ceSaveTitle').value = '';
+  document.getElementById('ceSaveModal').style.display = 'flex';
+}
+
+async function saveCodeSnippet(){
+  const title = document.getElementById('ceSaveTitle').value.trim();
+  const code = document.getElementById('ce_code').value;
+  const lang = document.getElementById('ce_lang').value;
+  if(!title){ alert('이름을 입력해주세요.'); return; }
+  if(!code.trim()){ alert('저장할 코드가 없어요.'); return; }
+
+  const { data: session } = await sb.auth.getSession();
+  if(!session?.session){ alert('로그인 후 이용해주세요.'); return; }
+
+  const { error } = await sb.from('code_snippets').insert({ title, language: lang, code });
+  if(error){ alert('저장 실패: ' + error.message); return; }
+  document.getElementById('ceSaveModal').style.display = 'none';
+  showToast('✅ 저장됐어요!');
+  await loadCodeSnippets();
+}
+
+async function loadCodeSnippets(){
+  const listEl = document.getElementById('ce_saved_list');
+  if(!listEl) return;
+
+  const { data: session } = await sb.auth.getSession();
+  if(!session?.session){
+    listEl.innerHTML = `<div style="color:var(--ink-faint);font-size:13px;padding:10px;">저장 기능은 로그인 후 이용할 수 있어요.</div>`;
+    return;
+  }
+
+  const { data, error } = await sb.from('code_snippets').select('*').order('created_at', { ascending: false });
+  if(error || !data || data.length === 0){
+    listEl.innerHTML = `
+      <div style="color:var(--ink-faint);font-size:13px;padding:10px 10px 14px;">저장된 코드가 없습니다. 새로 추가해주세요</div>
+      <button class="btn-preset-action" onclick="document.getElementById('ce_code').value='';document.getElementById('ce_output').textContent='실행 버튼을 누르면 결과가 여기 표시돼요.';document.getElementById('ce_output').className='ce-output';">＋ 새로만들기</button>`;
+    return;
+  }
+
+  listEl.innerHTML = data.map((s, i) => {
+    const date = new Date(s.created_at).toLocaleDateString('ko-KR');
+    const num = String(i+1).padStart(3,'0');
+    return `
+    <div class="ce-saved-row">
+      <div class="ce-saved-info">#${num} - <b>${s.title}</b> | ${CE_LANG_META[s.language]?.display || s.language} | ${date}</div>
+      <button class="btn-preset-action" onclick="loadCodeSnippet(${s.id})">불러오기</button>
+      <button class="btn-preset-action btn-preset-del" onclick="deleteCodeSnippet(${s.id})">🗑</button>
+    </div>`;
+  }).join('') + `<button class="btn-preset-action" style="margin-top:6px;" onclick="document.getElementById('ce_code').value='';document.getElementById('ce_output').textContent='실행 버튼을 누르면 결과가 여기 표시돼요.';document.getElementById('ce_output').className='ce-output';">＋ 새로만들기</button>`;
+
+  window._ceSnippets = data;
+}
+
+function loadCodeSnippet(id){
+  const s = (window._ceSnippets||[]).find(x => x.id === id);
+  if(!s) return;
+  document.getElementById('ce_lang').value = s.language;
+  document.getElementById('ce_code').value = s.code;
+  showToast(`✅ "${s.title}" 불러왔어요.`);
+}
+
+async function deleteCodeSnippet(id){
+  if(!confirm('이 코드를 삭제할까요?')) return;
+  const { error } = await sb.from('code_snippets').delete().eq('id', id);
+  if(error){ alert('삭제 실패: ' + error.message); return; }
+  await loadCodeSnippets();
+}
+
+function openCodeSettingsModal(){
+  document.getElementById('ceSettingsModal').style.display = 'flex';
+}
+
+function openExportModal(){
+  const code = document.getElementById('ce_code').value;
+  if(!code.trim()){ alert('내보낼 코드가 없어요.'); return; }
+  document.getElementById('ceExportChoice').style.display = 'flex';
+  document.getElementById('ceExportGuildArea').style.display = 'none';
+  document.getElementById('ceExportModal').style.display = 'flex';
+}
+
+function exportToComputer(){
+  const lang = document.getElementById('ce_lang').value;
+  const code = document.getElementById('ce_code').value;
+  const ext = CE_LANG_META[lang]?.ext || 'txt';
+  const filename = `code.${ext}`;
+  const blob = new Blob([code], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+  document.getElementById('ceExportModal').style.display = 'none';
+}
+
+async function showExportGuildPicker(){
+  const { data: session } = await sb.auth.getSession();
+  const user = session?.session?.user;
+  if(!user){ alert('로그인 후 이용해주세요.'); return; }
+
+  const area = document.getElementById('ceExportGuildArea');
+  document.getElementById('ceExportChoice').style.display = 'none';
+  area.style.display = 'block';
+  area.innerHTML = `<div style="color:var(--ink-faint);font-size:13px;padding:10px;">서버 목록 불러오는 중...</div>`;
+
+  let guildIds = [];
+  if(isBotOwner){
+    const { data } = await sb.from('guild_settings').select('guild_id,guild_name,guild_icon');
+    guildIds = data || [];
+  } else {
+    const myId = getDiscordId(user);
+    const { data: admins } = await sb.from('guild_admins').select('guild_id').eq('user_id', myId);
+    const ids = (admins||[]).map(a=>a.guild_id);
+    if(ids.length === 0){ area.innerHTML = `<div style="color:var(--ink-faint);font-size:13px;padding:10px;">관리 권한이 있는 서버가 없어요.</div>`; return; }
+    const { data } = await sb.from('guild_settings').select('guild_id,guild_name,guild_icon').in('guild_id', ids);
+    guildIds = data || [];
+  }
+
+  if(guildIds.length === 0){ area.innerHTML = `<div style="color:var(--ink-faint);font-size:13px;padding:10px;">서버가 없어요.</div>`; return; }
+
+  area.innerHTML = guildIds.map(g => {
+    const icon = g.guild_icon ? `<img src="${g.guild_icon}" style="width:28px;height:28px;border-radius:8px;object-fit:cover;">` : '🐶';
+    return `<div class="ch-option" style="display:flex;align-items:center;gap:8px;" onclick="selectExportGuild('${g.guild_id}','${(g.guild_name||g.guild_id).replace(/'/g,"\\'")}')">${icon} ${g.guild_name || g.guild_id}</div>`;
+  }).join('');
+}
+
+async function selectExportGuild(guildId, guildName){
+  const area = document.getElementById('ceExportGuildArea');
+  area.innerHTML = `<div style="color:var(--ink-faint);font-size:13px;padding:10px;">${guildName}의 채널 불러오는 중...</div>`;
+
+  const { data: channels } = await sb.from('guild_channels').select('*').eq('guild_id', guildId).eq('channel_type', 0);
+  if(!channels || channels.length === 0){ area.innerHTML = `<div style="color:var(--ink-faint);font-size:13px;padding:10px;">채널이 없어요.</div>`; return; }
+
+  area.innerHTML = channels.map(c =>
+    `<div class="ch-option" onclick="doExportToChannel('${guildId}','${c.channel_id}','${c.channel_name.replace(/'/g,"\\'")}')"># ${c.channel_name}</div>`
+  ).join('');
+}
+
+async function doExportToChannel(guildId, channelId, channelName){
+  const lang = document.getElementById('ce_lang').value;
+  const code = document.getElementById('ce_code').value;
+  const ext = CE_LANG_META[lang]?.ext || 'txt';
+  const filename = `code.${ext}`;
+
+  const { data: session } = await sb.auth.getSession();
+  const requestedBy = getDiscordId(session?.session?.user);
+
+  const { error } = await sb.from('pending_file_exports').insert({
+    guild_id: guildId, channel_id: channelId, filename, content: code, requested_by: requestedBy, status: 'pending'
+  });
+  if(error){ alert('내보내기 실패: ' + error.message); return; }
+  document.getElementById('ceExportModal').style.display = 'none';
+  showToast(`✅ #${channelName} 채널로 전송 요청했어요. 잠시 후 도착해요!`);
+}
+
+/* ══════════ 통계 페이지 (누구나 열람 가능) ══════════ */
+
+let statsLoaded = false;
+
+function formatStatNum(n){
+  return (n || 0).toLocaleString();
+}
+
+async function loadStatsPage(){
+  if(statsLoaded) return; // 매번 새로 안 불러오고 최초 1회만 (원하면 새로고침으로 갱신)
+  statsLoaded = true;
+
+  const tbody = document.getElementById('statsTableBody');
+
+  try {
+    const { data: stats, error } = await sb.from('guild_stats').select('*');
+    const { data: settingsRows } = await sb.from('guild_settings').select('guild_id,guild_name,updated_at,member_count');
+
+    if(error || !stats){
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--ink-faint);padding:20px;">${t('statsLoadErr')}</td></tr>`;
+      return;
+    }
+
+    const nameMap = {};
+    const memberMap = {};
+    const updateMap = {};
+    (settingsRows || []).forEach(r => {
+      nameMap[r.guild_id] = r.guild_name;
+      memberMap[r.guild_id] = r.member_count;
+      updateMap[r.guild_id] = r.updated_at;
+    });
+
+    // 전체 요약 계산
+    let totalMembers = 0, totalMessages = 0, totalCommands = 0;
+    stats.forEach(s => {
+      totalMembers += memberMap[s.guild_id] || s.member_count || 0;
+      totalMessages += s.message_count || 0;
+      totalCommands += s.command_count || 0;
+    });
+
+    document.getElementById('statTotalGuilds').textContent   = formatStatNum(stats.length);
+    document.getElementById('statTotalMembers').textContent  = formatStatNum(totalMembers);
+    document.getElementById('statTotalMessages').textContent = formatStatNum(totalMessages);
+    document.getElementById('statTotalCommands').textContent = formatStatNum(totalCommands);
+
+    if(stats.length === 0){
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--ink-faint);padding:20px;">${t('statsNoData')}</td></tr>`;
+      return;
+    }
+
+    // 메시지 수 내림차순 정렬
+    const sorted = [...stats].sort((a,b) => (b.message_count||0) - (a.message_count||0));
+
+    tbody.innerHTML = sorted.map(s => {
+      const name = nameMap[s.guild_id] || s.guild_id;
+      const members = memberMap[s.guild_id] ?? '-';
+      const lastUpdate = updateMap[s.guild_id] || s.updated_at;
+      const timeAgo = lastUpdate ? formatTimeAgo(new Date(lastUpdate)) : '-';
+      return `
+      <tr>
+        <td>${name}</td>
+        <td>${members === '-' ? '-' : members + (t('unitPeople')||'명')}</td>
+        <td>${formatStatNum(s.command_count)}${t('unitTimes')||'번'}</td>
+        <td>${formatStatNum(s.message_count)}${t('unitCount')||'개'}</td>
+        <td>${timeAgo}</td>
+      </tr>`;
+    }).join('');
+
+  } catch(e){
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--ink-faint);padding:20px;">${t('statsLoadErr')} (${e.message})</td></tr>`;
+  }
+}
+
+function formatTimeAgo(date){
+  const diffMs = Date.now() - date.getTime();
+  const diffMin = Math.floor(diffMs / 60000);
+  if(diffMin < 1) return currentLang === 'ko' ? '방금 전' : '1m ago';
+  if(diffMin < 60) return currentLang === 'ko' ? `${diffMin}분 전` : `${diffMin}m ago`;
+  const diffHour = Math.floor(diffMin / 60);
+  if(diffHour < 24) return currentLang === 'ko' ? `${diffHour}시간 전` : `${diffHour}h ago`;
+  const diffDay = Math.floor(diffHour / 24);
+  return currentLang === 'ko' ? `${diffDay}일 전` : `${diffDay}d ago`;
+}
 
 async function loadAdminConsole(){
   if(!isBotOwner) return;
@@ -3339,6 +3918,8 @@ document.addEventListener('click', e => {
 async function showPanelMenu(user, providerToken){
   const navPanel = document.getElementById('navPanel');
   if(navPanel) navPanel.style.display = 'flex';
+  const navCodeEditor = document.getElementById('navCodeEditor');
+  if(navCodeEditor) navCodeEditor.style.display = 'flex';
   await renderServerList(user, providerToken);
 
   // 봇 오너 전용 메뉴 표시
@@ -3351,11 +3932,14 @@ async function showPanelMenu(user, providerToken){
 function hidePanelMenu(){
   const navPanel = document.getElementById('navPanel');
   if(navPanel) navPanel.style.display = 'none';
+  const navCodeEditor = document.getElementById('navCodeEditor');
+  if(navCodeEditor) navCodeEditor.style.display = 'none';
   const navAnnounce = document.getElementById('navAnnounce');
   const navAdmin = document.getElementById('navAdmin');
   if(navAnnounce) navAnnounce.style.display = 'none';
   if(navAdmin) navAdmin.style.display = 'none';
   if(document.getElementById('page-panel').classList.contains('active') ||
+     document.getElementById('page-codeeditor')?.classList.contains('active') ||
      document.getElementById('page-announce')?.classList.contains('active') ||
      document.getElementById('page-admin')?.classList.contains('active')){
     document.querySelectorAll('.nav-item[data-page]').forEach(b=>b.classList.remove('active'));
@@ -3406,6 +3990,8 @@ document.querySelectorAll('.nav-item[data-page]').forEach(btn=>{
     document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
     document.getElementById('page-'+target).classList.add('active');
     if(target === 'admin') loadAdminConsole();
+    if(target === 'stats') loadStatsPage();
+    if(target === 'codeeditor') initCodeEditor();
   });
 });
 document.querySelector('.nav-item[data-page="home"]').classList.add('active');
@@ -3478,4 +4064,3 @@ applyLang('ko');
 </script>
 </body>
 </html>
-                                                                                                                                              
