@@ -970,6 +970,8 @@ footer{
       <a class="nav-item" href="https://dog869973-prog.github.io/-dogebot/privacy.html" target="_blank" rel="noopener"><span class="ic">♤</span><span data-i18n="navPrivacy">개인정보처리방침</span></a>
       <button class="nav-item" data-page="qna"><span class="ic">▶</span><span data-i18n="navQna">QnA</span></button>
       <button class="nav-item nav-panel-only" data-page="panel" id="navPanel" style="display:none; margin-top:6px; background:rgba(255,138,31,0.08); border:1px solid rgba(255,138,31,0.3); color:var(--doge-gold);"><span class="ic">⚙</span><span data-i18n="navPanel">관리패널</span></button>
+      <button class="nav-item nav-owner-only" data-page="announce" id="navAnnounce" style="display:none;"><span class="ic">📢</span><span data-i18n="navAnnounce">전체공지</span></button>
+      <button class="nav-item nav-owner-only" data-page="admin" id="navAdmin" style="display:none;"><span class="ic">🛠️</span><span data-i18n="navAdmin">관리</span></button>
     </nav>
 
     <div class="sidebar-spacer"></div>
@@ -1603,6 +1605,73 @@ footer{
       </div>
     </section>
 
+    <!-- 전체공지 페이지 (오너 전용) -->
+    <section class="page" id="page-announce">
+      <div class="section-title"><span class="tri">📢</span><span>전체공지</span></div>
+      <p style="font-size:13px;color:var(--ink-faint);margin:0 0 18px;">모든 서버 중 공지채널이 설정된 곳으로 즉시 발송돼요. 되돌릴 수 없으니 신중하게 작성해주세요.</p>
+
+      <div class="preset-form-grid">
+        <div class="preset-form-side">
+          <div class="preset-field-group">
+            <label class="preset-label">공지 제목 <span style="color:var(--doge-orange)">*</span></label>
+            <input class="modal-input" id="an_title" placeholder="예) 도지봇 업데이트 안내" maxlength="150" oninput="updateAnnouncePreview()">
+          </div>
+          <div class="preset-field-group">
+            <label class="preset-label">공지 내용 <small style="color:var(--ink-faint);">마크다운 지원</small></label>
+            <textarea class="modal-textarea" id="an_body" rows="8" placeholder="공지 내용을 입력하세요" oninput="updateAnnouncePreview()"></textarea>
+          </div>
+          <div class="preset-field-group">
+            <label class="preset-label">색상</label>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <input type="color" id="an_color" value="#FF8A1F" style="width:44px;height:36px;border:none;border-radius:8px;cursor:pointer;" oninput="updateAnnouncePreview()">
+              <input class="modal-input" id="an_color_hex" placeholder="FF8A1F" maxlength="6" style="width:110px;" oninput="document.getElementById('an_color').value='#'+this.value.replace('#','');updateAnnouncePreview()">
+            </div>
+          </div>
+          <button class="modal-submit" onclick="sendGlobalAnnouncement()">📤 전체 서버에 전송</button>
+        </div>
+        <div class="preset-preview-side">
+          <div class="preview-section-label">👁 미리보기</div>
+          <div class="dc-embed-wrap">
+            <div class="dc-embed" id="anPreviewEmbed">
+              <div class="dc-embed-inner" id="anPreviewInner">
+                <div class="dc-embed-title" id="anPrevTitle">📢 공지 제목</div>
+                <div class="dc-embed-desc" id="anPrevDesc">공지 내용이 여기 표시됩니다.</div>
+                <div class="dc-embed-footer">도지봇 공지</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 관리 콘솔 페이지 (오너 전용) -->
+    <section class="page" id="page-admin">
+      <div class="section-title"><span class="tri">🛠️</span><span>관리</span></div>
+      <p style="font-size:13px;color:var(--ink-faint);margin:0 0 18px;">서버를 선택하지 않고도 모든 서버의 계약/포인트를 한 번에 제어할 수 있어요.</p>
+
+      <div class="section-title" style="font-size:15px;">💰 포인트 지급</div>
+      <div class="preset-form-side" style="max-width:480px;">
+        <div class="preset-field-group">
+          <label class="preset-label">유저 디스코드 ID</label>
+          <input class="modal-input" id="ac_user_id" placeholder="예) 1176661509833752637">
+        </div>
+        <div class="preset-field-group">
+          <label class="preset-label">지급 포인트</label>
+          <input class="modal-input" id="ac_amount" type="number" placeholder="예) 1000">
+        </div>
+        <div class="preset-field-group">
+          <label class="preset-label">사유 (선택)</label>
+          <input class="modal-input" id="ac_reason" placeholder="예) 이벤트 보상">
+        </div>
+        <button class="modal-submit" onclick="submitPointGrant()">💰 지급하기</button>
+      </div>
+
+      <div class="hr" style="margin:26px 0;"></div>
+
+      <div class="section-title" style="font-size:15px;">🗂 등록된 서버 목록</div>
+      <div id="adminGuildList"><div style="color:var(--ink-faint);font-size:13px;padding:10px;">불러오는 중...</div></div>
+    </section>
+
     <footer data-i18n="footer">© 2025 도지봇 | DOGE BOT. All rights reserved.</footer>
   </main>
 </div>
@@ -1633,7 +1702,7 @@ const i18n = {
     q3:"기능 추가 요청은 어디서 하나요?", a3:"공식 디스코드 서버 내 건의 채널을 통해 언제든지 요청해 주세요.",
     footer:"© 2025 도지봇 | DOGE BOT. All rights reserved.",
     // 관리패널
-    navPanel:"관리패널",
+    navPanel:"관리패널", navAnnounce:"전체공지", navAdmin:"관리",
     panelSelectTitle:"🐶 관리할 서버를 선택해주세요",
     panelSelectDesc:"도지봇이 초대된 서버만 표시돼요. 권한에 따라 수정 가능 범위가 달라져요.",
     btnBackServer:"← 서버 목록",
@@ -1684,7 +1753,7 @@ const i18n = {
     q2:"How do I log in?", a2:"Click the 'Log in with Discord' button at the bottom of the sidebar to sign in with your Discord account.",
     q3:"Where can I request a new feature?", a3:"Feel free to suggest one anytime in the suggestions channel of our official Discord server.",
     footer:"© 2025 Doge Bot. All rights reserved.",
-    navPanel:"Admin Panel",
+    navPanel:"Admin Panel", navAnnounce:"Announcements", navAdmin:"Admin",
     panelSelectTitle:"🐶 Select a server to manage",
     panelSelectDesc:"Only servers with Doge Bot are shown. Your edit permissions depend on your role.",
     btnBackServer:"← Server list",
@@ -1735,7 +1804,7 @@ const i18n = {
     q2:"ログイン方法は？", a2:"サイドバー下部の「Discordでログイン」ボタンから簡単にログインできます。",
     q3:"機能追加のリクエストはどこで？", a3:"公式Discordサーバーの提案チャンネルからいつでもご要望をお寄せください。",
     footer:"© 2025 ドージボット | DOGE BOT. All rights reserved.",
-    navPanel:"管理パネル",
+    navPanel:"管理パネル", navAnnounce:"全体アナウンス", navAdmin:"管理",
     panelSelectTitle:"🐶 管理するサーバーを選択してください",
     panelSelectDesc:"ドージボットが招待されたサーバーのみ表示されます。権限によって編集範囲が異なります。",
     btnBackServer:"← サーバー一覧",
@@ -1786,7 +1855,7 @@ const i18n = {
     q2:"如何登录？", a2:"点击侧边栏底部的「使用Discord登录」按钮即可轻松登录。",
     q3:"在哪里可以提出功能建议？", a3:"欢迎随时在官方 Discord 服务器的建议频道提出。",
     footer:"© 2025 DOGE BOT. All rights reserved.",
-    navPanel:"管理面板",
+    navPanel:"管理面板", navAnnounce:"全体公告", navAdmin:"管理",
     panelSelectTitle:"🐶 请选择要管理的服务器",
     panelSelectDesc:"仅显示已邀请 DOGE BOT 的服务器。可编辑范围因权限而异。",
     btnBackServer:"← 服务器列表",
@@ -1837,7 +1906,7 @@ const i18n = {
     q2:"Comment se connecter ?", a2:"Cliquez sur le bouton « Se connecter avec Discord » en bas de la barre latérale pour vous connecter facilement.",
     q3:"Où proposer une nouvelle fonctionnalité ?", a3:"N'hésitez pas à faire vos suggestions sur le salon dédié de notre serveur Discord officiel.",
     footer:"© 2025 Doge Bot. Tous droits réservés.",
-    navPanel:"Panneau d'admin",
+    navPanel:"Panneau d'admin", navAnnounce:"Annonce globale", navAdmin:"Administration",
     panelSelectTitle:"🐶 Sélectionnez un serveur à gérer",
     panelSelectDesc:"Seuls les serveurs où Doge Bot est présent sont affichés. Les droits de modification dépendent de votre rôle.",
     btnBackServer:"← Liste des serveurs",
@@ -1888,7 +1957,7 @@ const i18n = {
     q2:"Как войти в аккаунт?", a2:"Нажмите кнопку «Войти через Discord» внизу боковой панели, чтобы быстро войти через свой аккаунт.",
     q3:"Где предложить новую функцию?", a3:"Оставляйте предложения в канале для идей на нашем официальном Discord-сервере.",
     footer:"© 2025 Doge Bot. Все права защищены.",
-    navPanel:"Панель управления",
+    navPanel:"Панель управления", navAnnounce:"Общее объявление", navAdmin:"Управление",
     panelSelectTitle:"🐶 Выберите сервер для управления",
     panelSelectDesc:"Отображаются только серверы с Doge Bot. Права на редактирование зависят от вашей роли.",
     btnBackServer:"← Список серверов",
@@ -2231,6 +2300,103 @@ async function saveVerifySettings(){
   const { error } = await sb.from('verify_settings').upsert(payload, { onConflict: 'guild_id' });
   if(error){ alert('저장 실패: ' + error.message); return; }
   showToast('✅ 인증 설정이 저장됐어요! 디스코드에서 /인증 을 사용해보세요.');
+}
+
+/* ══════════ 전체공지 (오너 전용) ══════════ */
+
+function updateAnnouncePreview(){
+  const title = document.getElementById('an_title')?.value || '공지 제목';
+  const body  = document.getElementById('an_body')?.value  || '공지 내용이 여기 표시됩니다.';
+  const color = document.getElementById('an_color')?.value || '#FF8A1F';
+
+  const hexIn = document.getElementById('an_color_hex');
+  if(hexIn && document.activeElement !== hexIn) hexIn.value = color.replace('#','');
+
+  const inner = document.getElementById('anPreviewInner');
+  if(inner) inner.style.borderLeftColor = color;
+  const t = document.getElementById('anPrevTitle');
+  const d = document.getElementById('anPrevDesc');
+  if(t) t.innerHTML = '📢 ' + renderMarkdown(title);
+  if(d) d.innerHTML = renderMarkdown(body);
+}
+
+async function sendGlobalAnnouncement(){
+  if(!isBotOwner){ alert('봇 오너만 사용할 수 있어요.'); return; }
+  const title = document.getElementById('an_title').value.trim();
+  const body  = document.getElementById('an_body').value.trim();
+  const color = document.getElementById('an_color').value.replace('#','');
+
+  if(!title || !body){ alert('제목과 내용을 입력해주세요.'); return; }
+  if(!confirm('공지채널이 설정된 모든 서버에 즉시 발송돼요. 되돌릴 수 없어요. 전송할까요?')) return;
+
+  const { error } = await sb.from('global_announcements').insert({ title, body, color, status: 'pending' });
+  if(error){ alert('전송 실패: ' + error.message); return; }
+  showToast('✅ 공지 전송 요청 완료! 30초 내로 각 서버에 발송돼요.');
+  document.getElementById('an_title').value = '';
+  document.getElementById('an_body').value = '';
+  updateAnnouncePreview();
+}
+
+/* ══════════ 관리 콘솔 (오너 전용) ══════════ */
+
+async function loadAdminConsole(){
+  if(!isBotOwner) return;
+  const listEl = document.getElementById('adminGuildList');
+  if(!listEl) return;
+  listEl.innerHTML = `<div style="color:var(--ink-faint);font-size:13px;padding:10px;">불러오는 중...</div>`;
+
+  const [{ data: guilds }, { data: ackRows }] = await Promise.all([
+    sb.from('guild_settings').select('guild_id,guild_name,guild_icon,member_count').order('guild_name'),
+    sb.from('acknowledged').select('guild_id,done')
+  ]);
+
+  const ackMap = {};
+  (ackRows || []).forEach(r => { ackMap[r.guild_id] = r.done; });
+
+  if(!guilds || guilds.length === 0){
+    listEl.innerHTML = `<div style="color:var(--ink-faint);font-size:13px;padding:10px;">등록된 서버가 없어요.</div>`;
+    return;
+  }
+
+  listEl.innerHTML = guilds.map(g => {
+    const done = !!ackMap[g.guild_id];
+    const iconHtml = g.guild_icon
+      ? `<img src="${g.guild_icon}" style="width:36px;height:36px;border-radius:10px;object-fit:cover;flex:none;">`
+      : `<div class="server-icon" style="width:36px;height:36px;font-size:16px;">🐶</div>`;
+    return `
+    <div class="ticket-row ${done ? 'open-t' : 'closed-t'}">
+      ${iconHtml}
+      <div class="ticket-info">
+        <div class="ticket-title">${g.guild_name || g.guild_id}</div>
+        <div class="ticket-meta">멤버 ${g.member_count ?? '?'}명 · ${done ? '✅ 등록됨' : '❌ 미등록'}</div>
+      </div>
+      <button class="btn-close-ticket" ${!done ? 'disabled style="opacity:.35"' : ''} onclick="requestDeregister('${g.guild_id}','${(g.guild_name||g.guild_id).replace(/'/g,"\\'")}')">계약 해지</button>
+    </div>`;
+  }).join('');
+}
+
+async function requestDeregister(guildId, guildName){
+  if(!confirm(`정말 "${guildName}" 서버의 계약을 해지할까요? 해당 서버는 다시 /도지봇 으로 등록해야 해요.`)) return;
+  const { error } = await sb.from('admin_commands').insert({ command_type: 'deregister', guild_id: guildId, status: 'pending' });
+  if(error){ alert('요청 실패: ' + error.message); return; }
+  showToast('✅ 계약 해지 요청 완료! 30초 내로 반영돼요.');
+  setTimeout(loadAdminConsole, 31000);
+}
+
+async function submitPointGrant(){
+  const userId = document.getElementById('ac_user_id').value.trim();
+  const amount = parseInt(document.getElementById('ac_amount').value, 10);
+  const reason = document.getElementById('ac_reason').value.trim() || '관리 콘솔 지급';
+
+  if(!/^\d{17,20}$/.test(userId)){ alert('올바른 디스코드 유저 ID를 입력해주세요.'); return; }
+  if(!amount || amount <= 0){ alert('지급할 포인트를 올바르게 입력해주세요.'); return; }
+
+  const { error } = await sb.from('admin_commands').insert({ command_type: 'grant_points', user_id: userId, amount, reason, status: 'pending' });
+  if(error){ alert('요청 실패: ' + error.message); return; }
+  showToast(`✅ ${amount.toLocaleString()}P 지급 요청 완료! 30초 내로 반영돼요.`);
+  document.getElementById('ac_user_id').value = '';
+  document.getElementById('ac_amount').value = '';
+  document.getElementById('ac_reason').value = '';
 }
 
 function openGreetingChannelModal(type){
@@ -3170,15 +3336,28 @@ document.addEventListener('click', e => {
 });
 
 // 로그인 시 패널 메뉴 표시
-function showPanelMenu(user, providerToken){
+async function showPanelMenu(user, providerToken){
   const navPanel = document.getElementById('navPanel');
   if(navPanel) navPanel.style.display = 'flex';
-  renderServerList(user, providerToken);
+  await renderServerList(user, providerToken);
+
+  // 봇 오너 전용 메뉴 표시
+  const showOwner = isBotOwner ? 'flex' : 'none';
+  const navAnnounce = document.getElementById('navAnnounce');
+  const navAdmin = document.getElementById('navAdmin');
+  if(navAnnounce) navAnnounce.style.display = showOwner;
+  if(navAdmin) navAdmin.style.display = showOwner;
 }
 function hidePanelMenu(){
   const navPanel = document.getElementById('navPanel');
   if(navPanel) navPanel.style.display = 'none';
-  if(document.getElementById('page-panel').classList.contains('active')){
+  const navAnnounce = document.getElementById('navAnnounce');
+  const navAdmin = document.getElementById('navAdmin');
+  if(navAnnounce) navAnnounce.style.display = 'none';
+  if(navAdmin) navAdmin.style.display = 'none';
+  if(document.getElementById('page-panel').classList.contains('active') ||
+     document.getElementById('page-announce')?.classList.contains('active') ||
+     document.getElementById('page-admin')?.classList.contains('active')){
     document.querySelectorAll('.nav-item[data-page]').forEach(b=>b.classList.remove('active'));
     document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
     document.querySelector('.nav-item[data-page="home"]').classList.add('active');
@@ -3226,6 +3405,7 @@ document.querySelectorAll('.nav-item[data-page]').forEach(btn=>{
     const target = btn.dataset.page;
     document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
     document.getElementById('page-'+target).classList.add('active');
+    if(target === 'admin') loadAdminConsole();
   });
 });
 document.querySelector('.nav-item[data-page="home"]').classList.add('active');
@@ -3298,4 +3478,4 @@ applyLang('ko');
 </script>
 </body>
 </html>
-                                                 
+                                                                                                                                              
