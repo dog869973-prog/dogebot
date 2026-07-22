@@ -2549,33 +2549,24 @@ async function sendGlobalAnnouncement(){
 /* ══════════ 코드문법검사 (코드 에디터) ══════════ */
 
 const CE_LANG_META = {
-  python:     { ext: 'py',   pistonName: 'python',     display: 'Python' },
-  javascript: { ext: 'js',   pistonName: 'javascript', display: 'JavaScript' },
-  java:       { ext: 'java', pistonName: 'java',       display: 'Java' },
-  c:          { ext: 'c',    pistonName: 'c',          display: 'C' },
-  cpp:        { ext: 'cpp',  pistonName: 'c++',        display: 'C++' },
+  python:     { ext: 'py',   display: 'Python' },
+  javascript: { ext: 'js',   display: 'JavaScript' },
+  java:       { ext: 'java', display: 'Java' },
+  c:          { ext: 'c',    display: 'C' },
+  cpp:        { ext: 'cpp',  display: 'C++' },
 };
-let ceRuntimes = null;     // Piston에서 받아온 언어별 최신 버전 캐시
-let ceAbortCtrl = null;    // 실행 중지를 위한 AbortController
 let ceInitDone = false;
 
 async function initCodeEditor(){
   if(ceInitDone) return;
   ceInitDone = true;
 
-  // 저장된 자동수정 설정 불러오기 (로컬)
-  const savedAutofix = localStorage.getItem('ce_autofix') === '1';
+  // 자동수정 토글 (세션 내에서만 유지, 새로고침 시 초기화)
   const toggle = document.getElementById('ce_autofix_toggle');
   if(toggle){
-    toggle.checked = savedAutofix;
-    toggle.addEventListener('change', () => localStorage.setItem('ce_autofix', toggle.checked ? '1' : '0'));
+    toggle.checked = false;
+    toggle.addEventListener('change', () => { window._ceAutofixPref = toggle.checked; });
   }
-
-  // Piston 런타임 목록 미리 받아두기 (언어별 최신 버전 캐시)
-  try {
-    const res = await fetch('https://emkc.org/api/v2/piston/runtimes');
-    ceRuntimes = await res.json();
-  } catch { ceRuntimes = []; }
 
   await loadCodeSnippets();
 }
@@ -2608,6 +2599,9 @@ function applyAutofix(lang, code){
   return fixed;
 }
 
+let ceCurrentJobId = null;
+let ceStopped = false;
+
 async function runCode(){
   const lang = document.getElementById('ce_lang').value;
   let code = document.getElementById('ce_code').value;
@@ -2617,67 +2611,91 @@ async function runCode(){
 
   if(!code.trim()){ alert('코드를 입력해주세요.'); return; }
 
+  const { data: session } = await sb.auth.getSession();
+  if(!session?.session){ alert('실행 기능은 로그인 후 이용할 수 있어요.'); return; }
+
   const autofixOn = document.getElementById('ce_autofix_toggle')?.checked;
   if(autofixOn){
     const fixed = applyAutofix(lang, code);
     if(fixed !== code){ code = fixed; document.getElementById('ce_code').value = fixed; }
   }
 
-  const meta = CE_LANG_META[lang];
-  const runtime = (ceRuntimes || []).find(r => r.language === meta.pistonName);
-  if(!runtime){ outEl.textContent = '❌ 실행 엔진에서 이 언어를 찾지 못했어요. 잠시 후 다시 시도해주세요.'; outEl.className = 'ce-output err'; return; }
-
   outEl.textContent = '⏳ 실행 중...';
   outEl.className = 'ce-output';
   runBtn.disabled = true; runBtn.style.opacity = '.5';
   stopBtn.disabled = false; stopBtn.style.opacity = '';
+  ceStopped = false;
 
-  ceAbortCtrl = new AbortController();
+  const { data: job, error } = await sb.from('code_execution_requests')
+    .insert({ language: lang, code, status: 'pending' })
+    .select().single();
 
-  try {
-    const res = await fetch('https://emkc.org/api/v2/piston/execute', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      signal: ceAbortCtrl.signal,
-      body: JSON.stringify({
-        language: runtime.language,
-        version: runtime.version,
-        files: [{ name: `main.${meta.ext}`, content: code }]
-      })
-    });
-    const data = await res.json();
-
-    const compileErr = data.compile?.stderr || '';
-    const runOut  = data.run?.stdout || '';
-    const runErr  = data.run?.stderr || '';
-
-    if(compileErr || runErr){
-      const errText = compileErr || runErr;
-      const lineMatch = errText.match(/line (\d+)/i) || errText.match(/:(\d+):/);
-      const lineNote = lineMatch ? `🔴 ${lineMatch[1]}번째 줄 부근에서 오류가 발견됐어요.\n\n` : '';
-      outEl.textContent = lineNote + errText + (runOut ? `\n\n--- 출력 ---\n${runOut}` : '');
-      outEl.className = 'ce-output err';
-    } else {
-      outEl.textContent = runOut || '(출력 없음 — 정상적으로 실행됐어요)';
-      outEl.className = 'ce-output ok';
-    }
-  } catch(e){
-    if(e.name === 'AbortError'){
-      outEl.textContent = '⏹ 실행이 중지됐어요.';
-      outEl.className = 'ce-output';
-    } else {
-      outEl.textContent = '❌ 실행 요청에 실패했어요: ' + e.message;
-      outEl.className = 'ce-output err';
-    }
-  } finally {
+  if(error){
+    outEl.textContent = '❌ 실행 요청에 실패했어요: ' + error.message;
+    outEl.className = 'ce-output err';
     runBtn.disabled = false; runBtn.style.opacity = '';
     stopBtn.disabled = true; stopBtn.style.opacity = '.35';
-    ceAbortCtrl = null;
+    return;
+  }
+
+  ceCurrentJobId = job.id;
+
+  // 최대 20초(2초 간격 x 10회) 폴링
+  for(let i = 0; i < 10; i++){
+    if(ceStopped) break;
+    await new Promise(r => setTimeout(r, 2000));
+    if(ceStopped) break;
+
+    const { data: row } = await sb.from('code_execution_requests').select('*').eq('id', job.id).single();
+    if(!row) continue;
+
+    if(row.status === 'done'){
+      renderCodeResult(row);
+      break;
+    }
+    if(row.status === 'failed'){
+      outEl.textContent = '❌ 실행에 실패했어요: ' + (row.error || '알 수 없는 오류');
+      outEl.className = 'ce-output err';
+      break;
+    }
+    if(i === 9){
+      outEl.textContent = '⏱️ 실행이 너무 오래 걸려요. 잠시 후 다시 시도해주세요.';
+      outEl.className = 'ce-output err';
+    }
+  }
+
+  runBtn.disabled = false; runBtn.style.opacity = '';
+  stopBtn.disabled = true; stopBtn.style.opacity = '.35';
+  ceCurrentJobId = null;
+}
+
+function renderCodeResult(row){
+  const outEl = document.getElementById('ce_output');
+  const stdout = row.stdout || '';
+  const stderr = row.stderr || '';
+  const errMsg = row.error || '';
+
+  if(stderr || errMsg){
+    const errText = stderr || errMsg;
+    const lineMatch = errText.match(/line (\d+)/i) || errText.match(/:(\d+):/);
+    const lineNote = lineMatch ? `🔴 ${lineMatch[1]}번째 줄 부근에서 오류가 발견됐어요.\n\n` : '';
+    outEl.textContent = lineNote + errText + (stdout ? `\n\n--- 출력 ---\n${stdout}` : '');
+    outEl.className = 'ce-output err';
+  } else {
+    outEl.textContent = stdout || '(출력 없음 — 정상적으로 실행됐어요)';
+    outEl.className = 'ce-output ok';
   }
 }
 
 function stopCode(){
-  if(ceAbortCtrl) ceAbortCtrl.abort();
+  ceStopped = true;
+  const outEl = document.getElementById('ce_output');
+  outEl.textContent = '⏹ 실행이 중지됐어요.';
+  outEl.className = 'ce-output';
+  document.getElementById('ce_run_btn').disabled = false;
+  document.getElementById('ce_run_btn').style.opacity = '';
+  document.getElementById('ce_stop_btn').disabled = true;
+  document.getElementById('ce_stop_btn').style.opacity = '.35';
 }
 
 function openSaveCodeModal(){
