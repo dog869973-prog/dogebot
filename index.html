@@ -1775,6 +1775,9 @@ footer{
 
       <textarea id="ce_code" class="ce-code-input" spellcheck="false" placeholder="여기에 코드를 입력하세요..."></textarea>
 
+      <div class="ce-output-label">⌨️ 입력값 (input) <small style="color:var(--ink-faint);">한 줄에 하나씩, input()이 여러 번 호출되면 순서대로 사용돼요</small></div>
+      <textarea id="ce_stdin" class="ce-code-input" style="min-height:80px;" spellcheck="false" placeholder="예)&#10;5&#10;홍길동"></textarea>
+
       <div class="ce-output-label">📤 실행 결과</div>
       <pre id="ce_output" class="ce-output">실행 버튼을 누르면 결과가 여기 표시돼요.</pre>
 
@@ -1832,21 +1835,56 @@ footer{
       <div class="section-title"><span class="tri">🛠️</span><span>관리</span></div>
       <p style="font-size:13px;color:var(--ink-faint);margin:0 0 18px;">서버를 선택하지 않고도 모든 서버의 계약/포인트를 한 번에 제어할 수 있어요.</p>
 
-      <div class="section-title" style="font-size:15px;">💰 포인트 지급</div>
+      <div class="section-title" style="font-size:15px;">💰 포인트 지급/차감 (개인)</div>
       <div class="preset-form-side" style="max-width:480px;">
         <div class="preset-field-group">
           <label class="preset-label">유저 디스코드 ID</label>
           <input class="modal-input" id="ac_user_id" placeholder="예) 1176661509833752637">
         </div>
         <div class="preset-field-group">
-          <label class="preset-label">지급 포인트</label>
+          <label class="preset-label">포인트</label>
           <input class="modal-input" id="ac_amount" type="number" placeholder="예) 1000">
         </div>
         <div class="preset-field-group">
           <label class="preset-label">사유 (선택)</label>
           <input class="modal-input" id="ac_reason" placeholder="예) 이벤트 보상">
         </div>
-        <button class="modal-submit" onclick="submitPointGrant()">💰 지급하기</button>
+        <div style="display:flex;gap:8px;">
+          <button class="modal-submit" style="flex:1;" onclick="submitPointGrant('grant_points')">💰 지급하기</button>
+          <button class="modal-cancel" style="flex:1;border-color:rgba(255,90,90,.3);color:#ff8d8d;" onclick="submitPointGrant('deduct_points')">🔻 차감하기</button>
+        </div>
+      </div>
+
+      <div class="hr" style="margin:26px 0;"></div>
+
+      <div class="section-title" style="font-size:15px;">🌐 포인트 전체 지급/차감 (모든 서버 · 모든 유저)</div>
+      <div class="preset-form-side" style="max-width:480px;">
+        <div class="preset-field-group">
+          <label class="preset-label">포인트</label>
+          <input class="modal-input" id="ac_all_amount" type="number" placeholder="예) 100">
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="modal-submit" style="flex:1;" onclick="submitBulkPoints('all', 'grant')">💰 전체 지급</button>
+          <button class="modal-cancel" style="flex:1;border-color:rgba(255,90,90,.3);color:#ff8d8d;" onclick="submitBulkPoints('all', 'deduct')">🔻 전체 차감</button>
+        </div>
+      </div>
+
+      <div class="hr" style="margin:26px 0;"></div>
+
+      <div class="section-title" style="font-size:15px;">🏠 서버 내 전체 지급/차감</div>
+      <div class="preset-form-side" style="max-width:480px;">
+        <div class="preset-field-group">
+          <label class="preset-label">대상 서버</label>
+          <select class="modal-input" id="ac_guild_select"><option value="">불러오는 중...</option></select>
+        </div>
+        <div class="preset-field-group">
+          <label class="preset-label">포인트</label>
+          <input class="modal-input" id="ac_guild_amount" type="number" placeholder="예) 100">
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="modal-submit" style="flex:1;" onclick="submitBulkPoints('guild', 'grant')">💰 서버 내 전체 지급</button>
+          <button class="modal-cancel" style="flex:1;border-color:rgba(255,90,90,.3);color:#ff8d8d;" onclick="submitBulkPoints('guild', 'deduct')">🔻 서버 내 전체 차감</button>
+        </div>
       </div>
 
       <div class="hr" style="margin:26px 0;"></div>
@@ -2605,6 +2643,7 @@ let ceStopped = false;
 async function runCode(){
   const lang = document.getElementById('ce_lang').value;
   let code = document.getElementById('ce_code').value;
+  const stdin = document.getElementById('ce_stdin')?.value || '';
   const outEl = document.getElementById('ce_output');
   const runBtn = document.getElementById('ce_run_btn');
   const stopBtn = document.getElementById('ce_stop_btn');
@@ -2627,7 +2666,7 @@ async function runCode(){
   ceStopped = false;
 
   const { data: job, error } = await sb.from('code_execution_requests')
-    .insert({ language: lang, code, status: 'pending' })
+    .insert({ language: lang, code, stdin, status: 'pending' })
     .select().single();
 
   if(error){
@@ -2706,6 +2745,7 @@ function openSaveCodeModal(){
 async function saveCodeSnippet(){
   const title = document.getElementById('ceSaveTitle').value.trim();
   const code = document.getElementById('ce_code').value;
+  const stdin = document.getElementById('ce_stdin')?.value || '';
   const lang = document.getElementById('ce_lang').value;
   if(!title){ alert('이름을 입력해주세요.'); return; }
   if(!code.trim()){ alert('저장할 코드가 없어요.'); return; }
@@ -2713,7 +2753,7 @@ async function saveCodeSnippet(){
   const { data: session } = await sb.auth.getSession();
   if(!session?.session){ alert('로그인 후 이용해주세요.'); return; }
 
-  const { error } = await sb.from('code_snippets').insert({ title, language: lang, code });
+  const { error } = await sb.from('code_snippets').insert({ title, language: lang, code, stdin });
   if(error){ alert('저장 실패: ' + error.message); return; }
   document.getElementById('ceSaveModal').style.display = 'none';
   showToast('✅ 저장됐어요!');
@@ -2734,7 +2774,7 @@ async function loadCodeSnippets(){
   if(error || !data || data.length === 0){
     listEl.innerHTML = `
       <div style="color:var(--ink-faint);font-size:13px;padding:10px 10px 14px;">저장된 코드가 없습니다. 새로 추가해주세요</div>
-      <button class="btn-preset-action" onclick="document.getElementById('ce_code').value='';document.getElementById('ce_output').textContent='실행 버튼을 누르면 결과가 여기 표시돼요.';document.getElementById('ce_output').className='ce-output';">＋ 새로만들기</button>`;
+      <button class="btn-preset-action" onclick="document.getElementById('ce_code').value='';document.getElementById('ce_stdin').value='';document.getElementById('ce_output').textContent='실행 버튼을 누르면 결과가 여기 표시돼요.';document.getElementById('ce_output').className='ce-output';">＋ 새로만들기</button>`;
     return;
   }
 
@@ -2747,7 +2787,7 @@ async function loadCodeSnippets(){
       <button class="btn-preset-action" onclick="loadCodeSnippet(${s.id})">불러오기</button>
       <button class="btn-preset-action btn-preset-del" onclick="deleteCodeSnippet(${s.id})">🗑</button>
     </div>`;
-  }).join('') + `<button class="btn-preset-action" style="margin-top:6px;" onclick="document.getElementById('ce_code').value='';document.getElementById('ce_output').textContent='실행 버튼을 누르면 결과가 여기 표시돼요.';document.getElementById('ce_output').className='ce-output';">＋ 새로만들기</button>`;
+  }).join('') + `<button class="btn-preset-action" style="margin-top:6px;" onclick="document.getElementById('ce_code').value='';document.getElementById('ce_stdin').value='';document.getElementById('ce_output').textContent='실행 버튼을 누르면 결과가 여기 표시돼요.';document.getElementById('ce_output').className='ce-output';">＋ 새로만들기</button>`;
 
   window._ceSnippets = data;
 }
@@ -2757,6 +2797,8 @@ function loadCodeSnippet(id){
   if(!s) return;
   document.getElementById('ce_lang').value = s.language;
   document.getElementById('ce_code').value = s.code;
+  const stdinEl = document.getElementById('ce_stdin');
+  if(stdinEl) stdinEl.value = s.stdin || '';
   showToast(`✅ "${s.title}" 불러왔어요.`);
 }
 
@@ -2950,6 +2992,17 @@ async function loadAdminConsole(){
   const ackMap = {};
   (ackRows || []).forEach(r => { ackMap[r.guild_id] = r.done; });
 
+  // 서버 내 전체 지급/차감용 드롭다운 채우기
+  const guildSelect = document.getElementById('ac_guild_select');
+  if(guildSelect){
+    if(!guilds || guilds.length === 0){
+      guildSelect.innerHTML = `<option value="">등록된 서버 없음</option>`;
+    } else {
+      guildSelect.innerHTML = `<option value="">서버를 선택하세요</option>` +
+        guilds.map(g => `<option value="${g.guild_id}">${g.guild_name || g.guild_id} (${g.member_count ?? '?'}명)</option>`).join('');
+    }
+  }
+
   if(!guilds || guilds.length === 0){
     listEl.innerHTML = `<div style="color:var(--ink-faint);font-size:13px;padding:10px;">등록된 서버가 없어요.</div>`;
     return;
@@ -2980,20 +3033,52 @@ async function requestDeregister(guildId, guildName){
   setTimeout(loadAdminConsole, 31000);
 }
 
-async function submitPointGrant(){
+// 개인 지급/차감 — type: 'grant_points' | 'deduct_points'
+async function submitPointGrant(type){
   const userId = document.getElementById('ac_user_id').value.trim();
   const amount = parseInt(document.getElementById('ac_amount').value, 10);
   const reason = document.getElementById('ac_reason').value.trim() || '관리 콘솔 지급';
 
   if(!/^\d{17,20}$/.test(userId)){ alert('올바른 디스코드 유저 ID를 입력해주세요.'); return; }
-  if(!amount || amount <= 0){ alert('지급할 포인트를 올바르게 입력해주세요.'); return; }
+  if(!amount || amount <= 0){ alert('포인트를 올바르게 입력해주세요.'); return; }
 
-  const { error } = await sb.from('admin_commands').insert({ command_type: 'grant_points', user_id: userId, amount, reason, status: 'pending' });
+  const { error } = await sb.from('admin_commands').insert({ command_type: type, user_id: userId, amount, reason, status: 'pending' });
   if(error){ alert('요청 실패: ' + error.message); return; }
-  showToast(`✅ ${amount.toLocaleString()}P 지급 요청 완료! 30초 내로 반영돼요.`);
+  const verb = type === 'grant_points' ? '지급' : '차감';
+  showToast(`✅ ${amount.toLocaleString()}P ${verb} 요청 완료! 30초 내로 반영돼요.`);
   document.getElementById('ac_user_id').value = '';
   document.getElementById('ac_amount').value = '';
   document.getElementById('ac_reason').value = '';
+}
+
+// 전체(모든 서버) 또는 서버 내 전체 지급/차감
+// scope: 'all' | 'guild', action: 'grant' | 'deduct'
+async function submitBulkPoints(scope, action){
+  const amountEl = scope === 'all' ? document.getElementById('ac_all_amount') : document.getElementById('ac_guild_amount');
+  const amount = parseInt(amountEl.value, 10);
+  if(!amount || amount <= 0){ alert('포인트를 올바르게 입력해주세요.'); return; }
+
+  const commandType = `${action}_points_${scope}`; // grant_points_all / deduct_points_all / grant_points_guild / deduct_points_guild
+  const payload = { command_type: commandType, amount, status: 'pending' };
+
+  let confirmMsg = '';
+  if(scope === 'all'){
+    confirmMsg = `정말 모든 서버의 모든 유저에게 ${amount.toLocaleString()}P를 ${action === 'grant' ? '지급' : '차감'}할까요?`;
+  } else {
+    const guildSelect = document.getElementById('ac_guild_select');
+    const guildId = guildSelect.value;
+    if(!guildId){ alert('대상 서버를 선택해주세요.'); return; }
+    payload.guild_id = guildId;
+    const guildName = guildSelect.options[guildSelect.selectedIndex].textContent;
+    confirmMsg = `정말 "${guildName}" 서버의 모든 유저에게 ${amount.toLocaleString()}P를 ${action === 'grant' ? '지급' : '차감'}할까요?`;
+  }
+
+  if(!confirm(confirmMsg)) return;
+
+  const { error } = await sb.from('admin_commands').insert(payload);
+  if(error){ alert('요청 실패: ' + error.message); return; }
+  showToast(`✅ 요청 완료! 30초 내로 반영돼요.`);
+  amountEl.value = '';
 }
 
 function openGreetingChannelModal(type){
