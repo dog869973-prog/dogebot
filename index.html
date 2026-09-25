@@ -1032,6 +1032,7 @@ footer{
       <button class="nav-item" data-page="qna"><span class="ic">▶</span><span data-i18n="navQna">QnA</span></button>
       <button class="nav-item nav-panel-only" data-page="panel" id="navPanel" style="display:none; margin-top:6px; background:rgba(255,138,31,0.08); border:1px solid rgba(255,138,31,0.3); color:var(--doge-gold);"><span class="ic">⚙</span><span data-i18n="navPanel">관리패널</span></button>
       <button class="nav-item nav-panel-only" data-page="codeeditor" id="navCodeEditor" style="display:none;"><span class="ic">💻</span><span data-i18n="navCodeEditor">코드문법검사</span></button>
+      <button class="nav-item nav-panel-only" data-page="documents" id="navDocuments" style="display:none;"><span class="ic">📑</span><span data-i18n="navDocuments">문서함</span></button>
       <button class="nav-item nav-owner-only" data-page="announce" id="navAnnounce" style="display:none;"><span class="ic">📢</span><span data-i18n="navAnnounce">전체공지</span></button>
       <button class="nav-item nav-owner-only" data-page="admin" id="navAdmin" style="display:none;"><span class="ic">🛠️</span><span data-i18n="navAdmin">관리</span></button>
     </nav>
@@ -1782,6 +1783,60 @@ footer{
           </div>
         </div>
       </div>
+    </section>
+
+    <!-- 문서함 페이지 -->
+    <section class="page" id="page-documents">
+      <div class="section-title"><span class="tri">📑</span><span>문서함</span></div>
+      <p style="font-size:13px;color:var(--ink-faint);margin:0 0 18px;">엑셀·파워포인트·한글 문서를 종류별로 관리해요. 디스코드에서 <code>/문서</code> 로도 목록을 볼 수 있어요. (실제 편집기는 준비 중이에요)</p>
+
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;margin-bottom:18px;">
+        <div>
+          <label class="preset-label">연도</label>
+          <input class="modal-input" id="doc_f_year" placeholder="예) 2026" style="width:90px;" oninput="applyDocFilters()">
+        </div>
+        <div>
+          <label class="preset-label">월</label>
+          <input class="modal-input" id="doc_f_month" placeholder="1-12" style="width:64px;" oninput="applyDocFilters()">
+        </div>
+        <div>
+          <label class="preset-label">일</label>
+          <input class="modal-input" id="doc_f_day" placeholder="1-31" style="width:64px;" oninput="applyDocFilters()">
+        </div>
+        <div>
+          <label class="preset-label">시간대</label>
+          <select class="modal-input" id="doc_f_hour" style="width:90px;" onchange="applyDocFilters()">
+            <option value="">전체</option>
+          </select>
+        </div>
+        <div style="flex:1;min-width:140px;">
+          <label class="preset-label">보낸사람</label>
+          <input class="modal-input" id="doc_f_author" placeholder="작성자 이름" oninput="applyDocFilters()">
+        </div>
+        <button class="btn-preset-action" onclick="resetDocFilters()">초기화</button>
+        <button class="modal-submit" onclick="openCreateDocumentModal()">+ 새 문서</button>
+      </div>
+
+      <div id="docCreateForm" style="display:none;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:18px;">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
+          <div>
+            <label class="preset-label">종류</label>
+            <select class="modal-input" id="doc_new_type" style="width:140px;">
+              <option value="excel">엑셀</option>
+              <option value="ppt">파워포인트</option>
+              <option value="hwp">한글</option>
+            </select>
+          </div>
+          <div style="flex:1;min-width:180px;">
+            <label class="preset-label">제목</label>
+            <input class="modal-input" id="doc_new_title" placeholder="문서 제목" maxlength="100">
+          </div>
+          <button class="modal-submit" onclick="createDocument()">만들기</button>
+          <button class="btn-preset-action" onclick="document.getElementById('docCreateForm').style.display='none';">취소</button>
+        </div>
+      </div>
+
+      <div id="docGroupsWrap"></div>
     </section>
 
     <!-- 코드 문법검사 페이지 -->
@@ -2727,6 +2782,201 @@ async function sendGlobalAnnouncement(){
   onAnnounceImageChange();
 }
 
+/* ══════════ 문서함 ══════════ */
+
+const DOC_TYPE_LABEL = { excel: '엑셀', ppt: '파워포인트', hwp: '한글' };
+const DOC_VIS_LABEL  = { private: '🔒 비공개', unlisted: '🔗 일부공개', public: '🌐 공개' };
+let docsCache = [];
+let docPermsCache = {}; // document_id -> [{id,user_id,user_name,role}]
+
+// 시간대(시) 옵션 채우기
+(function initDocHourOptions(){
+  const sel = document.getElementById('doc_f_hour');
+  if(!sel) return;
+  for(let h = 0; h < 24; h++){
+    const opt = document.createElement('option');
+    opt.value = h;
+    opt.textContent = `${h}시`;
+    sel.appendChild(opt);
+  }
+})();
+
+function openCreateDocumentModal(){
+  const form = document.getElementById('docCreateForm');
+  if(form) form.style.display = form.style.display === 'none' ? '' : 'none';
+}
+
+async function createDocument(){
+  if(!currentGuildId){ alert('먼저 서버를 선택해주세요.'); return; }
+  const type = document.getElementById('doc_new_type').value;
+  const title = document.getElementById('doc_new_title').value.trim();
+  if(!title){ alert('제목을 입력해주세요.'); return; }
+
+  const authorId = getDiscordId(currentDiscordUser);
+  const authorName = currentDiscordUser?.user_metadata?.full_name || currentDiscordUser?.user_metadata?.name || '알수없음';
+
+  const { error } = await sb.from('bot_documents').insert({
+    guild_id: currentGuildId, doc_type: type, title,
+    author_id: authorId, author_name: authorName,
+    visibility: 'private'
+  });
+  if(error){ alert('생성 실패: ' + error.message); return; }
+
+  showToast('✅ 문서가 만들어졌어요 (편집기는 준비 중이에요)');
+  document.getElementById('doc_new_title').value = '';
+  document.getElementById('docCreateForm').style.display = 'none';
+  loadDocuments();
+}
+
+async function loadDocuments(){
+  const wrap = document.getElementById('docGroupsWrap');
+  if(!wrap || !currentGuildId) return;
+  wrap.innerHTML = '<div style="color:var(--ink-faint);font-size:13px;padding:10px;">불러오는 중...</div>';
+
+  const { data: docs, error } = await sb.from('bot_documents').select('*').eq('guild_id', currentGuildId).order('created_at', { ascending: false });
+  if(error){ wrap.innerHTML = '<div style="color:var(--ink-faint);font-size:13px;">문서를 불러오지 못했어요.</div>'; return; }
+
+  docsCache = docs || [];
+  docPermsCache = {};
+  if(docsCache.length){
+    const ids = docsCache.map(d => d.id);
+    const { data: perms } = await sb.from('bot_document_permissions').select('*').in('document_id', ids);
+    for(const p of (perms || [])){
+      if(!docPermsCache[p.document_id]) docPermsCache[p.document_id] = [];
+      docPermsCache[p.document_id].push(p);
+    }
+  }
+
+  renderDocuments();
+}
+
+function applyDocFilters(){ renderDocuments(); }
+
+function resetDocFilters(){
+  ['doc_f_year','doc_f_month','doc_f_day','doc_f_author'].forEach(id=>{ const el = document.getElementById(id); if(el) el.value = ''; });
+  const hourSel = document.getElementById('doc_f_hour');
+  if(hourSel) hourSel.value = '';
+  renderDocuments();
+}
+
+function renderDocuments(){
+  const wrap = document.getElementById('docGroupsWrap');
+  if(!wrap) return;
+
+  const fYear  = document.getElementById('doc_f_year')?.value.trim();
+  const fMonth = document.getElementById('doc_f_month')?.value.trim();
+  const fDay   = document.getElementById('doc_f_day')?.value.trim();
+  const fHour  = document.getElementById('doc_f_hour')?.value;
+  const fAuthor= document.getElementById('doc_f_author')?.value.trim().toLowerCase();
+
+  const filtered = docsCache.filter(d => {
+    const dt = new Date(d.created_at);
+    if(fYear  && dt.getFullYear() !== Number(fYear)) return false;
+    if(fMonth && (dt.getMonth() + 1) !== Number(fMonth)) return false;
+    if(fDay   && dt.getDate() !== Number(fDay)) return false;
+    if(fHour  !== '' && fHour !== undefined && dt.getHours() !== Number(fHour)) return false;
+    if(fAuthor && !d.author_name.toLowerCase().includes(fAuthor)) return false;
+    return true;
+  });
+
+  const grouped = { excel: [], ppt: [], hwp: [] };
+  for(const d of filtered) if(grouped[d.doc_type]) grouped[d.doc_type].push(d);
+
+  wrap.innerHTML = Object.keys(DOC_TYPE_LABEL).map(type => {
+    const list = grouped[type];
+    const rows = list.length ? list.map(renderDocRow).join('') : `<div style="color:var(--ink-faint);font-size:13px;padding:8px 0;">-</div>`;
+    return `
+      <div style="margin-bottom:22px;">
+        <div class="preview-section-label" style="margin-bottom:8px;">[도지봇 ${DOC_TYPE_LABEL[type]}]</div>
+        ${rows}
+      </div>
+    `;
+  }).join('');
+}
+
+function renderDocRow(d){
+  const myId = getDiscordId(currentDiscordUser);
+  const isOwnerOfDoc = d.author_id === myId;
+  const dt = new Date(d.created_at);
+  const dateStr = `${dt.getFullYear()}.${dt.getMonth()+1}.${dt.getDate()} ${String(dt.getHours()).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')}`;
+  const perms = docPermsCache[d.id] || [];
+
+  const collabHtml = perms.map(p => `
+    <span style="display:inline-flex;align-items:center;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:2px 8px;font-size:11.5px;color:var(--ink-dim);margin:2px 4px 0 0;">
+      ${p.user_name} (${p.role === 'editor' ? '편집가능' : '보기만'})
+      ${isOwnerOfDoc ? `<span style="cursor:pointer;color:var(--ink-faint);" onclick="removeCollaborator(${p.id})">✕</span>` : ''}
+    </span>
+  `).join('');
+
+  return `
+    <div style="border:1px solid var(--line);border-radius:9px;padding:12px 14px;margin-bottom:8px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
+        <div style="font-weight:700;font-size:14px;cursor:pointer;" onclick="openDocumentPlaceholder()">${escapeHtml(d.title)}</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          ${isOwnerOfDoc ? `<button class="btn-preset-action" onclick="cycleVisibility(${d.id})">${DOC_VIS_LABEL[d.visibility] || d.visibility}</button>` : `<span style="font-size:12px;color:var(--ink-faint);">${DOC_VIS_LABEL[d.visibility] || d.visibility}</span>`}
+          ${d.visibility === 'unlisted' ? `<button class="btn-preset-action" onclick='copyShareLink(${JSON.stringify(d.share_token)})'>🔗 링크복사</button>` : ''}
+          ${isOwnerOfDoc ? `<button class="btn-preset-action" onclick="addCollaborator(${d.id})">＋ 협업자</button>` : ''}
+          ${isOwnerOfDoc ? `<button class="btn-preset-action" onclick="deleteDocument(${d.id})">🗑 삭제</button>` : ''}
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--ink-faint);margin-top:6px;">${escapeHtml(d.author_name)} · ${dateStr}</div>
+      ${collabHtml ? `<div style="margin-top:8px;">${collabHtml}</div>` : ''}
+    </div>
+  `;
+}
+
+function openDocumentPlaceholder(){
+  alert('📝 편집기는 아직 준비 중이에요! 문서함(목록·검색·공개범위·협업 권한)까지만 먼저 만들었어요.');
+}
+
+async function cycleVisibility(docId){
+  const doc = docsCache.find(d => d.id === docId);
+  if(!doc) return;
+  const order = ['private','unlisted','public'];
+  const next = order[(order.indexOf(doc.visibility) + 1) % order.length];
+  let shareToken = doc.share_token;
+  if(next === 'unlisted' && !shareToken){
+    shareToken = Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+  }
+  const { error } = await sb.from('bot_documents').update({ visibility: next, share_token: shareToken }).eq('id', docId);
+  if(error){ alert('변경 실패: ' + error.message); return; }
+  showToast(`✅ ${DOC_VIS_LABEL[next]}(으)로 변경됐어요`);
+  loadDocuments();
+}
+
+function copyShareLink(shareToken){
+  if(!shareToken){ alert('공유 링크가 아직 없어요.'); return; }
+  const url = `${location.origin}${location.pathname}?doc=${shareToken}`;
+  if(navigator.clipboard?.writeText){
+    navigator.clipboard.writeText(url).then(() => showToast('🔗 링크가 복사됐어요')).catch(() => alert(url));
+  } else {
+    alert(url);
+  }
+}
+
+async function addCollaborator(docId){
+  const userId = prompt('추가할 사람의 디스코드 ID를 입력하세요');
+  if(!userId) return;
+  const userName = prompt('표시할 이름(닉네임)을 입력하세요', userId) || userId;
+  const wantsEdit = confirm('편집도 가능하게 할까요?\n확인 = 편집가능 / 취소 = 보기만');
+  const role = wantsEdit ? 'editor' : 'viewer';
+
+  const { error } = await sb.from('bot_document_permissions').upsert(
+    { document_id: docId, user_id: userId.trim(), user_name: userName.trim(), role },
+    { onConflict: 'document_id,user_id' }
+  );
+  if(error){ alert('추가 실패: ' + error.message); return; }
+  showToast('✅ 협업자를 추가했어요');
+  loadDocuments();
+}
+
+async function removeCollaborator(permId){
+  if(!confirm('이 협업자를 제거할까요?')) return;
+  const { error } = await sb.from('bot_document_permissions').delete().eq('id', permId);
+  if(error){ alert('제거 실패: ' + error.message); return; }
+  loadDocuments();
+}
+
 /* ══════════ 관리 콘솔 (오너 전용) ══════════ */
 
 /* ══════════ 코드문법검사 (코드 에디터) ══════════ */
@@ -3665,6 +3915,7 @@ let currentServerRole = null;
 let currentGuildId = null;
 let isBotOwner = false;
 let currentProviderToken = null;
+let currentDiscordUser = null;
 
 // Supabase user.id는 내부 UUID라 Discord ID와 달라요.
 // 실제 Discord ID는 user_metadata.provider_id 에 있어요.
@@ -4164,10 +4415,13 @@ document.addEventListener('click', e => {
 
 // 로그인 시 패널 메뉴 표시
 async function showPanelMenu(user, providerToken){
+  currentDiscordUser = user;
   const navPanel = document.getElementById('navPanel');
   if(navPanel) navPanel.style.display = 'flex';
   const navCodeEditor = document.getElementById('navCodeEditor');
   if(navCodeEditor) navCodeEditor.style.display = 'flex';
+  const navDocuments = document.getElementById('navDocuments');
+  if(navDocuments) navDocuments.style.display = 'flex';
   await renderServerList(user, providerToken);
 
   // 봇 오너 전용 메뉴 표시
@@ -4178,16 +4432,20 @@ async function showPanelMenu(user, providerToken){
   if(navAdmin) navAdmin.style.display = showOwner;
 }
 function hidePanelMenu(){
+  currentDiscordUser = null;
   const navPanel = document.getElementById('navPanel');
   if(navPanel) navPanel.style.display = 'none';
   const navCodeEditor = document.getElementById('navCodeEditor');
   if(navCodeEditor) navCodeEditor.style.display = 'none';
+  const navDocuments = document.getElementById('navDocuments');
+  if(navDocuments) navDocuments.style.display = 'none';
   const navAnnounce = document.getElementById('navAnnounce');
   const navAdmin = document.getElementById('navAdmin');
   if(navAnnounce) navAnnounce.style.display = 'none';
   if(navAdmin) navAdmin.style.display = 'none';
   if(document.getElementById('page-panel').classList.contains('active') ||
      document.getElementById('page-codeeditor')?.classList.contains('active') ||
+     document.getElementById('page-documents')?.classList.contains('active') ||
      document.getElementById('page-announce')?.classList.contains('active') ||
      document.getElementById('page-admin')?.classList.contains('active')){
     document.querySelectorAll('.nav-item[data-page]').forEach(b=>b.classList.remove('active'));
@@ -4240,6 +4498,7 @@ document.querySelectorAll('.nav-item[data-page]').forEach(btn=>{
     if(target === 'admin') loadAdminConsole();
     if(target === 'stats') loadStatsPage();
     if(target === 'codeeditor') initCodeEditor();
+    if(target === 'documents') loadDocuments();
   });
 });
 document.querySelector('.nav-item[data-page="home"]').classList.add('active');
