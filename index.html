@@ -1807,6 +1807,12 @@ footer{
 
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;margin-bottom:18px;">
         <div>
+          <label class="preset-label">서버</label>
+          <select class="modal-input" id="doc_guild_select" style="width:180px;" onchange="onDocGuildChange()">
+            <option value="">불러오는 중...</option>
+          </select>
+        </div>
+        <div>
           <label class="preset-label">연도</label>
           <input class="modal-input" id="doc_f_year" placeholder="예) 2026" style="width:90px;" oninput="applyDocFilters()">
         </div>
@@ -2819,6 +2825,37 @@ const DOC_TYPE_LABEL = { excel: '엑셀', ppt: '파워포인트', hwp: '한글' 
 const DOC_VIS_LABEL  = { private: '🔒 비공개', unlisted: '🔗 일부공개', public: '🌐 공개' };
 let docsCache = [];
 let docPermsCache = {}; // document_id -> [{id,user_id,user_name,role}]
+
+// 문서함은 관리패널을 거치지 않고도 바로 들어올 수 있어서, 여기서 자체적으로 서버 목록을 불러와 선택하게 함
+async function populateDocGuildSelect(){
+  const sel = document.getElementById('doc_guild_select');
+  if(!sel) return;
+
+  if(cachedDisplayGuilds.length === 0){
+    sel.innerHTML = '<option value="">불러오는 중...</option>';
+    const resolved = await resolveDisplayGuilds(currentProviderToken || sessionStorage.getItem('dc_token'));
+    cachedDisplayGuilds = resolved || [];
+  }
+
+  if(cachedDisplayGuilds.length === 0){
+    sel.innerHTML = '<option value="">서버 없음</option>';
+    return;
+  }
+
+  sel.innerHTML = cachedDisplayGuilds.map(g => `<option value="${g.id}">${escapeHtml(g.name || g.id)}</option>`).join('');
+
+  if(!currentGuildId || !cachedDisplayGuilds.find(g => g.id === currentGuildId)){
+    currentGuildId = cachedDisplayGuilds[0].id;
+  }
+  sel.value = currentGuildId;
+}
+
+function onDocGuildChange(){
+  const sel = document.getElementById('doc_guild_select');
+  if(!sel || !sel.value) return;
+  currentGuildId = sel.value;
+  loadDocuments();
+}
 
 // 시간대(시) 옵션 채우기
 (function initDocHourOptions(){
@@ -4054,6 +4091,7 @@ let currentGuildId = null;
 let isBotOwner = false;
 let currentProviderToken = null;
 let currentDiscordUser = null;
+let cachedDisplayGuilds = [];
 
 // Supabase user.id는 내부 UUID라 Discord ID와 달라요.
 // 실제 Discord ID는 user_metadata.provider_id 에 있어요.
@@ -4065,6 +4103,69 @@ function getDiscordId(user){
 } // Discord access token
 
 // ── 서버 목록 로드 ──
+async function resolveDisplayGuilds(token){
+  // 봇이 들어간 서버 목록 (guild_settings에서 — 봇 시작 시 자동 저장)
+  const { data: botGuilds } = await sb.from('guild_settings').select('guild_id,guild_name,guild_icon').not('guild_name','is',null);
+  const botMap = {};
+  (botGuilds || []).forEach(g => { botMap[g.guild_id] = g; });
+
+  if(Object.keys(botMap).length === 0) return null; // 봇이 어느 서버에도 없음
+
+  // 유저의 Discord 서버 목록 (token 있을 때)
+  let userGuildMap = {};
+  if(token){
+    try {
+      const res = await fetch('https://discord.com/api/users/@me/guilds', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if(res.ok){
+        const guilds = await res.json();
+        guilds.forEach(g => { userGuildMap[g.id] = g; });
+      }
+    } catch {}
+  }
+
+  // 표시할 서버 결정
+  let displayGuilds;
+  if(isBotOwner){
+    displayGuilds = Object.values(botMap).map(g => ({
+      id: g.guild_id, name: g.guild_name, icon: g.guild_icon, role: 'owner'
+    }));
+  } else if(Object.keys(userGuildMap).length > 0){
+    displayGuilds = Object.values(botMap)
+      .filter(g => userGuildMap[g.guild_id])
+      .map(g => {
+        const dg = userGuildMap[g.guild_id];
+        const isOwner2 = dg?.owner === true;
+        const hasManage = (parseInt(dg?.permissions || '0') & 0x20) !== 0;
+        const role = isOwner2 ? 'owner' : hasManage ? 'admin' : 'member';
+        return { id: g.guild_id, name: g.guild_name, icon: g.guild_icon, role };
+      });
+  } else {
+    displayGuilds = Object.values(botMap).map(g => ({
+      id: g.guild_id, name: g.guild_name, icon: g.guild_icon, role: 'member'
+    }));
+  }
+
+  // ── 봇이 직접 동기화한 오너/최상위역할 명단으로 권한을 확정 (OAuth 토큰 만료/누락과 무관하게 정확함) ──
+  if(!isBotOwner){
+    try {
+      const myDiscordId = getDiscordId(currentDiscordUser);
+      const { data: adminRows } = await sb.from('guild_admins').select('guild_id,role_type').eq('user_id', myDiscordId);
+      const adminMap = {};
+      (adminRows || []).forEach(r => { adminMap[r.guild_id] = r.role_type; });
+      displayGuilds = displayGuilds.map(g => {
+        const confirmed = adminMap[g.id];
+        if(confirmed === 'owner') return { ...g, role: 'owner' };
+        if(confirmed === 'top_role') return { ...g, role: 'admin' };
+        return g;
+      });
+    } catch {}
+  }
+
+  return displayGuilds;
+}
+
 async function renderServerList(user, providerToken){
   const list = document.getElementById('serverList');
   if(!list) return;
@@ -4079,74 +4180,17 @@ async function renderServerList(user, providerToken){
   list.innerHTML = `<div style="color:var(--ink-faint);font-size:13px;padding:10px;">' + t('loading') + '</div>`;
 
   try {
-    // 봇이 들어간 서버 목록 (guild_settings에서 — 봇 시작 시 자동 저장)
-    const { data: botGuilds } = await sb.from('guild_settings').select('guild_id,guild_name,guild_icon').not('guild_name','is',null);
-    const botMap = {};
-    (botGuilds || []).forEach(g => { botMap[g.guild_id] = g; });
+    const displayGuilds = await resolveDisplayGuilds(token);
+    cachedDisplayGuilds = displayGuilds || [];
 
-    if(Object.keys(botMap).length === 0){
+    if(displayGuilds === null){
       list.innerHTML = `<div style="color:var(--ink-faint);font-size:13px;padding:10px;">${t('panelNoBot')}</div>`;
       return;
-    }
-
-    // 유저의 Discord 서버 목록 (token 있을 때)
-    let userGuildMap = {};
-    if(token){
-      try {
-        const res = await fetch('https://discord.com/api/users/@me/guilds', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        if(res.ok){
-          const guilds = await res.json();
-          guilds.forEach(g => { userGuildMap[g.id] = g; });
-        }
-      } catch {}
-    }
-
-    // 표시할 서버 결정
-    let displayGuilds;
-    if(isBotOwner){
-      // 봇 오너: 봇이 있는 모든 서버
-      displayGuilds = Object.values(botMap).map(g => ({
-        id: g.guild_id, name: g.guild_name, icon: g.guild_icon, role: 'owner'
-      }));
-    } else if(Object.keys(userGuildMap).length > 0){
-      // 일반 유저: 봇 서버 ∩ 내 서버
-      displayGuilds = Object.values(botMap)
-        .filter(g => userGuildMap[g.guild_id])
-        .map(g => {
-          const dg = userGuildMap[g.guild_id];
-          const isOwner2 = dg?.owner === true;
-          const hasManage = (parseInt(dg?.permissions || '0') & 0x20) !== 0;
-          const role = isOwner2 ? 'owner' : hasManage ? 'admin' : 'member';
-          return { id: g.guild_id, name: g.guild_name, icon: g.guild_icon, role };
-        });
-    } else {
-      // token 없음 → 봇 서버 전체 표시 (권한은 member로)
-      displayGuilds = Object.values(botMap).map(g => ({
-        id: g.guild_id, name: g.guild_name, icon: g.guild_icon, role: 'member'
-      }));
     }
 
     if(displayGuilds.length === 0){
       list.innerHTML = `<div style="color:var(--ink-faint);font-size:13px;padding:10px;">${t('panelNoCommon')}</div>`;
       return;
-    }
-
-    // ── 봇이 직접 동기화한 오너/최상위역할 명단으로 권한을 확정 (OAuth 토큰 만료/누락과 무관하게 정확함) ──
-    if(!isBotOwner){
-      try {
-        const myDiscordId = getDiscordId(user);
-        const { data: adminRows } = await sb.from('guild_admins').select('guild_id,role_type').eq('user_id', myDiscordId);
-        const adminMap = {};
-        (adminRows || []).forEach(r => { adminMap[r.guild_id] = r.role_type; });
-        displayGuilds = displayGuilds.map(g => {
-          const confirmed = adminMap[g.id];
-          if(confirmed === 'owner') return { ...g, role: 'owner' };
-          if(confirmed === 'top_role') return { ...g, role: 'admin' };
-          return g;
-        });
-      } catch {}
     }
 
     list.innerHTML = displayGuilds.map(g => {
@@ -4636,7 +4680,7 @@ document.querySelectorAll('.nav-item[data-page]').forEach(btn=>{
     if(target === 'admin') loadAdminConsole();
     if(target === 'stats') loadStatsPage();
     if(target === 'codeeditor') initCodeEditor();
-    if(target === 'documents') loadDocuments();
+    if(target === 'documents') { populateDocGuildSelect().then(() => loadDocuments()); }
   });
 });
 document.querySelector('.nav-item[data-page="home"]').classList.add('active');
