@@ -3001,6 +3001,10 @@ function renderDocRow(d){
   `;
 }
 
+function escapeHtml(str){
+  return String(str ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
 function openDocumentPlaceholder(){
   alert('📝 편집기는 아직 준비 중이에요! 문서함(목록·검색·공개범위·협업 권한)까지만 먼저 만들었어요.');
 }
