@@ -2833,8 +2833,15 @@ async function populateDocGuildSelect(){
 
   if(cachedDisplayGuilds.length === 0){
     sel.innerHTML = '<option value="">불러오는 중...</option>';
-    const resolved = await resolveDisplayGuilds(currentProviderToken || sessionStorage.getItem('dc_token'));
-    cachedDisplayGuilds = resolved || [];
+    try {
+      const resolved = await resolveDisplayGuilds(currentProviderToken || sessionStorage.getItem('dc_token'));
+      cachedDisplayGuilds = resolved || [];
+    } catch(e){
+      console.error('서버 목록 로드 실패:', e);
+      sel.innerHTML = '<option value="">⚠ 불러오기 실패 (클릭해서 재시도)</option>';
+      sel.onclick = () => { sel.onclick = null; populateDocGuildSelect(); };
+      return;
+    }
   }
 
   if(cachedDisplayGuilds.length === 0){
@@ -4105,7 +4112,8 @@ function getDiscordId(user){
 // ── 서버 목록 로드 ──
 async function resolveDisplayGuilds(token){
   // 봇이 들어간 서버 목록 (guild_settings에서 — 봇 시작 시 자동 저장)
-  const { data: botGuilds } = await sb.from('guild_settings').select('guild_id,guild_name,guild_icon').not('guild_name','is',null);
+  const { data: botGuilds, error: botGuildsErr } = await sb.from('guild_settings').select('guild_id,guild_name,guild_icon').not('guild_name','is',null);
+  if(botGuildsErr) throw new Error('guild_settings 조회 실패: ' + botGuildsErr.message);
   const botMap = {};
   (botGuilds || []).forEach(g => { botMap[g.guild_id] = g; });
 
