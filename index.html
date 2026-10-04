@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>
+(()=>{let mode='system';try{mode=localStorage.getItem('doge_theme_mode')||'system';}catch{}if(!['dark','white','system'].includes(mode))mode='system';window.dogeThemeMode=mode;document.documentElement.dataset.theme=mode==='system'?(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'white'):mode;})();
+</script>
 <title>도지봇 | DOGE BOT</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%90%95%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1004,6 +1007,74 @@ footer{
 .stats-table td{ padding:12px 16px; color:var(--ink-dim); border-bottom:1px solid var(--line); }
 .stats-table tr:last-child td{ border-bottom:none; }
 .stats-table tr:hover td{ background:rgba(255,138,31,.04); }
+
+/* DOGE support */
+.dsupport{max-width:900px;margin:auto}.ds-eyebrow{color:var(--doge-orange);font-size:12px;font-weight:800;letter-spacing:2px}.dsupport h1{font-size:34px;margin:12px 0}.ds-sub{color:var(--ink-dim);line-height:1.8}.ds-card{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:26px;margin:20px 0}.ds-platforms{display:grid;grid-template-columns:1fr 1fr;gap:12px}.ds-choice{padding:22px;border:1px solid var(--line);background:var(--panel-2);color:var(--ink);border-radius:14px;text-align:left;cursor:pointer;font:inherit}.ds-choice[aria-pressed=true]{border-color:var(--doge-orange);box-shadow:0 0 0 1px var(--doge-orange);background:rgba(255,138,31,.08)}.ds-choice strong{display:block;font-size:19px;margin-bottom:6px}.ds-choice span{color:var(--ink-dim);font-size:12px}.ds-field{display:block;margin-top:20px;font-weight:700;font-size:14px}.ds-input{width:100%;margin-top:9px;padding:13px 14px;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;color:var(--ink);font:inherit;outline:none}.ds-input:focus{border-color:var(--doge-orange)}.ds-input option{background:var(--panel)}textarea.ds-input{resize:vertical;min-height:170px}.ds-drop{border:1px dashed var(--ink-faint);padding:24px;border-radius:12px;text-align:center;margin-top:10px;cursor:pointer;display:block}.ds-drop.drag{border-color:var(--doge-orange);background:rgba(255,138,31,.08)}.ds-note{font-size:12px;color:var(--ink-dim);line-height:1.8}.ds-btn{border:1px solid var(--line);border-radius:10px;background:var(--panel-2);color:var(--ink);padding:11px 16px;cursor:pointer;font:inherit;font-size:13px;font-weight:700}.ds-btn.primary{background:var(--doge-orange);color:#1a1308;border-color:var(--doge-orange)}.ds-btn:disabled{opacity:.4;cursor:wait}.ds-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:20px}.ds-msg{white-space:pre-wrap;font-size:13px;line-height:1.7;color:var(--doge-gold)}.ds-row{display:flex;justify-content:space-between;align-items:center;gap:12px;border:1px solid var(--line);padding:16px;border-radius:12px;margin:10px 0;background:var(--panel)}.ds-row h3{margin:0 0 6px;font-size:15px;overflow-wrap:anywhere}.ds-badge{color:var(--doge-gold);background:rgba(255,138,31,.1);font-size:12px;padding:5px 9px;border-radius:8px}.ds-badge.done{color:#73d5a2;background:rgba(70,200,130,.1)}.ds-body{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.8}.ds-attachments{display:flex;flex-direction:column;gap:10px}.ds-attachments img,.ds-attachments video{max-width:100%;max-height:340px;border-radius:10px}.ds-reply{border-left:3px solid var(--doge-orange);padding:14px 18px;background:var(--panel-2);margin:15px 0;border-radius:8px}.ds-preview{display:flex;align-items:center;gap:10px;margin-top:10px;overflow-wrap:anywhere}.ds-preview img{width:52px;height:52px;object-fit:cover;border-radius:8px}.ds-empty{padding:36px;text-align:center;color:var(--ink-dim)}@media(max-width:600px){.ds-card{padding:18px}.dsupport h1{font-size:27px}.ds-choice{padding:16px}.ds-row{align-items:flex-start;flex-wrap:wrap}}
+
+/* DOGE BOT — paper, ink and a little yellow. */
+:root{--bg:#f7f7f4;--panel:#ffffff;--panel-2:#f1f2ee;--line:#dedfd8;--doge-orange:#936400;--doge-gold:#745200;--ink:#222722;--ink-dim:#565e55;--ink-faint:#697168;--shadow-ink:transparent;--radius:8px;--radius-sm:6px;--accent:#f2d34e;--focus:#34654c}
+body{background:var(--bg);color:var(--ink);font-family:Inter,'Noto Sans KR',system-ui,sans-serif;letter-spacing:-.2px}
+button,input,select,textarea{font-family:inherit}button,a,input,select,textarea{touch-action:manipulation}button:focus-visible,a:focus-visible{outline:2px solid var(--focus);outline-offset:4px}input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.display,.brand-text,.hero h1,.section-title,.card h3,.server-select-title,.panel-server-name,.modal-title,.pstat-num,.stats-card-value,.btn-invite{font-family:Inter,'Noto Sans KR',system-ui,sans-serif;letter-spacing:-.6px}
+.app{grid-template-columns:232px minmax(0,1fr)}.sidebar{background:#fff;border-color:var(--line);padding:28px 16px 20px;gap:22px}.sidebar-head{display:flex;align-items:center}.brand{background:none;border-radius:0;box-shadow:none;padding:0 10px;gap:10px}.brand-coin{width:34px;height:34px}.brand-text{color:var(--ink);font-size:14px;font-weight:800;letter-spacing:-.5px;text-shadow:none;line-height:1.35}
+.brand-coin circle{fill:var(--accent);stroke:#e4c442}.brand-coin text{fill:var(--ink);font-family:Inter,sans-serif;font-weight:800}
+.search-box{border:0;border-radius:6px;background:#f1f2ee;padding:11px}.search-box input{font-size:12px}.nav{gap:2px;margin:0}.nav-item{font-size:13px;font-weight:500;padding:11px 12px;border:0;border-radius:5px;background:transparent!important;color:var(--ink-dim)!important;box-shadow:none;transform:none!important}.nav-item .ic{width:18px;height:18px;display:flex;align-items:center;justify-content:center;opacity:1}.nav-item .ic svg{width:17px;height:17px;stroke-width:1.7}.nav-item:hover{background:#f4f5f0!important;color:var(--ink)!important}.nav-item.active{background:#f7efc6!important;color:#332d13!important;font-weight:750}.nav-item.active .ic{color:#826000}.nav-divider{height:1px;margin:15px 10px 10px;background:var(--line)}
+.auth-zone{padding-top:18px;gap:12px}.btn-discord{background:#29352f;border:1px solid #29352f;box-shadow:none;border-radius:6px;font-size:12px;padding:12px}.btn-discord:active{transform:none;box-shadow:none}.user-card{background:transparent;border:0;padding:0}.user-tag{color:var(--ink-faint)}.user-avatar{background:var(--accent)}.btn-logout{font-size:11px;padding:6px}.main{min-width:0;max-width:1200px;width:100%;padding:28px clamp(24px,5vw,76px) 60px;margin:0 auto}.topbar{justify-content:space-between;align-items:center;margin-bottom:46px;min-height:32px}.site-kicker{font-size:10px;letter-spacing:1.5px;color:var(--ink-faint);font-weight:600}.btn-settings{background:transparent;border:0;padding:6px 0;font-size:12px;color:var(--ink-dim)}.btn-settings:hover{color:var(--ink)}.lang-menu{border-radius:7px;box-shadow:0 8px 24px #22272212}
+.hero{margin:0;text-align:left}.hero h1{background:none;color:var(--ink);font-size:clamp(40px,6vw,66px);font-weight:850;line-height:1.14;letter-spacing:-3px;margin:10px 0 20px}.hero .lead{text-align:left;margin:0;max-width:510px;font-size:15px;line-height:1.9;font-weight:400;color:var(--ink-dim)}.home-intro{display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:40px;align-items:center;padding:14px 0 48px;border-bottom:1px solid var(--line)}.home-wordmark{width:166px;height:166px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:108px;line-height:1;font-weight:800;color:#252c24;letter-spacing:-10px;user-select:none}.home-caption{font-size:11px;letter-spacing:1px;color:var(--ink-faint);font-weight:650}.home-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:28px}.home-action{display:inline-flex;align-items:center;gap:22px;padding:12px 18px;border:1px solid var(--line);border-radius:5px;text-decoration:none;color:var(--ink);font-size:13px;font-weight:650;background:white;cursor:pointer}.home-action.primary{background:#29352f;color:#fff;border-color:#29352f}.home-action:hover{filter:brightness(.96)}.home-heading{display:flex;justify-content:space-between;align-items:center;margin-top:38px}.home-heading .section-title{margin:0;font-size:17px}.home-heading small{font-size:11px;color:var(--ink-faint)}.home-features{display:block;margin-top:18px}.home-features .card{border:0;border-top:1px solid var(--line);border-radius:0;background:transparent;display:grid;grid-template-columns:40px 180px 1fr;gap:14px;padding:22px 0;align-items:start}.home-features .card:last-child{border-bottom:1px solid var(--line)}.feature-number{font:500 11px Inter,sans-serif;color:var(--ink-faint);padding-top:4px}.home-features .card h3{font-size:14px;font-weight:700;margin:0}.home-features .card p{font-size:13px;line-height:1.8;margin:0;color:var(--ink-dim)}.home-links{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:34px}.home-link{display:flex;align-items:center;justify-content:space-between;padding:18px 0;border-bottom:1px solid var(--line);color:var(--ink);text-decoration:none;font-size:15px;font-weight:650}.home-link span small{display:block;font-size:12px;font-weight:400;color:var(--ink-dim);margin-top:8px}.home-link:hover{border-color:var(--ink)}
+.hr{background:var(--line);margin:26px 0}.lead{font-size:16px;font-weight:500;color:var(--ink-dim)}.section-title{font-size:21px;font-weight:750;color:var(--ink);margin-top:30px;gap:8px}.section-title .tri{display:none}.card{box-shadow:none;border-radius:7px}.card h3{font-size:15px;font-weight:700}.qna-item{border-radius:0;border-width:0 0 1px;background:transparent}.qna-q{padding:20px 4px;font-size:14px}.qna-q .tri{color:var(--ink-faint);font-size:11px}.qna-a{color:var(--ink-dim)}.invite-box{background:#f7efc6;border:1px solid #e7dca6;border-radius:8px;text-align:left;padding:32px}.btn-invite{background:var(--accent);color:var(--ink);font-weight:700;box-shadow:none;border-radius:5px;font-size:14px}.btn-invite:active{transform:none;box-shadow:none}
+.cat-tabs{gap:0;border-bottom:1px solid var(--line);padding-bottom:0;margin:24px 0 20px}.cat-tab{background:transparent;border:0;border-bottom:2px solid transparent;border-radius:0;padding:12px 15px;font-size:12px;color:var(--ink-dim)}.cat-tab:hover{color:var(--ink);background:#eeefe9}.cat-tab.active{background:transparent;border-color:var(--ink);color:var(--ink);font-weight:750}.cmd-grid{gap:0;border:1px solid var(--line);border-radius:7px;overflow:hidden;background:var(--panel)}.cmd-card{border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent;padding:18px;border-right:1px solid var(--line)}.cmd-name{color:#31553d;font-size:13px;font-weight:700}.cmd-desc{color:var(--ink-dim);font-size:12px}.cmd-badge{background:#f6ecc5;color:#725400;border-color:#e4d69d}.cmd-card.cmd-admin{border-left:0}
+.panel-stat,.setting-card,.server-card,.greeting-section,.preset-card,.stats-card,.modal-box,.ticket-row,.stats-table-wrap{border-radius:7px;box-shadow:none}.pstat-num,.stats-card-value{color:var(--ink);font-weight:750}.stats-card{padding:22px;text-align:left}.stats-card-icon{display:none}.stats-card-value{font-size:30px}.stats-card-label{color:var(--ink-dim);font-size:12px}.ticket-row.closed-t{opacity:1;background:#f2f3ef}.ticket-meta{color:var(--ink-dim)}.open-s,.role-admin{color:#23633f;background:#e7f1e9;border-color:#cadfce}.closed-s{color:#586157;background:#edf0ea}.role-owner,.owner-label{color:#745400;background:#fbf1c7;border-color:#e7db9e}.setting-btn{background:#fff;color:var(--ink);border-color:var(--line);border-radius:5px}.setting-btn:hover{background:#f7efc6}.btn-new-ticket,.modal-submit{background:var(--accent);color:var(--ink);border-radius:5px}.panel-server-name,.modal-title{color:var(--ink);font-weight:700}.readonly-notice,.owner-only-notice{background:#fbf5db;color:#725300;border-color:#e6d99d}.modal-backdrop{background:#202a2359}.modal-box{box-shadow:0 12px 48px #22272218}.search-results{box-shadow:0 8px 24px #22272215}.var-chip{background:#f8f1d5;color:#755800;border-color:#e6dba9}.toggle-wrap input:checked+.toggle-slider{background:#3c6248}
+.dsupport{max-width:none;margin:0}.ds-eyebrow{font-size:10px;letter-spacing:1.3px;color:var(--ink-faint);font-weight:600}.dsupport h1{font-size:32px;letter-spacing:-1.3px;margin:12px 0}.ds-sub{font-size:14px;line-height:1.9;max-width:570px}.ds-card{border-radius:7px;padding:28px;background:white;margin:26px 0}.ds-platforms{gap:12px}.ds-choice{padding:18px 20px;border-radius:6px;background:#fff}.ds-choice[aria-pressed=true]{background:#faf5dc;border-color:#bfa139;box-shadow:none}.ds-choice strong{font-size:15px}.ds-choice span{font-size:12px;color:var(--ink-dim)}.ds-field{font-size:13px;font-weight:650;margin-top:24px}.ds-input{background:#fff;border-color:#d4d8ce;border-radius:5px;font-size:14px;padding:12px 14px;line-height:1.6}.ds-input:focus{border-color:var(--focus)}.ds-drop{border-radius:5px;padding:28px;border-color:#adb5a6;background:#fafbf8;font-size:13px}.ds-drop.drag{background:#f7efc6;border-color:#9d7b0d}.ds-btn{border-radius:5px;background:white;color:var(--ink);font-size:12px}.ds-btn.primary{background:#29352f;color:#fff;border-color:#29352f;padding:12px 18px}.ds-btn:hover:not(:disabled){filter:brightness(.96)}.ds-msg{color:#735a0d}.ds-row{border-radius:0;border-width:0 0 1px;margin:0;padding:22px 0;background:transparent}.ds-badge{border-radius:4px;background:#f8edc1;color:#6d5310}.ds-badge.done{background:#e7f1e9;color:#276141}.ds-reply{border-left:2px solid #9f8829;background:#faf7e9;border-radius:0;font-size:14px}.ds-body{font-size:14px}.ds-empty{border-bottom:1px solid var(--line);font-size:13px}#dsCount{margin-left:auto}#dsNotices .ds-card{background:transparent;border-width:0 0 1px;border-radius:0;padding:24px 0;margin:0}#dsNotices h2{font-size:20px;letter-spacing:-.5px}footer{text-align:left;border-top:1px solid var(--line);margin-top:56px;padding-top:22px;font-size:11px;color:var(--ink-faint)}
+@media(max-width:1100px){.app{grid-template-columns:214px minmax(0,1fr)}.main{padding:24px 30px 50px}.home-intro{grid-template-columns:minmax(0,1fr) 140px;gap:22px}.home-wordmark{width:130px;height:130px;font-size:87px}.home-features .card{grid-template-columns:26px 130px 1fr;gap:12px}}
+@media(max-width:860px) and (orientation:portrait){.app{grid-template-columns:minmax(0,1fr)}.mobile-topbar{background:white;padding:13px 18px;border-color:var(--line)}.mobile-topbar .brand{padding:0;flex:0 1 auto}.mobile-topbar .brand-text{font-size:12px}.mobile-topbar .brand-coin{width:27px;height:27px}.btn-hamburger,.sidebar-close{background:white;border-color:var(--line);border-radius:5px}.sidebar{width:min(84vw,300px);padding:26px 18px;box-shadow:8px 0 32px #22272218}.main{padding:18px 22px 40px}.topbar{margin-bottom:28px}.home-intro{padding:12px 0 32px;grid-template-columns:minmax(0,1fr) 100px;gap:12px}.hero h1{font-size:43px;margin-top:8px;letter-spacing:-2px}.hero .lead{font-size:13px}.home-wordmark{width:94px;height:94px;font-size:63px;letter-spacing:-6px}.home-actions{gap:8px;margin-top:22px}.home-action{font-size:12px;padding:11px 13px;gap:12px}.home-features .card{grid-template-columns:24px 1fr;gap:10px;padding:20px 0}.home-features .card p{grid-column:2}.home-heading{margin-top:28px}.home-heading small{display:none}.home-links{grid-template-columns:1fr;gap:6px;margin-top:24px}.section-title{font-size:19px}.cat-tab{padding:11px 10px}.ds-card{padding:20px 16px;margin-top:22px}.dsupport h1{font-size:27px}.ds-platforms{gap:8px}.ds-choice{padding:14px 12px}.ds-choice strong{font-size:14px}.ds-sub{font-size:13px}.ds-row{gap:10px}.ds-row>div{min-width:0}.site-kicker{font-size:9px}.stats-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.stats-card-value{font-size:24px}}
+@media(max-width:420px){.home-intro{grid-template-columns:minmax(0,1fr)}.home-wordmark{display:none}.main{padding-left:18px;padding-right:18px}.home-actions .home-action{flex:1;justify-content:space-between}.ds-choice span{font-size:11px}.ds-actions>span{width:100%}.ds-drop{padding:22px 12px}.ds-preview{flex-wrap:wrap}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* Theme preferences */
+:root{color-scheme:light}.lang-menu{min-width:260px;padding:16px}.settings-label{font-size:11px;font-weight:700;color:var(--ink-faint);margin:0 0 10px}.theme-options{display:flex;gap:6px;margin-bottom:18px}.theme-option{flex:1;border:1px solid var(--line);border-radius:5px;padding:10px 8px;background:var(--panel);color:var(--ink-dim);font:inherit;font-size:12px;cursor:pointer}.theme-option[aria-pressed=true]{border-color:var(--doge-orange);background:#f7efc6;color:#332d13;font-weight:700}.settings-language{border-top:1px solid var(--line);padding-top:14px}.lang-opt{font-size:12px;padding:8px}.lang-opt.active{background:var(--panel-2);color:var(--ink)}
+html[data-theme=dark]{color-scheme:dark;--bg:#171b18;--panel:#202621;--panel-2:#29302a;--line:#3a433b;--doge-orange:#d5bd58;--doge-gold:#d5bd58;--ink:#ebeee7;--ink-dim:#b5bfb2;--ink-faint:#9ca996;--focus:#b6cf9b}
+html[data-theme=dark] .sidebar,html[data-theme=dark] .mobile-topbar{background:var(--panel)}
+html[data-theme=dark] .brand-text{color:var(--ink)}
+html[data-theme=dark] .search-box{background:var(--panel-2)}
+html[data-theme=dark] .nav-item:hover{background:#2a322a!important}
+html[data-theme=dark] .nav-item.active{background:#3a3520!important;color:#f3de88!important}
+html[data-theme=dark] .nav-item.active .ic{color:#e9ce68}
+html[data-theme=dark] .btn-discord,html[data-theme=dark] .home-action.primary,html[data-theme=dark] .ds-btn.primary{background:#e4cc64;color:#20261e;border-color:#e4cc64}
+html[data-theme=dark] .home-action,html[data-theme=dark] .setting-btn,html[data-theme=dark] .ds-btn{background:var(--panel);color:var(--ink);border-color:var(--line)}
+html[data-theme=dark] .cat-tab:hover{background:var(--panel-2)}
+html[data-theme=dark] .cmd-name{color:#b4d2a4}
+html[data-theme=dark] .cmd-badge,html[data-theme=dark] .role-owner,html[data-theme=dark] .owner-label,html[data-theme=dark] .readonly-notice,html[data-theme=dark] .owner-only-notice,html[data-theme=dark] .var-chip{background:#37321e;color:#e6cf78;border-color:#66572d}
+html[data-theme=dark] .invite-box{background:#2f301f;border-color:#59522e}
+html[data-theme=dark] .ticket-row.closed-t{background:#222822}
+html[data-theme=dark] .open-s,html[data-theme=dark] .role-admin,html[data-theme=dark] .ds-badge.done{color:#acd3b2;background:#24372b;border-color:#37543c}
+html[data-theme=dark] .closed-s{background:#303730;color:#b9c3b5}
+html[data-theme=dark] .ds-card{background:var(--panel)}
+html[data-theme=dark] .ds-choice,html[data-theme=dark] .ds-input{background:var(--panel);border-color:var(--line)}
+html[data-theme=dark] .ds-choice[aria-pressed=true],html[data-theme=dark] .theme-option[aria-pressed=true]{background:#39351f;color:#efe0a2;border-color:#9d893d}
+html[data-theme=dark] .ds-drop{background:#1c221d;border-color:#596650}
+html[data-theme=dark] .ds-drop.drag{background:#39351f;border-color:#bda34a}
+html[data-theme=dark] .ds-msg{color:#dfcb79}
+html[data-theme=dark] .ds-badge{background:#3a341f;color:#e3cf82}
+html[data-theme=dark] .ds-reply{background:#2e2e20;border-color:#aa9345}
+html[data-theme=dark] #dsNotices .ds-card{background:transparent}
+html[data-theme=dark] .btn-hamburger,html[data-theme=dark] .sidebar-close{background:var(--panel);border-color:var(--line);color:var(--ink)}
+/* Discord previews and document pages retain their own canvas colors. */
+html[data-theme=dark] .doc-editor-body .ql-editor{color:#222722}
+
+.lang-menu{width:340px;min-width:0;max-height:min(78vh,720px);overflow:auto;overscroll-behavior:contain}.bg-settings{padding-top:4px;margin-bottom:18px}.bg-palette{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px}.bg-swatch{height:43px;padding:4px 1px;background:var(--panel);border:1px solid var(--line);border-radius:5px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--ink-dim);font:inherit;font-size:9px}.bg-swatch i{width:21px;height:15px;border-radius:3px;border:1px solid #8886;background:var(--swatch)}.bg-swatch[aria-pressed=true]{outline:2px solid var(--focus);outline-offset:1px}.bg-swatch:disabled,.rgb-controls button:disabled,.rgb-controls input:disabled{opacity:.45;cursor:not-allowed}.rgb-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.rgb-controls label{font:500 11px Inter,sans-serif;color:var(--ink-dim)}.rgb-controls input{width:100%;padding:8px;margin-top:5px;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:var(--ink);font:inherit;font-size:12px}.rgb-actions{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}.rgb-preview{display:block;width:28px;height:28px;border:1px solid var(--line);border-radius:4px}.trial-note{font-size:11px;line-height:1.8;color:var(--doge-gold);margin:10px 0 0}.bg-note{font-size:11px;line-height:1.7;margin:10px 0;color:var(--ink-dim)}.trial-tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.trial-tools button{padding:7px 11px}.trial-table{display:flex;flex-direction:column;gap:10px;margin:20px 0}.trial-table>div{padding:18px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink)}.trial-table h3{font-size:14px;margin:0 0 6px}.trial-state{font-size:12px;color:var(--ink-dim);line-height:1.8}.trial-period{display:grid;grid-template-columns:1fr 1fr;gap:16px}.trial-period input{min-width:0}
+html[data-background] body{background:var(--canvas-bg)!important}
+html[data-background] .main{color:var(--canvas-ink)}
+html[data-background] .hero h1,html[data-background] .dsupport>h1,html[data-background] .section-title,html[data-background] .home-features .card h3,html[data-background] .home-link,html[data-background] .ds-row h3,html[data-background] #dsNotices h2{color:var(--canvas-ink)}
+html[data-background] .hero .lead,html[data-background] .ds-sub,html[data-background] .home-caption,html[data-background] .site-kicker,html[data-background] .home-heading small,html[data-background] .home-features .card p,html[data-background] .feature-number,html[data-background] .home-link span small,html[data-background] footer,html[data-background] .ds-row .ds-note,html[data-background] #dsCount,html[data-background] .ds-empty,html[data-background] #dsNotices .ds-note,html[data-background] #dsNotices .ds-body{color:var(--canvas-muted)}
+html[data-background] .home-intro,html[data-background] .home-features .card,html[data-background] .home-link,html[data-background] .ds-row,html[data-background] #dsNotices .ds-card,html[data-background] footer{border-color:var(--canvas-line)}
+html[data-background] .ds-card,html[data-background] .card:not(.home-features .card),html[data-background] .stats-card,html[data-background] .greeting-section,html[data-background] .modal-box{color:var(--ink)}
+html[data-background] .cat-tab{color:var(--canvas-muted)}html[data-background] .cat-tab.active{color:var(--canvas-ink);border-color:var(--canvas-ink)}
+@media(max-width:420px){.lang-menu{width:min(340px,calc(100vw - 36px))}.trial-period{grid-template-columns:minmax(0,1fr)}}
+
+.trial-period[hidden]{display:none}
+
+html[data-background] .bodytext p,html[data-background] .qna-a,html[data-background] .gate,html[data-background] .ds-eyebrow{color:var(--canvas-muted)}
+html[data-background] .bodytext strong,html[data-background] .qna-q{color:var(--canvas-ink)}
 </style>
 </head>
 <body>
@@ -1039,18 +1110,24 @@ footer{
     </div>
 
     <nav class="nav">
-      <button class="nav-item" data-page="home"><span class="ic">⌂</span><span data-i18n="navHome">홈메뉴</span></button>
-      <button class="nav-item" data-page="intro"><span class="ic">✦</span><span data-i18n="navIntro">도지봇 소개</span></button>
-      <button class="nav-item" data-page="invite"><span class="ic">☞</span><span data-i18n="navInvite">도지봇 초대</span></button>
+      <button class="nav-item" data-page="home"><span class="ic"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 9-7 9 7v10H3Z"/><path d="M9 20v-7h6v7"/></svg></span><span data-i18n="navHome">홈메뉴</span></button>
+      <button class="nav-item" data-page="intro"><span class="ic"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7v1"/></svg></span><span data-i18n="navIntro">도지봇 소개</span></button>
+      <button class="nav-item" data-page="invite"><span class="ic"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7M21 3 11 13M11 3H3v18h18v-8"/></svg></span><span data-i18n="navInvite">도지봇 초대</span></button>
       <a class="nav-item" href="https://dog869973-prog.github.io/-dogebot/terms.html" target="_blank" rel="noopener"><span class="ic">♣</span><span data-i18n="navTerms">도지봇 이용약관</span></a>
       <a class="nav-item" href="https://dog869973-prog.github.io/-dogebot/privacy.html" target="_blank" rel="noopener"><span class="ic">♤</span><span data-i18n="navPrivacy">개인정보처리방침</span></a>
-      <button class="nav-item" data-page="stats"><span class="ic">📊</span><span data-i18n="navStats">통계</span></button>
-      <button class="nav-item" data-page="qna"><span class="ic">▶</span><span data-i18n="navQna">QnA</span></button>
-      <button class="nav-item nav-panel-only" data-page="panel" id="navPanel" style="display:none; margin-top:6px; background:rgba(255,138,31,0.08); border:1px solid rgba(255,138,31,0.3); color:var(--doge-gold);"><span class="ic">⚙</span><span data-i18n="navPanel">관리패널</span></button>
-      <button class="nav-item nav-panel-only" data-page="codeeditor" id="navCodeEditor" style="display:none;"><span class="ic">💻</span><span data-i18n="navCodeEditor">코드문법검사</span></button>
-      <button class="nav-item nav-panel-only" data-page="documents" id="navDocuments" style="display:none;"><span class="ic">📑</span><span data-i18n="navDocuments">문서함</span></button>
-      <button class="nav-item nav-owner-only" data-page="announce" id="navAnnounce" style="display:none;"><span class="ic">📢</span><span data-i18n="navAnnounce">전체공지</span></button>
-      <button class="nav-item nav-owner-only" data-page="admin" id="navAdmin" style="display:none;"><span class="ic">🛠️</span><span data-i18n="navAdmin">관리</span></button>
+      <button class="nav-item" data-page="stats"><span class="ic"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V12M12 20V4M20 20V8"/></svg></span><span data-i18n="navStats">통계</span></button>
+      <button class="nav-item" data-page="qna"><span class="ic"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M8 8a4 4 0 1 1 5 4l-1 2M12 18v1"/><circle cx="12" cy="12" r="10"/></svg></span><span data-i18n="navQna">QnA</span></button>
+      <div class="nav-divider" aria-hidden="true"></div>
+<button class="nav-item nav-panel-only" data-page="panel" id="navPanel" style="display:none; margin-top:6px; background:rgba(255,138,31,0.08); border:1px solid rgba(255,138,31,0.3); color:var(--doge-gold);"><span class="ic"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span><span data-i18n="navPanel">관리패널</span></button>
+      <button class="nav-item nav-panel-only" data-page="codeeditor" id="navCodeEditor" style="display:none;"><span class="ic"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m8 6-6 6 6 6M16 6l6 6-6 6M14 3l-4 18"/></svg></span><span data-i18n="navCodeEditor">코드문법검사</span></button>
+      <button class="nav-item nav-panel-only" data-page="documents" id="navDocuments" style="display:none;"><span class="ic"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6ZM15 3v5h4M9 12h6M9 16h6"/></svg></span><span data-i18n="navDocuments">문서함</span></button>
+      <button class="nav-item nav-owner-only" data-page="announce" id="navAnnounce" style="display:none;"><span class="ic"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 16-6v14L3 14ZM6 15l2 6h4l-2-5"/></svg></span><span data-i18n="navAnnounce">전체공지</span></button>
+      <button class="nav-item nav-owner-only" data-page="admin" id="navAdmin" style="display:none;"><span class="ic"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/><circle cx="12" cy="12" r="5"/></svg></span><span data-i18n="navAdmin">관리</span></button>
+<button class="nav-item" data-page="notices"><span class="ic"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 16-6v14L3 14ZM6 15l2 6h4l-2-5M21 9v6"/></svg></span><span>도지봇 공지</span></button>
+<button class="nav-item" data-page="support"><span class="ic"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 6 9 7 9-7"/></svg></span><span>문의하기</span></button>
+<button class="nav-item" data-page="my-support"><span class="ic"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg></span><span>내 문의</span></button>
+<button class="nav-item" data-page="support-inbox" id="navSupportInbox" style="display:none"><span class="ic"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14 6 4h12l3 10v6H3Z"/><path d="M3 14h6l1 3h4l1-3h6"/></svg></span><span>문의접수</span></button>
+<button class="nav-item" id="navFreeTrials" data-page="free-trials" style="display:none"><span class="ic" aria-hidden="true">◷</span><span>무료체험</span></button>
     </nav>
 
     <div class="sidebar-spacer"></div>
@@ -1074,47 +1151,44 @@ footer{
 
   <!-- MAIN -->
   <main class="main">
-    <div class="topbar">
+    <div class="topbar"><span class="site-kicker">DOGE BOT / COMMUNITY</span>
       <div class="lang-wrap">
         <button class="btn-settings" id="settingsBtn">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
           <span data-i18n="settings">설정</span>
         </button>
         <div class="lang-menu" id="langMenu">
+          <p class="settings-label">테마 변경</p>
+          <div class="theme-options" role="group" aria-label="테마 변경">
+            <button type="button" class="theme-option" data-theme-mode="dark" aria-pressed="false">다크</button>
+            <button type="button" class="theme-option" data-theme-mode="white" aria-pressed="false">화이트</button>
+            <button type="button" class="theme-option" data-theme-mode="system" aria-pressed="false">시스템</button>
+          </div><div class="bg-settings"><p class="settings-label">배경 색 설정</p><div class="bg-palette" role="group" aria-label="배경 색상 팔레트"><button type="button" class="bg-swatch" data-rgb="255,193,193" style="--swatch:rgb(255,193,193)" title="연한 빨강" aria-label="연한 빨강" aria-pressed="false"><i aria-hidden="true"></i><span>연빨</span></button><button type="button" class="bg-swatch" data-rgb="225,62,62" style="--swatch:rgb(225,62,62)" title="빨강" aria-label="빨강" aria-pressed="false"><i aria-hidden="true"></i><span>빨</span></button><button type="button" class="bg-swatch" data-rgb="255,210,166" style="--swatch:rgb(255,210,166)" title="연한 주황" aria-label="연한 주황" aria-pressed="false"><i aria-hidden="true"></i><span>연주</span></button><button type="button" class="bg-swatch" data-rgb="239,145,45" style="--swatch:rgb(239,145,45)" title="주황" aria-label="주황" aria-pressed="false"><i aria-hidden="true"></i><span>주</span></button><button type="button" class="bg-swatch" data-rgb="255,244,177" style="--swatch:rgb(255,244,177)" title="연한 노랑" aria-label="연한 노랑" aria-pressed="false"><i aria-hidden="true"></i><span>연노</span></button><button type="button" class="bg-swatch" data-rgb="242,212,62" style="--swatch:rgb(242,212,62)" title="노랑" aria-label="노랑" aria-pressed="false"><i aria-hidden="true"></i><span>노</span></button><button type="button" class="bg-swatch" data-rgb="200,231,185" style="--swatch:rgb(200,231,185)" title="연한 초록" aria-label="연한 초록" aria-pressed="false"><i aria-hidden="true"></i><span>연초</span></button><button type="button" class="bg-swatch" data-rgb="68,143,72" style="--swatch:rgb(68,143,72)" title="초록" aria-label="초록" aria-pressed="false"><i aria-hidden="true"></i><span>초</span></button><button type="button" class="bg-swatch" data-rgb="188,219,247" style="--swatch:rgb(188,219,247)" title="연한 파랑" aria-label="연한 파랑" aria-pressed="false"><i aria-hidden="true"></i><span>연파</span></button><button type="button" class="bg-swatch" data-rgb="55,132,211" style="--swatch:rgb(55,132,211)" title="파랑" aria-label="파랑" aria-pressed="false"><i aria-hidden="true"></i><span>파</span></button><button type="button" class="bg-swatch" data-rgb="173,185,220" style="--swatch:rgb(173,185,220)" title="연한 남색" aria-label="연한 남색" aria-pressed="false"><i aria-hidden="true"></i><span>연남</span></button><button type="button" class="bg-swatch" data-rgb="29,50,102" style="--swatch:rgb(29,50,102)" title="남색" aria-label="남색" aria-pressed="false"><i aria-hidden="true"></i><span>남</span></button><button type="button" class="bg-swatch" data-rgb="207,178,234" style="--swatch:rgb(207,178,234)" title="연한 보라" aria-label="연한 보라" aria-pressed="false"><i aria-hidden="true"></i><span>연보</span></button><button type="button" class="bg-swatch" data-rgb="117,66,166" style="--swatch:rgb(117,66,166)" title="보라" aria-label="보라" aria-pressed="false"><i aria-hidden="true"></i><span>보</span></button><button type="button" class="bg-swatch" data-rgb="250,203,223" style="--swatch:rgb(250,203,223)" title="연한 핑크" aria-label="연한 핑크" aria-pressed="false"><i aria-hidden="true"></i><span>연핑</span></button><button type="button" class="bg-swatch" data-rgb="239,114,167" style="--swatch:rgb(239,114,167)" title="핑크" aria-label="핑크" aria-pressed="false"><i aria-hidden="true"></i><span>핑</span></button><button type="button" class="bg-swatch" data-rgb="228,172,202" style="--swatch:rgb(228,172,202)" title="연한 자홍색" aria-label="연한 자홍색" aria-pressed="false"><i aria-hidden="true"></i><span>연자</span></button><button type="button" class="bg-swatch" data-rgb="181,38,98" style="--swatch:rgb(181,38,98)" title="자홍색" aria-label="자홍색" aria-pressed="false"><i aria-hidden="true"></i><span>자</span></button><button type="button" class="bg-swatch" data-rgb="236,238,237" style="--swatch:rgb(236,238,237)" title="연한 회색" aria-label="연한 회색" aria-pressed="false"><i aria-hidden="true"></i><span>연회</span></button><button type="button" class="bg-swatch" data-rgb="135,142,138" style="--swatch:rgb(135,142,138)" title="회색" aria-label="회색" aria-pressed="false"><i aria-hidden="true"></i><span>회</span></button><button type="button" class="bg-swatch" data-rgb="21,25,22" style="--swatch:rgb(21,25,22)" title="검정색" aria-label="검정색" aria-pressed="false"><i aria-hidden="true"></i><span>검정</span></button><button type="button" class="bg-swatch" data-rgb="255,255,255" style="--swatch:rgb(255,255,255)" title="하얀색" aria-label="하얀색" aria-pressed="false"><i aria-hidden="true"></i><span>하양</span></button></div><p id="bgAccessNotice" class="bg-note" role="status"></p><button class="ds-btn" id="bgReset" type="button" style="margin:10px 0 18px">테마 기본 배경으로</button><p class="settings-label">또는 커스텀 색상 지정 (RGB)</p><div id="rgbControls" class="rgb-controls"><label>R<input id="bgR" type="number" min="0" max="255" step="1" value="247" inputmode="numeric"></label><label>G<input id="bgG" type="number" min="0" max="255" step="1" value="247" inputmode="numeric"></label><label>B<input id="bgB" type="number" min="0" max="255" step="1" value="244" inputmode="numeric"></label></div><div class="rgb-actions"><span id="rgbPreview" class="rgb-preview" aria-label="RGB 색상 미리보기"></span><button id="rgbApply" class="ds-btn" type="button">적용</button></div><p id="rgbInputNotice" class="bg-note" role="status"></p><p id="rgbTrialNotice" class="trial-note">*이 기능은 곧 유료로 전환됩니다! (남은 기간: -)</p></div><div class="settings-language"><p class="settings-label">언어</p>
           <div class="lang-opt" data-lang="ko"><span class="lang-flag">🇰🇷</span>한국어</div>
           <div class="lang-opt" data-lang="en"><span class="lang-flag">🇺🇸</span>English</div>
           <div class="lang-opt" data-lang="ja"><span class="lang-flag">🇯🇵</span>日本語</div>
           <div class="lang-opt" data-lang="zh"><span class="lang-flag">🇨🇳</span>中文</div>
           <div class="lang-opt" data-lang="fr"><span class="lang-flag">🇫🇷</span>Français</div>
-          <div class="lang-opt" data-lang="ru"><span class="lang-flag">🇷🇺</span>Русский</div>
+          <div class="lang-opt" data-lang="ru"><span class="lang-flag">🇷🇺</span>Русский</div></div>
         </div>
       </div>
     </div>
 
     <!-- HOME / INTRO PAGE -->
     <section class="page active" id="page-home">
-      <div class="hero">
-        <h1 class="display" data-i18n="brandTitle">도지봇 | DOGE BOT</h1>
+      <div class="home-intro">
+        <div class="hero"><div class="home-caption">DISCORD COMMUNITY BOT</div><h1>도지봇.</h1>
+          <p class="lead" data-i18n="heroLead">멤버 관리부터 미니게임까지.<br>우리 서버에서 함께 쓰는 도지봇.</p>
+          <div class="home-actions"><button class="home-action primary" onclick="document.querySelector('[data-page=invite]').click()"><span data-i18n="navInvite">도지봇 초대</span><span aria-hidden="true">↗</span></button><button class="home-action" onclick="document.querySelector('[data-page=intro]').click()"><span data-i18n="navIntro">도지봇 소개</span><span aria-hidden="true">→</span></button></div>
+        </div><div class="home-wordmark" aria-hidden="true">D</div>
       </div>
-      <div class="hr"></div>
-      <p class="lead" data-i18n="heroLead">도지봇은 디스코드에서 필요한 커뮤니티용 봇으로, 다양한 기능과 정보를 제공합니다.</p>
-      <div class="hr"></div>
-
-      <div class="section-title"><span class="tri">▶</span><span data-i18n="whyTitle">도지봇의 특징</span></div>
-      <div class="card-grid">
-        <div class="card">
-          <h3 data-i18n="why1Title">실시간 소통</h3>
-          <p data-i18n="why1Body">지속적인 업데이트와 활발한 유저 소통을 통해 커뮤니티에 꼭 맞게 설계되었습니다.</p>
-        </div>
-        <div class="card">
-          <h3 data-i18n="why2Title">계속되는 연구</h3>
-          <p data-i18n="why2Body">2025년부터 개발을 시작해 지금까지도 새로운 기능을 연구하고 있습니다.</p>
-        </div>
-        <div class="card">
-          <h3 data-i18n="why3Title">충실한 컨셉</h3>
-          <p data-i18n="why3Body">신식 기능을 꾸준히 추가하면서도 도지(Doge) 컨셉에 충실하도록 설계 중입니다.</p>
-        </div>
+      <div class="home-heading"><div class="section-title" data-i18n="whyTitle">도지봇의 특징</div><small>DOGE BOT</small></div>
+      <div class="card-grid home-features">
+        <div class="card"><span class="feature-number">01</span><h3 data-i18n="why1Title">실시간 소통</h3><p data-i18n="why1Body">유저가 보내준 의견을 바탕으로 조금씩 더 나아지고 있어요.</p></div>
+        <div class="card"><span class="feature-number">02</span><h3 data-i18n="why2Title">계속되는 연구</h3><p data-i18n="why2Body">2025년부터 만들고 있어요. 필요한 기능을 하나씩 더하는 중이에요.</p></div>
+        <div class="card"><span class="feature-number">03</span><h3 data-i18n="why3Title">충실한 컨셉</h3><p data-i18n="why3Body">도지다운 재미와 서버에 필요한 기능을 함께 챙겨요.</p></div>
       </div>
+      <div class="home-links"><a class="home-link" href="#notices"><span>도지봇 공지<small>새 소식과 업데이트</small></span><span aria-hidden="true">↗</span></a><a class="home-link" href="#support"><span>문의하기<small>불편한 점이나 제안 남기기</small></span><span aria-hidden="true">↗</span></a></div>
     </section>
 
     <!-- INTRO PAGE -->
@@ -2002,6 +2076,20 @@ footer{
     </section>
 
     <footer data-i18n="footer">© 2025 도지봇 | DOGE BOT. All rights reserved.</footer>
+<section class="page" id="page-notices"><div class="dsupport"><div class="ds-eyebrow">DOGE BOT · NEWS</div><h1>도지봇 공지</h1><p class="ds-sub">도지봇의 새로운 소식과 업데이트를 확인하세요.</p><button class="ds-btn" onclick="dsNotices()">새로고침</button><div id="dsNoticeEditor" hidden><form id="dsNoticeForm" class="ds-card"><h2>웹 공지 작성</h2><p class="ds-note">이곳에서 게시하면 웹에 공개돼요. 기존 ‘전체공지’에서 전송한 공지도 웹에 함께 표시됩니다.</p><label class="ds-field">공지 제목<input id="dsNoticeTitle" class="ds-input" maxlength="120" required></label><label class="ds-field">내용<textarea id="dsNoticeBody" class="ds-input" maxlength="20000" required></textarea></label><div class="ds-actions"><button class="ds-btn primary" id="dsPublish">웹 공지 게시</button></div><p id="dsPublishMsg" class="ds-msg" role="status"></p></form></div><div id="dsNotices"></div></div></section>
+
+<section class="page" id="page-support"><div class="dsupport"><div class="ds-eyebrow">DOGE BOT · SUPPORT</div><h1>어떤 도움이 필요하세요?</h1><p class="ds-sub">작은 불편부터 새로운 아이디어까지.<br>도지봇 개발자에게 직접 문의를 남겨주세요.</p>
+<form id="dsForm" class="ds-card"><div class="ds-platforms"><button type="button" class="ds-choice" data-platform="kakao" aria-pressed="false"><strong>💬 카카오톡</strong><span>카카오톡 도지봇 문의</span></button><button type="button" class="ds-choice" data-platform="discord" aria-pressed="true"><strong>🎮 디스코드</strong><span>디스코드 도지봇 문의</span></button></div>
+<label class="ds-field">문의 유형<select id="dsCategory" class="ds-input"><option>오류 신고</option><option>사용 방법</option><option>기능 제안</option><option>기타 문의</option></select></label>
+<label class="ds-field">제목<input id="dsTitle" class="ds-input" maxlength="120" required placeholder="어떤 문제인지 간단히 알려주세요"></label>
+<label class="ds-field">문의 내용<textarea id="dsBody" class="ds-input" maxlength="10000" required minlength="10" placeholder="문제가 발생한 상황과 시도한 방법을 적어주세요. (10자 이상)"></textarea></label>
+<label class="ds-field">첨부파일 (선택)</label><label class="ds-drop" id="dsDrop" for="dsFiles">＋ 사진 · 영상 · 파일 첨부<br><span class="ds-note">클릭하거나 파일을 끌어 놓으세요 · 최대 5개, 각 20MB, 총 50MB</span></label><input id="dsFiles" type="file" multiple hidden accept="image/jpeg,image/png,image/gif,image/webp,video/mp4,video/webm,.pdf,.txt,.log,.zip"><div id="dsFileList"></div>
+<p class="ds-note">카카오톡 문의도 Discord 로그인 후 접수할 수 있어요. 답변은 이 사이트의 ‘내 문의’에서 확인해주세요.<br>비밀번호·인증번호 등 민감한 정보는 첨부하지 마세요.</p><label class="ds-note"><input type="checkbox" id="dsConsent" required> 문의 처리에 필요한 계정 정보, 문의 내용과 첨부파일 제공에 동의합니다.</label>
+<div class="ds-actions"><button class="ds-btn primary" id="dsSubmit" type="submit">문의 제출하기 →</button><span class="ds-note">개발자와 문의 작성자만 확인할 수 있어요.</span></div><p id="dsNotice" class="ds-msg" role="status" aria-live="polite"></p></form></div></section>
+<section class="page" id="page-my-support"><div class="dsupport"><div class="ds-eyebrow">MY REQUESTS</div><h1>내 문의</h1><p class="ds-sub">접수 상태와 개발자의 답변을 확인하세요.</p><button class="ds-btn" onclick="dsLoad(false)">새로고침</button><div id="dsMyList"></div><div id="dsMyDetail"></div></div></section>
+<section class="page" id="page-support-inbox"><div class="dsupport"><div class="ds-eyebrow">DEVELOPER DESK</div><h1>문의접수</h1><p class="ds-sub">첨부파일을 확인하고 답변하거나 문의를 완료하세요.</p><div class="ds-actions"><select class="ds-input" id="dsFilter" style="width:auto;margin:0" onchange="dsLoad(true)"><option value="all">전체 문의</option><option value="open">접수됨</option><option value="done">완료됨</option></select><button class="ds-btn" onclick="dsLoad(true)">새로고침</button><span id="dsCount" class="ds-note"></span></div><div id="dsInboxList"></div><div id="dsInboxDetail"></div></div></section>
+
+<section class="page" id="page-free-trials"><div class="dsupport"><div class="ds-eyebrow">DEVELOPER SETTINGS</div><h1>무료체험</h1><p class="ds-sub">어떤 기능을 무료로 공개할지, 언제 체험을 시작하고 끝낼지 정하세요.</p><p id="trialAdminGate" class="ds-note">개발자만 설정할 수 있어요.</p><div id="trialAdminContent" hidden><div id="trialStates" class="trial-table"></div><form id="trialAdminForm" class="ds-card"><label class="ds-field">대상 기능<select id="trialFeature" class="ds-input"><option value="custom_rgb">커스텀 색상 지정 (RGB)</option><option value="background_palette">배경 색상 팔레트</option></select></label><label class="ds-field">이용 설정<select id="trialMode" class="ds-input"><option value="free">무료 공개 (기간 제한 없음)</option><option value="trial">기간을 정해 무료체험</option><option value="locked">무료 이용 중지</option></select></label><div class="trial-period" id="trialPeriod" hidden><label class="ds-field">시작 시간<input id="trialStart" type="datetime-local" class="ds-input"></label><label class="ds-field">종료 시간<input id="trialEnd" type="datetime-local" class="ds-input"></label></div><div class="trial-tools"><button type="button" class="ds-btn" data-trial-days="1">지금부터 1일</button><button type="button" class="ds-btn" data-trial-days="7">7일</button><button type="button" class="ds-btn" data-trial-days="30">30일</button></div><p class="ds-note">입력 시간은 현재 기기의 현지 시간 기준이며, 모든 이용자에게 같은 체험 기간이 적용됩니다. 각 기능은 따로 설정할 수 있어요.<br>체험 종료 후 해당 색상 기능이 잠기고, 적용된 배경은 테마 기본 배경으로 돌아갑니다. 개발자는 계속 사용할 수 있어요.</p><div class="ds-actions"><button id="trialSave" class="ds-btn primary" type="submit">설정 저장</button></div><p id="trialSaveNotice" class="ds-msg" role="status"></p></form></div></div></section>
   </main>
 </div>
 
@@ -2031,11 +2119,11 @@ const i18n = {
     statsColName:"서버 이름", statsColMembers:"멤버 수", statsColCmd:"명령어 사용", statsColMsg:"메시지 수", statsColUpdated:"마지막 업데이트",
     statsLoadErr:"통계를 불러오지 못했어요.", statsNoData:"아직 통계 데이터가 없어요.", unitPeople:"명", unitTimes:"번", unitCount:"개",
     loginBtn:"디스코드로 로그인", logoutBtn:"로그아웃",
-    heroLead:"도지봇은 디스코드에서 필요한 커뮤니티용 봇으로, 다양한 기능과 정보를 제공합니다.",
+    heroLead:"멤버 관리부터 미니게임까지. 우리 서버에서 함께 쓰는 도지봇.",
     whyTitle:"도지봇의 특징",
-    why1Title:"실시간 소통", why1Body:"지속적인 업데이트와 활발한 유저 소통을 통해 커뮤니티에 꼭 맞게 설계되었습니다.",
-    why2Title:"계속되는 연구", why2Body:"2025년부터 개발을 시작해 지금까지도 새로운 기능을 연구하고 있습니다.",
-    why3Title:"충실한 컨셉", why3Body:"신식 기능을 꾸준히 추가하면서도 도지(Doge) 컨셉에 충실하도록 설계 중입니다.",
+    why1Title:"실시간 소통", why1Body:"유저가 보내준 의견을 바탕으로 조금씩 더 나아지고 있어요.",
+    why2Title:"계속되는 연구", why2Body:"2025년부터 만들고 있어요. 필요한 기능을 하나씩 더하는 중이에요.",
+    why3Title:"충실한 컨셉", why3Body:"도지다운 재미와 서버에 필요한 기능을 함께 챙겨요.",
     introP1:"도지봇은 디스코드 서버 운영에 필요한 다양한 기능을 한곳에 모은 커뮤니티 전용 봇입니다.",
     introP2:"멤버 관리, 알림, 미니게임 등 서버 분위기를 살리는 기능들을 지속적으로 추가하고 있으며, 사용자 피드백을 반영해 매주 업데이트되고 있습니다.",
     introP3:"앞으로도 도지(Doge) 특유의 유쾌한 컨셉을 잃지 않으면서, 실제로 유용한 커뮤니티 도구로 발전시켜 나갈 예정입니다.",
@@ -4790,5 +4878,172 @@ document.querySelectorAll('.qna-q').forEach(q=>{
 
 applyLang('ko');
 </script>
+<script>
+// Support uses the existing authenticated Supabase client. All permissions enforced by SQL RLS/RPC.
+let dsPlatform='discord',dsFiles=[],dsPreviews=[],dsUser=null,dsDeveloper=false,dsEpoch=0;
+const dsBucket='doge-support';
+const dsAllowed=/\.(jpe?g|png|gif|webp|mp4|webm|pdf|txt|log|zip)$/i;
+const dsEl=id=>document.getElementById(id);
+const dsText=(tag,text,cls)=>{const e=document.createElement(tag);e.textContent=text;if(cls)e.className=cls;return e;};
+const dsCheck=r=>{if(r.error)throw r.error;return r.data;};
+const dsDate=d=>new Date(d).toLocaleString('ko-KR');
+function dsError(e){console.error('Support:',e);return '처리하지 못했어요. 로그인 상태와 문의 시스템 설정을 확인한 뒤 다시 시도해주세요.';}
+function dsGo(page){document.querySelector(`.nav-item[data-page="${page}"]`).click();}
+async function dsRefreshAuth(){
+ const epoch=++dsEpoch;const {data,error}=await sb.auth.getSession();if(epoch!==dsEpoch)return;
+ dsUser=error?null:data.session?.user||null;dsDeveloper=false;
+ if(dsUser){try{const permitted=dsCheck(await sb.rpc('doge_support_is_developer'));if(epoch!==dsEpoch)return;dsDeveloper=permitted===true;}catch(e){console.warn('Support setup needed');}}
+ if(epoch!==dsEpoch)return;dsEl('navSupportInbox').style.display=dsDeveloper?'flex':'none';
+ dsEl('dsMyDetail').replaceChildren();dsEl('dsInboxDetail').replaceChildren();dsEl('dsMyList').replaceChildren();dsEl('dsInboxList').replaceChildren();
+ if(!dsDeveloper&&dsEl('page-support-inbox').classList.contains('active'))dsGo('support');
+ if(dsEl('page-my-support').classList.contains('active'))dsLoad(false);
+ if(dsDeveloper&&dsEl('page-support-inbox').classList.contains('active'))dsLoad(true);
+}
+sb.auth.onAuthStateChange(()=>setTimeout(dsRefreshAuth,0));dsRefreshAuth();
+document.querySelectorAll('[data-platform]').forEach(b=>b.onclick=()=>{dsPlatform=b.dataset.platform;document.querySelectorAll('[data-platform]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));});
+function dsRenderFiles(){dsPreviews.forEach(URL.revokeObjectURL);dsPreviews=[];dsEl('dsFileList').replaceChildren();dsFiles.forEach((f,i)=>{const row=dsText('div','', 'ds-preview');if(['image/jpeg','image/png','image/gif','image/webp'].includes(f.type)){const img=document.createElement('img');img.src=URL.createObjectURL(f);dsPreviews.push(img.src);img.alt=f.name;row.append(img);}row.append(dsText('span',`${f.name} · ${(f.size/1048576).toFixed(1)} MB`));const remove=dsText('button','삭제','ds-btn');remove.type='button';remove.onclick=()=>{dsFiles.splice(i,1);dsRenderFiles();};row.append(remove);dsEl('dsFileList').append(row);});}
+function dsAddFiles(files){const candidate=[...dsFiles,...files];if(candidate.length>5||candidate.some(f=>!dsAllowed.test(f.name)||f.size>20*1048576)||candidate.reduce((s,f)=>s+f.size,0)>50*1048576){dsEl('dsNotice').textContent='JPG, PNG, GIF, WebP, MP4, WebM, PDF, TXT, LOG, ZIP만 가능해요. 최대 5개, 각 20MB, 총 50MB를 확인해주세요.';return;}dsFiles=candidate;dsRenderFiles();dsEl('dsNotice').textContent='';}
+dsEl('dsFiles').onchange=e=>{dsAddFiles([...e.target.files]);e.target.value='';};
+for(const event of ['dragover','dragleave','drop'])dsEl('dsDrop').addEventListener(event,e=>{e.preventDefault();dsEl('dsDrop').classList.toggle('drag',event==='dragover');if(event==='drop')dsAddFiles([...e.dataTransfer.files]);});
+dsEl('dsForm').addEventListener('submit',async e=>{
+ e.preventDefault();if(!dsUser){dsEl('dsNotice').textContent='왼쪽의 Discord 로그인 후 문의를 제출해주세요.';return;}
+ const title=dsEl('dsTitle').value.trim(),body=dsEl('dsBody').value.trim();if(!title||body.length<10){dsEl('dsNotice').textContent='제목과 10자 이상의 문의 내용을 입력해주세요.';return;}
+ const button=dsEl('dsSubmit');button.disabled=true;let ticket=null,paths=[];let submitted=false;
+ try{
+  ticket=dsCheck(await sb.from('doge_support_tickets').insert({owner_id:dsUser.id,platform:dsPlatform,category:dsEl('dsCategory').value,title,body}).select('id').single());
+  const attachments=[];
+  for(let i=0;i<dsFiles.length;i++){const f=dsFiles[i];dsEl('dsNotice').textContent=`첨부파일 업로드 중… ${i+1}/${dsFiles.length}`;const ext=f.name.split('.').pop().toLowerCase();const path=`${dsUser.id}/${ticket.id}/${crypto.randomUUID()}.${ext}`;dsCheck(await sb.storage.from(dsBucket).upload(path,f,{contentType:f.type||'application/octet-stream',upsert:false}));paths.push(path);attachments.push({path,name:f.name,size:f.size,type:f.type});}
+  dsCheck(await sb.rpc('doge_support_submit',{ticket_id:ticket.id,files:attachments}));submitted=true;
+  dsFiles=[];dsRenderFiles();dsEl('dsForm').reset();dsEl('dsNotice').textContent='문의가 접수됐어요! 내 문의에서 답변을 확인할 수 있어요.';dsGo('my-support');
+ }catch(err){dsEl('dsNotice').textContent=dsError(err);if(ticket&&!submitted){if(paths.length)await sb.storage.from(dsBucket).remove(paths);await sb.from('doge_support_tickets').delete().eq('id',ticket.id).eq('status','draft');}}
+ finally{button.disabled=false;}
+});
+async function dsLoad(admin){
+ const container=dsEl(admin?'dsInboxList':'dsMyList'),epoch=dsEpoch;container.replaceChildren(dsText('div','불러오는 중…','ds-empty'));
+ if(!dsUser||admin&&!dsDeveloper){container.replaceChildren(dsText('div',admin?'개발자만 확인할 수 있어요.':'Discord 로그인 후 확인할 수 있어요.','ds-empty'));return;}
+ try{let q=sb.from('doge_support_tickets').select('*').neq('status','draft').order('created_at',{ascending:false}).limit(200);if(!admin)q=q.eq('owner_id',dsUser.id);if(admin&&dsEl('dsFilter').value!=='all')q=q.eq('status',dsEl('dsFilter').value);const rows=dsCheck(await q);if(epoch!==dsEpoch)return;container.replaceChildren();if(admin)dsEl('dsCount').textContent=`최근 ${rows.length}건 (최대 200건)`;if(!rows.length)container.append(dsText('div','아직 문의가 없어요.','ds-empty'));for(const r of rows){const row=dsText('div','','ds-row'),info=document.createElement('div');info.append(dsText('h3',r.title),dsText('div',`${r.platform==='kakao'?'카카오톡':'디스코드'} · ${r.category} · ${dsDate(r.created_at)}`,'ds-note'));const badge=dsText('span',r.status==='done'?'완료됨':'접수됨','ds-badge'+(r.status==='done'?' done':''));const btn=dsText('button','문의 보기 →','ds-btn');btn.onclick=()=>dsOpen(r.id,admin);row.append(info,badge,btn);container.append(row);}}
+ catch(e){if(epoch===dsEpoch)container.replaceChildren(dsText('div',dsError(e),'ds-empty'));}
+}
+async function dsOpen(id,admin){
+ const target=dsEl(admin?'dsInboxDetail':'dsMyDetail'),epoch=dsEpoch;target.replaceChildren(dsText('div','문의 불러오는 중…','ds-card'));
+ try{
+ const r=dsCheck(await sb.from('doge_support_tickets').select('*').eq('id',id).single());
+ const replies=dsCheck(await sb.from('doge_support_replies').select('*').eq('ticket_id',id).order('created_at'));
+ if(epoch!==dsEpoch)return;const card=dsText('article','','ds-card');card.append(dsText('h2',r.title),dsText('p',`${r.platform==='kakao'?'카카오톡':'디스코드'} · ${r.category} · ${dsDate(r.created_at)} · ${r.status==='done'?'완료됨':'접수됨'}`,'ds-note'),dsText('p',r.body,'ds-body'));if(admin)card.append(dsText('p',`작성자 계정: ${r.owner_id}`,'ds-note'));
+ const assets=dsText('div','','ds-attachments');card.append(assets);
+ for(const f of r.attachments||[]){const block=document.createElement('div');block.append(dsText('p',`${f.name} · ${(f.size/1048576).toFixed(1)} MB`,'ds-note'));const button=dsText('button','첨부파일 열기 / 다운로드','ds-btn');button.onclick=async()=>{button.disabled=true;try{const d=dsCheck(await sb.storage.from(dsBucket).createSignedUrl(f.path,120));const link=document.createElement('a');link.href=d.signedUrl;link.target='_blank';link.rel='noopener noreferrer';link.download=f.name;link.textContent='파일 열기 (2분간 유효)';block.append(link);if(/\.(jpe?g|png|gif|webp)$/i.test(f.path)){const img=document.createElement('img');img.src=d.signedUrl;img.alt=f.name;block.append(img);}else if(/\.(mp4|webm)$/i.test(f.path)){const video=document.createElement('video');video.controls=true;video.preload='metadata';video.src=d.signedUrl;block.append(video);}button.remove();}catch(e){block.append(dsText('p',dsError(e),'ds-msg'));button.disabled=false;}};block.append(button);assets.append(block);}
+ card.append(dsText('h3','개발자 답변'));if(!replies.length)card.append(dsText('p','아직 등록된 답변이 없어요.','ds-note'));for(const reply of replies){const block=dsText('div','','ds-reply');block.append(dsText('div',dsDate(reply.created_at),'ds-note'),dsText('p',reply.body,'ds-body'));card.append(block);}
+ if(admin&&dsDeveloper&&r.status!=='done'){const input=document.createElement('textarea');input.className='ds-input';input.maxLength=10000;input.placeholder='답변을 입력하세요 (문의 완료 시 선택 사항)';input.setAttribute('aria-label','개발자 답변');const actions=dsText('div','','ds-actions');const send=dsText('button','답변 보내기','ds-btn'),done=dsText('button','문의완료','ds-btn primary'),message=dsText('p','','ds-msg');
+ const act=async finish=>{if(!finish&&!input.value.trim()){message.textContent='답변 내용을 입력해주세요.';return;}send.disabled=done.disabled=true;try{dsCheck(await sb.rpc('doge_support_respond',{ticket_id:id,message:input.value.trim(),finish}));await dsLoad(true);await dsOpen(id,true);}catch(e){message.textContent=dsError(e);send.disabled=done.disabled=false;}};send.onclick=()=>act(false);done.onclick=()=>act(true);actions.append(send,done);card.append(input,dsText('p','입력한 메시지는 문의자의 ‘내 문의’에 전달됩니다. 메시지 없이 완료할 수도 있어요.','ds-note'),actions,message);}
+ target.replaceChildren(card);card.scrollIntoView({behavior:'smooth',block:'start'});
+ }catch(e){if(epoch===dsEpoch)target.replaceChildren(dsText('p',dsError(e),'ds-card'));}
+}
+document.querySelector('[data-page="my-support"]').addEventListener('click',()=>dsLoad(false));
+document.querySelector('[data-page="support-inbox"]').addEventListener('click',()=>dsLoad(true));
+async function dsNotices(){const target=dsEl('dsNotices');target.replaceChildren(dsText('p','공지를 불러오는 중…','ds-note'));try{const rows=dsCheck(await sb.from('doge_web_notices').select('*').order('created_at',{ascending:false}).limit(100));target.replaceChildren();if(!rows.length)target.append(dsText('div','아직 등록된 공지가 없어요.','ds-empty'));for(const r of rows){const card=dsText('article','','ds-card');card.append(dsText('p',dsDate(r.created_at),'ds-note'),dsText('h2',r.title),dsText('p',r.body,'ds-body'));target.append(card);}}catch(e){target.replaceChildren(dsText('p',dsError(e),'ds-msg'));}}
+const dsAuthOriginal=dsRefreshAuth;
+dsRefreshAuth=async()=>{await dsAuthOriginal();dsEl('dsNoticeEditor').hidden=!dsDeveloper;};
+dsEl('dsNoticeForm').onsubmit=async e=>{e.preventDefault();if(!dsDeveloper)return;const btn=dsEl('dsPublish');btn.disabled=true;try{dsCheck(await sb.from('doge_web_notices').insert({title:dsEl('dsNoticeTitle').value.trim(),body:dsEl('dsNoticeBody').value.trim()}));dsEl('dsNoticeForm').reset();dsEl('dsPublishMsg').textContent='웹 공지가 게시됐어요.';await dsNotices();}catch(err){dsEl('dsPublishMsg').textContent=dsError(err);}finally{btn.disabled=false;}};
+document.querySelector('[data-page="notices"]').addEventListener('click',dsNotices);
+function dsHash(){const route=location.hash.slice(1);if(['support','my-support','notices'].includes(route))dsGo(route);if(route==='support-kakao'){dsGo('support');document.querySelector('[data-platform="kakao"]').click();}}
+window.addEventListener('hashchange',dsHash);
+document.querySelectorAll('.nav-item[data-page]').forEach(btn=>btn.addEventListener('click',()=>{if(['support','my-support','notices'].includes(btn.dataset.page))history.replaceState(null,'','#'+btn.dataset.page);}));
+// Keep the destination query through Discord OAuth redirects (original strips hash).
+document.querySelector('[data-page="my-support"]').addEventListener('click',()=>sessionStorage.setItem('doge_support_return','my-support'));
+loginBtn.addEventListener('click',()=>{const route=location.hash.slice(1);if(['support','my-support','notices'].includes(route))sessionStorage.setItem('doge_support_return',route);});
+const dsReturn=sessionStorage.getItem('doge_support_return');if(dsReturn&&!location.hash){sessionStorage.removeItem('doge_support_return');location.hash=dsReturn;}
+dsHash();dsRefreshAuth();
+
+</script>
+<script>
+(()=>{
+ const buttons=[...document.querySelectorAll('[data-theme-mode]')];
+ const systemTheme=window.matchMedia('(prefers-color-scheme: dark)');
+ let mode=window.dogeThemeMode||'system';
+ function apply(next,persist){
+  mode=['dark','white','system'].includes(next)?next:'system';
+  document.documentElement.dataset.theme=mode==='system'?(systemTheme.matches?'dark':'white'):mode;
+  window.dogeThemeMode=mode;
+  buttons.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.themeMode===mode)));
+  if(persist){try{localStorage.setItem('doge_theme_mode',mode);}catch{}}
+ }
+ buttons.forEach(b=>b.addEventListener('click',()=>apply(b.dataset.themeMode,true)));
+ langMenu.addEventListener('click',e=>e.stopPropagation());
+ settingsBtn.setAttribute('aria-controls','langMenu');settingsBtn.setAttribute('aria-expanded','false');
+ settingsBtn.addEventListener('click',()=>settingsBtn.setAttribute('aria-expanded',String(langMenu.classList.contains('show'))));
+ document.addEventListener('click',()=>settingsBtn.setAttribute('aria-expanded','false'));
+ document.querySelectorAll('.lang-opt').forEach(b=>b.addEventListener('click',()=>settingsBtn.setAttribute('aria-expanded','false')));
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&langMenu.classList.contains('show')){langMenu.classList.remove('show');settingsBtn.classList.remove('open');settingsBtn.setAttribute('aria-expanded','false');settingsBtn.focus();}});
+ const sync=()=>{if(mode==='system')apply('system',false);};
+ if(systemTheme.addEventListener)systemTheme.addEventListener('change',sync);else systemTheme.addListener(sync);
+ window.addEventListener('storage',e=>{if(e.key==='doge_theme_mode')apply(e.newValue,false);});
+ apply(mode,false);
+})();
+
+</script>
+<script>
+(()=>{
+ const $=id=>document.getElementById(id);
+ const validPreference=p=>p&&['background_palette','custom_rgb'].includes(p.feature)&&Array.isArray(p.rgb)&&p.rgb.length===3&&p.rgb.every(n=>Number.isInteger(n)&&n>=0&&n<=255);
+ const stateFor=(feature,now)=>{if(!feature)return 'unknown';if(feature.mode==='free')return 'free';if(feature.mode==='locked')return 'locked';if(now<Date.parse(feature.starts_at))return 'scheduled';if(now>=Date.parse(feature.ends_at))return 'expired';return 'trial';};
+ const timeLeft=ms=>{const s=Math.max(0,Math.ceil(ms/1000));return `${Math.floor(s/86400)}일 ${Math.floor(s%86400/3600)}시간 ${Math.floor(s%3600/60)}분 ${s%60}초`;};
+ let preference=null,features={},developer=false,known=false,snapshotTime=0,receivedAt=0,authVersion=0;
+ try{const p=JSON.parse(localStorage.getItem('doge_background')||'null');if(validPreference(p))preference=p;}catch{}
+ const now=()=>snapshotTime+(performance.now()-receivedAt);
+ const canUse=feature=>developer||(known&&['free','trial'].includes(stateFor(features[feature],now())));
+ function applyBackground(){
+  const html=document.documentElement;
+  if(!preference||!canUse(preference.feature)){delete html.dataset.background;for(const name of ['--canvas-bg','--canvas-ink','--canvas-muted','--canvas-line'])html.style.removeProperty(name);return;}
+  const rgb=preference.rgb,linear=rgb.map(n=>{const s=n/255;return s<=.04045?s/12.92:((s+.055)/1.055)**2.4;}),dark=(linear[0]*.2126+linear[1]*.7152+linear[2]*.0722)<.179;
+  html.dataset.background=preference.feature;html.style.setProperty('--canvas-bg',`rgb(${rgb.join(',')})`);html.style.setProperty('--canvas-ink',dark?'#ffffff':'#171b18');html.style.setProperty('--canvas-muted',dark?'#f0f2ec':'#343d32');html.style.setProperty('--canvas-line',dark?'rgba(255,255,255,.28)':'rgba(20,30,20,.22)');
+ }
+ function savePreference(p){preference=p;try{if(p)localStorage.setItem('doge_background',JSON.stringify(p));else localStorage.removeItem('doge_background');}catch{}applyBackground();paint();}
+ function paint(){
+  const current=now();document.querySelectorAll('.bg-swatch').forEach(b=>{b.disabled=!canUse('background_palette');b.setAttribute('aria-pressed',String(preference?.feature==='background_palette'&&preference.rgb.join(',')===b.dataset.rgb));});
+  document.querySelectorAll('#rgbControls input,#rgbApply').forEach(e=>e.disabled=!canUse('custom_rgb'));
+  const f=features.custom_rgb,status=known?stateFor(f,current):'unknown';
+  let remaining='-';if(status==='trial')remaining=timeLeft(Date.parse(f.ends_at)-current);if(status==='expired')remaining='종료';if(status==='scheduled')remaining=`시작까지 ${timeLeft(Date.parse(f.starts_at)-current)}`;if(status==='locked')remaining='무료 이용 종료';
+  $('rgbTrialNotice').textContent=`*이 기능은 곧 유료로 전환됩니다! (남은 기간: ${remaining})`;
+  $('bgAccessNotice').textContent=!known?'무료체험 설정을 확인하는 중이에요.':!canUse('background_palette')?'배경 색상 팔레트의 무료 이용 기간이 종료됐거나 아직 시작되지 않았어요.':'';
+  $('navFreeTrials').style.display=developer?'flex':'none';
+  if(!developer&&$('page-free-trials').classList.contains('active'))dsGo('support');
+  applyBackground();
+ }
+ async function load(){
+  const version=++authVersion;
+  try{const data=dsCheck(await sb.rpc('doge_trial_snapshot'));if(version!==authVersion)return;snapshotTime=Date.parse(data.server_now);receivedAt=performance.now();features=Object.fromEntries(data.features.map(f=>[f.feature_key,f]));developer=data.developer===true;known=true;paint();if($('page-free-trials').classList.contains('active'))renderAdmin();}
+  catch(e){if(version!==authVersion)return;known=false;developer=false;paint();$('bgAccessNotice').textContent='색상 설정을 불러오지 못했어요. 관리자에게 설정 상태를 확인해주세요.';}
+ }
+ document.querySelectorAll('.bg-swatch').forEach(b=>b.onclick=()=>{if(canUse('background_palette'))savePreference({feature:'background_palette',rgb:b.dataset.rgb.split(',').map(Number)});});
+ $('bgReset').onclick=()=>savePreference(null);
+ const readRGB=()=>['bgR','bgG','bgB'].map(id=>Number($(id).value));
+ function preview(){const rgb=readRGB();if(rgb.every(n=>Number.isInteger(n)&&n>=0&&n<=255))$('rgbPreview').style.background=`rgb(${rgb.join(',')})`;}
+ ['bgR','bgG','bgB'].forEach(id=>$(id).addEventListener('input',preview));
+ $('rgbApply').onclick=()=>{if(!canUse('custom_rgb'))return;const raw=['bgR','bgG','bgB'].map(id=>$(id).value);const rgb=readRGB();if(raw.some(v=>!v.trim())||!validPreference({feature:'custom_rgb',rgb})){$('rgbInputNotice').textContent='R, G, B에 0~255 사이의 정수를 입력해주세요.';return;}$('rgbInputNotice').textContent='';savePreference({feature:'custom_rgb',rgb});};
+ if(preference){['bgR','bgG','bgB'].forEach((id,i)=>$(id).value=preference.rgb[i]);}preview();
+ const titles={background_palette:'배경 색상 팔레트',custom_rgb:'커스텀 색상 지정 (RGB)'};
+ const labels={free:'무료 공개',trial:'무료체험 진행 중',scheduled:'시작 예정',expired:'체험 종료',locked:'무료 이용 중지',unknown:'설정 확인 필요'};
+ function localDate(iso){if(!iso)return '';const d=new Date(iso);return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16);}
+ function fillAdmin(){const f=features[$('trialFeature').value];if(!f)return;$('trialMode').value=f.mode;$('trialStart').value=localDate(f.starts_at);$('trialEnd').value=localDate(f.ends_at);togglePeriod();}
+ function togglePeriod(){$('trialPeriod').hidden=$('trialMode').value!=='trial';}
+ function renderAdmin(){
+  $('trialAdminGate').hidden=developer;$('trialAdminContent').hidden=!developer;$('trialStates').replaceChildren();if(!developer)return;
+  for(const key of Object.keys(titles)){const f=features[key],row=dsText('div',''),status=stateFor(f,now());row.append(dsText('h3',titles[key]),dsText('div',labels[status],'trial-state'));if(f?.mode==='trial')row.append(dsText('p',`${dsDate(f.starts_at)} ~ ${dsDate(f.ends_at)}`,'trial-state'));$('trialStates').append(row);}fillAdmin();
+ }
+ $('trialFeature').onchange=fillAdmin;$('trialMode').onchange=togglePeriod;
+ document.querySelectorAll('[data-trial-days]').forEach(b=>b.onclick=()=>{const start=new Date(now());$('trialMode').value='trial';$('trialStart').value=localDate(start.toISOString());$('trialEnd').value=localDate(new Date(+start+Number(b.dataset.trialDays)*86400000).toISOString());togglePeriod();});
+ $('trialAdminForm').onsubmit=async e=>{e.preventDefault();if(!developer)return;const mode=$('trialMode').value,start=mode==='trial'?new Date($('trialStart').value):null,end=mode==='trial'?new Date($('trialEnd').value):null;if(mode==='trial'&&(!Number.isFinite(+start)||!Number.isFinite(+end)||end<=start)){$('trialSaveNotice').textContent='종료 시간을 시작 시간보다 늦게 설정해주세요.';return;}$('trialSave').disabled=true;try{dsCheck(await sb.rpc('doge_trial_save',{feature:$('trialFeature').value,access_mode:mode,start_time:start?.toISOString()||null,end_time:end?.toISOString()||null}));$('trialSaveNotice').textContent='무료체험 설정을 저장했어요.';await load();}catch(err){$('trialSaveNotice').textContent=dsError(err);}finally{$('trialSave').disabled=false;}};
+ document.querySelector('[data-page="free-trials"]').addEventListener('click',()=>{renderAdmin();load();});
+ sb.auth.onAuthStateChange(()=>{developer=false;paint();setTimeout(load,0);});
+ settingsBtn.addEventListener('click',load);
+ window.addEventListener('storage',e=>{if(e.key==='doge_background'){try{const p=JSON.parse(e.newValue);preference=validPreference(p)?p:null;}catch{preference=null;}paint();}});
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden)load();});
+ setInterval(()=>{paint();},1000);setInterval(load,60000);paint();load();
+ // Pure helpers for regression checks; no client-side admin authorization.
+ window.dogeBackgroundHelpers={stateFor,validPreference,timeLeft};
+})();
+
+</script>
 </body>
 </html>
+
