@@ -1077,6 +1077,8 @@ html[data-background] .bodytext p,html[data-background] .qna-a,html[data-backgro
 html[data-background] .bodytext strong,html[data-background] .qna-q{color:var(--canvas-ink)}
 .rgb-editor{display:grid;grid-template-columns:minmax(0,1fr) 112px;gap:12px;align-items:start}.rgb-spectrum{height:165px;position:relative;border:1px solid var(--line);border-radius:5px;touch-action:none;cursor:crosshair;background:linear-gradient(to top,#000,transparent),linear-gradient(to right,#fff,transparent),hsl(var(--picker-hue,45),100%,50%)}.rgb-spectrum:focus-visible{outline:2px solid var(--focus);outline-offset:3px}.rgb-marker{position:absolute;width:12px;height:12px;border:2px solid white;box-shadow:0 0 0 1px #222;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;left:0;top:0}.rgb-hue-label{font-size:10px;color:var(--ink-dim);display:block;margin-top:12px}.rgb-hue{width:100%;height:12px;margin:8px 0 0;appearance:none;border-radius:4px;background:linear-gradient(to right,red,#ff0,#0f0,#0ff,#00f,#f0f,red);cursor:pointer}.rgb-hue::-webkit-slider-thumb{appearance:none;width:12px;height:20px;border:2px solid white;border-radius:3px;box-shadow:0 0 0 1px #222;background:transparent}.rgb-hue::-moz-range-thumb{width:9px;height:17px;border:2px solid white;border-radius:3px;box-shadow:0 0 0 1px #222;background:transparent}.rgb-editor .rgb-controls{grid-template-columns:minmax(0,1fr);gap:6px}.rgb-editor .rgb-controls label{display:grid;grid-template-columns:15px minmax(0,1fr);align-items:center;gap:6px}.rgb-editor .rgb-controls input{margin:0;padding:7px;min-width:0}.rgb-hex-label{display:block;font-size:10px;color:var(--ink-dim);margin:0 0 8px}.rgb-hex{display:block;width:100%;min-width:0;margin-top:5px;padding:8px 6px;font:11px monospace;border:1px solid var(--line);border-radius:4px;color:var(--ink);background:var(--panel)}.rgb-preview-label{font-size:10px;color:var(--ink-dim);margin-top:12px}.rgb-editor .rgb-preview{width:100%;height:52px;margin-top:6px;border:1px solid #8888;border-radius:4px}.rgb-value{font:10px monospace;color:var(--ink-dim);display:block;margin-top:7px;overflow-wrap:anywhere}.rgb-actions{justify-content:flex-end}.rgb-editor input:disabled,.rgb-hue:disabled{opacity:.45;cursor:not-allowed}.rgb-spectrum[aria-disabled=true]{opacity:.45;cursor:not-allowed}
 
+
+.ds-markdown{white-space:normal;overflow-wrap:anywhere}.ds-markdown p{margin:0 0 14px;line-height:1.85}.ds-markdown h1,.ds-markdown h2,.ds-markdown h3,.ds-markdown h4,.ds-markdown h5,.ds-markdown h6{line-height:1.4;margin:18px 0 12px;color:inherit}.ds-markdown h1{font-size:28px}.ds-markdown h2{font-size:24px!important}.ds-markdown h3{font-size:20px}.ds-markdown h4,.ds-markdown h5,.ds-markdown h6{font-size:16px}.ds-markdown a{color:#2863b5;text-decoration:underline;text-underline-offset:3px}html[data-theme=dark] .ds-markdown a{color:#92baff}.ds-markdown ul,.ds-markdown ol{padding-left:24px;margin:0 0 14px}.ds-markdown blockquote{border-left:3px solid var(--line);padding:8px 16px;margin:10px 0}.ds-markdown code{font-family:monospace;background:#8882;padding:2px 5px;border-radius:3px}
 </style>
 </head>
 <body>
@@ -4942,7 +4944,36 @@ async function dsOpen(id,admin){
 }
 document.querySelector('[data-page="my-support"]').addEventListener('click',()=>dsLoad(false));
 document.querySelector('[data-page="support-inbox"]').addEventListener('click',()=>dsLoad(true));
-async function dsNotices(){const target=dsEl('dsNotices');target.replaceChildren(dsText('p','공지를 불러오는 중…','ds-note'));try{const rows=dsCheck(await sb.from('doge_web_notices').select('*').order('created_at',{ascending:false}).limit(100));target.replaceChildren();if(!rows.length)target.append(dsText('div','아직 등록된 공지가 없어요.','ds-empty'));for(const r of rows){const card=dsText('article','','ds-card');card.append(dsText('p',dsDate(r.created_at),'ds-note'),dsText('h2',r.title),dsText('p',r.body,'ds-body'));target.append(card);}}catch(e){target.replaceChildren(dsText('p',dsError(e),'ds-msg'));}}
+// Render supported notice Markdown with DOM nodes; raw HTML stays plain text.
+function dsNoticeInline(parent, source, depth=0){
+ if(depth>8){parent.append(document.createTextNode(source));return;}
+ const tokens=/\[([^\]\n]+)\]\((https?:\/\/[^\s)]+)\)|(`+)([^`\n]+)\2|\*\*([^\n]+?)\*\*|__([^\n]+?)__|~~([^\n]+?)~~|\*([^*\n]+)\*/g;
+ let offset=0,match;
+ while((match=tokens.exec(source))){
+  parent.append(document.createTextNode(source.slice(offset,match.index)));
+  let node;
+  if(match[1]){
+   try{const url=new URL(match[2]);if(!['https:','http:'].includes(url.protocol))throw Error();node=document.createElement('a');node.href=url.href;node.target='_blank';node.rel='noopener noreferrer';dsNoticeInline(node,match[1],depth+1);}catch{node=document.createTextNode(match[0]);}
+  }else if(match[3]){node=document.createElement('code');node.textContent=match[4];}
+  else{node=document.createElement(match[5]?'strong':match[6]?'u':match[7]?'s':'em');dsNoticeInline(node,match[5]||match[6]||match[7]||match[8],depth+1);}
+  parent.append(node);offset=tokens.lastIndex;
+ }
+ parent.append(document.createTextNode(source.slice(offset)));
+}
+function dsNoticeBody(source){
+ const root=document.createElement('div');root.className='ds-body ds-markdown';
+ let list=null,paragraph=null;
+ for(const line of String(source||'').replace(/\r\n?/g,'\n').split('\n')){
+  if(!line.trim()){list=null;paragraph=null;continue;}
+  const heading=line.match(/^(#{1,6})\s+(.+)$/),item=line.match(/^\s*(?:[-*+]\s+|\d+\.\s+)(.+)$/),quote=line.match(/^>\s?(.*)$/);
+  if(heading){list=null;paragraph=null;const node=document.createElement('h'+heading[1].length);dsNoticeInline(node,heading[2]);root.append(node);}
+  else if(item){paragraph=null;const tag=/^\s*\d+\./.test(line)?'ol':'ul';if(!list||list.tagName.toLowerCase()!==tag){list=document.createElement(tag);root.append(list);}const node=document.createElement('li');dsNoticeInline(node,item[1]);list.append(node);}
+  else if(quote){list=null;paragraph=null;const node=document.createElement('blockquote');dsNoticeInline(node,quote[1]);root.append(node);}
+  else{list=null;if(!paragraph){paragraph=document.createElement('p');root.append(paragraph);}else paragraph.append(document.createElement('br'));dsNoticeInline(paragraph,line);}
+ }
+ return root;
+}
+async function dsNotices(){const target=dsEl('dsNotices');target.replaceChildren(dsText('p','공지를 불러오는 중…','ds-note'));try{const rows=dsCheck(await sb.from('doge_web_notices').select('*').order('created_at',{ascending:false}).limit(100));target.replaceChildren();if(!rows.length)target.append(dsText('div','아직 등록된 공지가 없어요.','ds-empty'));for(const r of rows){const card=dsText('article','','ds-card');card.append(dsText('p',dsDate(r.created_at),'ds-note'),dsText('h2',r.title),dsNoticeBody(r.body));target.append(card);}}catch(e){target.replaceChildren(dsText('p',dsError(e),'ds-msg'));}}
 const dsAuthOriginal=dsRefreshAuth;
 dsRefreshAuth=async()=>{await dsAuthOriginal();dsEl('dsNoticeEditor').hidden=!dsDeveloper;};
 dsEl('dsNoticeForm').onsubmit=async e=>{e.preventDefault();if(!dsDeveloper)return;const btn=dsEl('dsPublish');btn.disabled=true;try{dsCheck(await sb.from('doge_web_notices').insert({title:dsEl('dsNoticeTitle').value.trim(),body:dsEl('dsNoticeBody').value.trim()}));dsEl('dsNoticeForm').reset();dsEl('dsPublishMsg').textContent='웹 공지가 게시됐어요.';await dsNotices();}catch(err){dsEl('dsPublishMsg').textContent=dsError(err);}finally{btn.disabled=false;}};
@@ -5065,3 +5096,5 @@ dsHash();dsRefreshAuth();
 </body>
 </html>
 
+
+  
