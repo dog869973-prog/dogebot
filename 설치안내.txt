@@ -1,0 +1,56 @@
+도지봇 웹사이트 업데이트 — 문서함 편집기 / 약관 / 개인정보
+
+1. GitHub Pages에 업로드
+ZIP을 풀고 index.html 및 editer-hwp, editer-excel, editer-ppt, terms, privacy 폴더를 현재 웹사이트 index.html이 있는 위치에 올립니다. 폴더 안의 index.html까지 포함하세요. ZIP 자체를 업로드하면 사이트가 변경되지 않습니다.
+기존 다른 파일은 유지하세요. 배포 후 문서함의 [열기] 또는 문서 제목을 누르면 새 탭에서 해당 편집기가 열립니다.
+
+주소
+/editer-hwp/?doc_edit=문서ID
+/editer-excel/?doc_edit=문서ID
+/editer-ppt/?doc_edit=문서ID
+/terms/ — 이용약관
+/privacy/ — 개인정보처리방침
+/terms 및 /privacy로 들어가도 됩니다. GitHub Pages가 마지막 /를 붙일 수 있으며 .html은 주소에 나오지 않습니다.
+기존 /terms.html, /privacy.html은 새 경로로 이동합니다. 새 도메인을 구매할 필요는 없습니다.
+
+2. 저장 기능 설치 (필수)
+기존 Supabase 프로젝트의 SQL Editor에서 document_editor.sql 전체를 한 번 실행합니다.
+기존 bot_documents 및 bot_document_permissions 테이블을 사용합니다. 기존 문서 행은 유지됩니다.
+자동 저장, 수동 저장, 저장 버전 충돌 확인용 함수가 추가됩니다.
+SQL을 실행하지 않으면 문서 작성과 다운로드는 가능하지만 서버 저장은 실패합니다.
+기존 테이블의 RLS 접근 정책은 그대로 사용하며 별도로 변경하지 않습니다.
+
+3. Discord 로그인 복귀 주소
+Supabase > Authentication > URL Configuration > Redirect URLs에 아래 주소들을 기존 주소와 함께 추가하세요.
+https://dogebot.kr/editer-hwp/
+https://dogebot.kr/editer-excel/
+https://dogebot.kr/editer-ppt/
+https://www.dogebot.kr/editer-hwp/
+https://www.dogebot.kr/editer-excel/
+https://www.dogebot.kr/editer-ppt/
+기존 홈페이지 복귀 주소는 지우지 마세요.
+Discord Developer Portal의 OAuth2 Redirect URI는 기존 Supabase callback을 유지합니다.
+
+4. 사용할 수 있는 기능
+텍스트: 글자 서식, 제목, 목록, 링크, 사진 / DOCX·TXT 가져오기 / DOCX 다운로드.
+엑셀: 셀 편집, 시트 추가·삭제, 행·열 추가, 글자·배경색, 수식 계산 / XLSX·CSV 가져오기 / XLSX 다운로드.
+지원 수식: + - * /, 괄호, A1 및 $A$1 참조, SUM·AVERAGE·MIN·MAX·COUNT와 셀 범위.
+PPT: 슬라이드 추가·복제·삭제·순서 변경, 제목·본문·메모·색상·사진 / PPTX 가져오기·다운로드.
+모든 종류: 자동·수동 저장, 실행 취소·다시 실행, 도지봇 JSON 백업·복구, 인쇄/PDF.
+권한: 소유자·편집자는 수정, 보기 권한은 열람. 서버 저장 함수에서도 인증된 Discord 계정과 편집 권한을 검사합니다.
+저장 실패 때 기기에 복구본을 남깁니다. 다른 사람이 먼저 저장하면 덮어쓰지 않고 백업 후 다시 열도록 알립니다. 실시간 동시 편집 기능은 아닙니다.
+
+5. 범위 및 제한
+이 편집기는 기본 편집 기능을 제공하며 한컴·Microsoft Office 전체 기능을 대체하지 않습니다.
+.hwp 및 .hwpx 원본 파일 입출력은 지원하지 않습니다. 텍스트 문서는 한컴에서도 열 수 있는 DOCX를 사용하세요.
+DOCX의 복잡한 표·페이지 배치·일부 서식은 보존되지 않을 수 있습니다.
+엑셀은 최대 20시트, 각 300행 × 50열입니다. 원본 차트·매크로·복잡한 수식·서식은 유지되지 않습니다. 사이트의 셀 색상과 굵게 서식은 서버/JSON에 저장되지만 XLSX 내보내기에는 반영하지 않습니다.
+PPT는 최대 100슬라이드입니다. PPTX 가져오기는 제목·본문·첫 사진을 기본 배치로 변환하며 원본 도형·배치·애니메이션·메모를 보존하지 않습니다.
+가져올 파일은 10MB 이하, PPT 사진은 PNG/JPG/WebP 2MB 이하입니다.
+파일 변환 라이브러리를 불러오는 인터넷 연결이 필요합니다.
+
+약관과 개인정보처리방침은 기존 5개 언어의 본문을 유지하고 디자인만 홈페이지와 맞췄습니다.
+다크·화이트·시스템 테마를 제공하고 홈페이지와 선택을 공유합니다. 배경색 설정은 적용하지 않습니다.
+
+검증: JavaScript 구문, 문서 경로, 수식, 저장 실패·충돌, 권한, DOCX/PPTX 생성 및 PPTX 제목·본문 가져오기 검사 완료.
+실제 Supabase SQL 실행, GitHub 배포 및 브라우저 화면/Discord 로그인 확인은 이 파일을 업로드한 뒤 진행해야 합니다.

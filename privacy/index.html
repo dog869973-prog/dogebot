@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>도지봇 개인정보처리방침 | Privacy Policy</title>
+<script>(()=>{const media=matchMedia('(prefers-color-scheme: dark)');let mode='system';try{mode=localStorage.getItem('doge_theme_mode')||'system';}catch{}if(!['dark','white','system'].includes(mode))mode='system';function apply(){document.documentElement.dataset.theme=mode==='system'?(media.matches?'dark':'white'):mode;document.querySelectorAll('[data-legal-theme]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.legalTheme===mode)));}window.setLegalTheme=value=>{if(!['dark','white','system'].includes(value))return;mode=value;try{localStorage.setItem('doge_theme_mode',mode);}catch{}apply();};media.addEventListener('change',apply);window.addEventListener('storage',e=>{if(e.key==='doge_theme_mode'){mode=['dark','white','system'].includes(e.newValue)?e.newValue:'system';apply();}});document.addEventListener('DOMContentLoaded',apply);apply();})();
+</script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&family=Noto+Sans:wght@400;600;700&family=Noto+Sans+SC:wght@400;700&family=Noto+Sans+FR:wght@400;700&display=swap');
+
+  :root {
+    --doge-yellow: #F5C842;
+    --doge-orange: #F07A3A;
+    --doge-brown: #C47A2A;
+    --bg: #0d0d0d;
+    --surface: #1a1a1a;
+    --surface2: #242424;
+    --border: #2e2e2e;
+    --text: #e8e8e8;
+    --muted: #888;
+    --radius: 12px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans KR', 'Noto Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.75;
+  }
+
+  /* ── Header ── */
+  header {
+    background: linear-gradient(135deg, #111 0%, #1a1a1a 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 28px 24px 20px;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+
+  .logo-circle {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    background: #2a2a2a;
+    border: 2px solid var(--doge-yellow);
+    overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+  }
+
+  .logo-text h1 {
+    font-size: 22px;
+    font-weight: 700;
+    background: linear-gradient(90deg, var(--doge-orange), var(--doge-yellow));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.5px;
+  }
+
+  .logo-text p {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  /* ── Lang Switcher ── */
+  .lang-bar {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .lang-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all .2s;
+    font-weight: 600;
+  }
+
+  .lang-btn.active,
+  .lang-btn:hover {
+    background: var(--doge-yellow);
+    color: #111;
+    border-color: var(--doge-yellow);
+  }
+
+  /* ── Main ── */
+  main {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+  }
+
+  .page-badge {
+    display: inline-block;
+    background: linear-gradient(90deg, var(--doge-orange), var(--doge-yellow));
+    color: #111;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+  }
+
+  .page-title {
+    font-size: clamp(26px, 5vw, 38px);
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 8px;
+  }
+
+  .page-meta {
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 40px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section {
+    margin-bottom: 36px;
+  }
+
+  .section-num {
+    display: inline-block;
+    background: var(--doge-yellow);
+    color: #111;
+    font-size: 10px;
+    font-weight: 700;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 22px;
+    margin-right: 10px;
+    vertical-align: middle;
+  }
+
+  .section h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 14px;
+  }
+
+  .section p, .section li {
+    color: #ccc;
+    margin-bottom: 8px;
+  }
+
+  .section ul, .section ol {
+    padding-left: 20px;
+    margin-top: 8px;
+  }
+
+  .section li {
+    margin-bottom: 6px;
+  }
+
+  .info-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--doge-yellow);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 16px 20px;
+    margin: 16px 0;
+  }
+
+  .info-box strong {
+    color: var(--doge-yellow);
+    display: block;
+    margin-bottom: 6px;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  footer {
+    text-align: center;
+    padding: 32px 20px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  footer a {
+    color: var(--doge-yellow);
+    text-decoration: none;
+  }
+
+  /* ── Lang content ── */
+  .lang-content { display: none; }
+  .lang-content.active { display: block; }
+:root{--bg:#f7f8f2;--surface:#fff;--surface2:#eff1e8;--border:#d8ddcf;--text:#25332b;--muted:#677264;--doge-yellow:#9b790e;--doge-orange:#745d17;--radius:5px}html[data-theme=dark]{--bg:#161e18;--surface:#1d2720;--surface2:#263029;--border:#37433a;--text:#eef0e8;--muted:#b0b9aa;--doge-yellow:#e4c95d;--doge-orange:#e4c95d}body{font-family:'Noto Sans KR','Noto Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.9}header{background:var(--surface);border-bottom:1px solid var(--border);text-align:left;padding:18px max(20px,calc((100vw - 880px)/2));position:static}.logo-row{justify-content:flex-start;gap:12px;margin-bottom:16px}.logo-circle{width:40px;height:40px;border:0;background:#f0cc4d;color:#25332b;font:800 22px sans-serif}.logo-text h1{font-size:18px;background:none;color:var(--text);-webkit-text-fill-color:var(--text);letter-spacing:-.5px}.logo-text p{font-size:10px;letter-spacing:.7px}.lang-bar{justify-content:flex-start;gap:7px}.lang-btn{border-radius:4px;background:var(--surface);color:var(--muted);padding:5px 10px;font-size:11px}.lang-btn.active,.lang-btn:hover{background:var(--surface2);color:var(--text);border-color:var(--muted)}main{max-width:880px;padding:48px 24px 72px}.page-badge{background:transparent;color:var(--muted);border-radius:0;padding:0;letter-spacing:1px;font-size:10px}.page-title{color:var(--text);font-size:clamp(27px,5vw,38px);letter-spacing:-1.3px}.page-meta{color:var(--muted);margin-bottom:36px}.section{margin-bottom:32px}.section-num{background:var(--surface2);color:var(--muted);border-radius:4px;font-size:11px;width:24px;height:24px;line-height:24px}.section h2{color:var(--text);font-size:17px;letter-spacing:-.3px}.section p,.section li{color:var(--text)}.info-box,.warn-box{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--doge-yellow);border-radius:4px;padding:16px 20px}.info-box strong,.warn-box strong{color:var(--doge-orange);font-size:12px;letter-spacing:.2px}footer{text-align:left;max-width:880px;margin:auto;padding:24px;color:var(--muted)}footer a{color:var(--text);text-decoration:underline;text-underline-offset:4px}.legal-headline{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}.legal-home{font-size:12px;text-decoration:none;color:var(--muted)}.legal-themes{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:14px}.legal-themes span{font-size:11px;color:var(--muted);margin-right:5px}.legal-themes button{font:inherit;font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:5px 10px;color:var(--text);cursor:pointer}.legal-themes button[aria-pressed=true]{background:#f0cc4d;color:#25332b;border-color:#c5a12b}.legal-themes button:focus-visible,.lang-btn:focus-visible{outline:2px solid var(--doge-yellow);outline-offset:2px}table{color:var(--text)}td,th{border-color:var(--border)}a{color:var(--doge-orange)}@media(max-width:600px){main{padding:30px 20px 50px}header{padding:18px 20px}.logo-text h1{font-size:16px}.lang-bar{gap:5px}}
+
+</style>
+<link rel="canonical" href="https://dogebot.kr/privacy/">
+<script>if(location.pathname==='/privacy.html')location.replace('/privacy/'+location.search+location.hash);</script>
+</head>
+<body>
+
+<header>
+  <div class="legal-headline"><div class="logo-row">
+    <div class="logo-circle" aria-hidden="true">D</div>
+    <div class="logo-text">
+      <h1>도지봇 DOGEBOT</h1>
+      <p>Dogebot Team</p>
+    </div>
+  </div>
+  <a class="legal-home" href="/">← 도지봇 홈</a></div>
+  <div class="legal-themes" role="group" aria-label="테마 변경"><span>테마 변경</span><button data-legal-theme="dark" onclick="setLegalTheme('dark')">다크</button><button data-legal-theme="white" onclick="setLegalTheme('white')">화이트</button><button data-legal-theme="system" onclick="setLegalTheme('system')">시스템</button></div>
+  <div class="lang-bar">
+    <button class="lang-btn active" onclick="setLang('ko')">🇰🇷 한국어</button>
+    <button class="lang-btn" onclick="setLang('en')">🇺🇸 English</button>
+    <button class="lang-btn" onclick="setLang('zh')">🇨🇳 中文</button>
+    <button class="lang-btn" onclick="setLang('ru')">🇷🇺 Русский</button>
+    <button class="lang-btn" onclick="setLang('fr')">🇫🇷 Français</button>
+  </div>
+</header>
+
+<main>
+
+<!-- ═══════════════ 한국어 ═══════════════ -->
+<div class="lang-content active" id="lang-ko">
+  <div class="page-badge">개인정보처리방침</div>
+  <h1 class="page-title">개인정보처리방침</h1>
+  <p class="page-meta">시행일: 2025년 1월 1일 &nbsp;|&nbsp; 최종 수정: 2025년 6월 28일</p>
+
+  <div class="section">
+    <h2><span class="section-num">1</span>총칙</h2>
+    <p>도지봇 팀(이하 "팀")은 Discord 봇 서비스 도지봇(이하 "봇")을 운영하며, 이용자의 개인정보 보호를 중요하게 생각합니다. 본 방침은 개인정보보호법, 정보통신망법 등 관계 법령에 따라 작성되었습니다.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="section-num">2</span>수집하는 개인정보 항목</h2>
+    <p>봇은 서비스 제공을 위해 다음의 정보를 수집할 수 있습니다.</p>
+    <ul>
+      <li>Discord 사용자 ID (고유 식별자)</li>
+      <li>Discord 서버(길드) ID</li>
+      <li>봇과의 명령어 사용 내역 및 로그</li>
+      <li>봇 기능 이용 중 이용자가 직접 입력한 데이터</li>
+    </ul>
+    <div class="info-box">
+      <strong>⚠️ 안내</strong>
+      봇은 이용자의 실명, 이메일, 전화번호 등 민감한 개인정보는 수집하지 않습니다.
+    </div>
+  </div>
+
+  <div class="section">
+    <h2><span class="section-num">3</span>개인정보 수집 및 이용 목적</h2>
+    <ul>
+      <li>봇 서비스의 제공 및 운영</li>
+      <li>서비스 품질 개선 및 오류 수정</li>
+      <li>불법·악의적 사용 탐지 및 제재</li>
+      <li>이용자 문의 및 민원 처리</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2><span class="section-num">4</span>개인정보 보유 및 파기</h2>
+    <p>수집된 개인정보는 서비스 이용 목적 달성 후 지체 없이 파기합니다. 단, 관련 법령에 따라 보존이 필요한 경우에는 해당 기간 동안 보관합니다.</p>
+    <ul>
+      <li>서버 탈퇴 또는 봇 제거 시: 해당 서버 데이터 30일 이내 파기</li>
+      <li>이용자 삭제 요청 시: 즉시 파기</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2><span class="section-num">5</span>개인정보의 제3자 제공</h2>
+    <p>팀은 이용자의 개인정보를 원칙적으로 외부에 제공하지 않습니다. 다만, 아래의 경우는 예외로 합니다.</p>
+    <ul>
+      <li>이용자가 사전에 동의한 경우</li>
+      <li>법령의 규정에 의거하거나, 수사기관의 적법한 요청이 있는 경우</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2><span class="section-num">6</span>이용자의 권리</h2>
+    <p>이용자는 언제든지 자신의 개인정보에 대한 열람, 정정, 삭제, 처리 정지를 요청할 수 있습니다. 요청은 아래 연락처로 문의하여 주시기 바랍니다.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="section-num">7</span>쿠키 및 분석 도구</h2>
+    <p>봇 자체는 쿠키를 사용하지 않습니다. 단, 웹 대시보드가 있는 경우 세션 유지를 위한 최소한의 쿠키를 사용할 수 있습니다.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="section-num">8</span>개인정보 보호책임자</h2>
+    <div class="info-box">
+      <strong>연락처</strong>
+      도지봇 팀 &nbsp;|&nbsp; Discord 서버 또는 공식 채널을 통해 문의해 주세요.<br>
+      방침 변경 시 Discord 서버 내 공지 또는 본 페이지를 통해 사전 고지합니다.
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ English ═══════════════ -->
+<div class="lang-content" id="lang-en">
+  <div class="page-badge">Privacy Policy</div>
+  <h1 class="page-title">Privacy Policy</h1>
+  <p class="page-meta">Effective: January 1, 2025 &nbsp;|&nbsp; Last updated: June 28, 2025</p>
+
+  <div class="section">
+    <h2><span class="section-num">1</span>Introduction</h2>
+    <p>The Dogebot Team ("we", "us") operates the Discord bot Dogebot ("the Bot"). We are committed to protecting your privacy. This policy is designed to help you understand what information we collect, why we collect it, and how you can control it.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="section-num">2</span>Information We Collect</h2>
+    <p>To operate the Bot, we may collect the following information:</p>
+    <ul>
+      <li>Discord User ID (unique identifier)</li>
+      <li>Discord Server (Guild) ID</li>
+      <li>Command usage history and logs</li>
+      <li>Data you directly provide while using Bot features</li>
+    </ul>
+    <div class="info-box">
+      <strong>⚠️ Note</strong>
+      We do not collect sensitive personal information such as your real name, email address, or phone number.
+    </div>
+  </div>
+
+  <div class="section">
+    <h2><span class="section-num">3</span>How We Use Information</h2>
+    <ul>
+      <li>To provide and operate the Bot service</li>
+      <li>To improve service quality and fix bugs</li>
+      <li>To detect and prevent abuse or malicious use</li>
+      <li>To respond to user inquiries and support requests</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2><span class="section-num">4</span>Data Retention & Deletion</h2>
+    <p>Collected data is deleted promptly once it is no longer needed for its intended purpose.</p>
+    <ul>
+      <li>When the Bot is removed from a server: server data deleted within 30 days</li>
+      <li>Upon user deletion request: deleted immediately</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2><span class="section-num">5</span>Third-Party Sharing</h2>
+    <p>We do not share your personal data with third parties, except in the following circumstances:</p>
+    <ul>
+      <li>You have given prior consent</li>
+      <li>Required by applicable law or a lawful request from law enforcement</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2><span class="section-num">6</span>Your Rights</h2>
+    <p>You may request access to, correction of, or deletion of your data at any time. To exercise these rights, please contact us through the channels listed below.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="section-num">7</span>Cookies</h2>
+    <p>The Bot itself does not use cookies. If a web dashboard is provided, minimal session cookies may be used solely to maintain your login state.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="section-num">8</span>Contact</h2>
+    <div class="info-box">
+      <strong>Contact Us</strong>
+      Dogebot Team &nbsp;|&nbsp; Please reach out via our official Discord server or support channels.<br>
+      Any changes to this policy will be announced in our Discord server and updated on this page.
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ 中文 ═══════════════ -->
+<div class="lang-content" id="lang-zh">
+  <div class="page-badge">隐私政策</div>
+  <h1 class="page-title">隐私政策</h1>
+  <p class="page-meta">生效日期：2025年1月1日 &nbsp;|&nbsp; 最后更新：2025年6月28日</p>
+
+  <div class="section">
+    <h2><span class="section-num">1</span>简介</h2>
+    <p>DogeBot 团队（以下简称"我们"）运营 Discord 机器人 DogeBot（以下简称"机器人"）。我们高度重视您的隐私保护，本政策旨在说明我们收集哪些信息、为何收集以及如何使用这些信息。</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="section-num">2</span>我们收集的信息</h2>
+    <p>为提供服务，我们可能收集以下信息：</p>
+    <ul>
+      <li>Discord 用户 ID（唯一标识符）</li>
+      <li>Discord 服务器（Guild）ID</li>
+      <li>命令使用记录及日志</li>
+      <li>您在使用机器人功能时主动提供的数据</li>
+    </ul>
+    <div class="info-box">
+      <strong>⚠️ 说明</strong>
+      我们不收集您的真实姓名、电子邮件地址或电话号码等敏感个人信息。
+    </div>
+  </div>
+
+  <div class="section">
+    <h2><span class="section-num">3</span>信息使用目的</h2>
+    <ul>
+      <li>提供及运营机器人服务</li>
+      <li>改善服务质量及修复错误</li>
+      <li>检测和防止滥用或恶意行为</li>
+      <li>处理用户咨询和支持请求</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2><span class="section-num">4</span>数据保留与删除</h2>
+    <p>当收集的数据不再用于其既定目的后，我们将及时予以删除。</p>
+    <ul>
+      <li>机器人从服务器中移除时：30天内删除服务器数据</li>
+      <li>用户提出删除请求时：立即删除</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2><span class="section-num">5</span>第三方共享</h2>
+    <p>我们不会将您的个人数据共享给第三方，以下情况除外：</p>
+    <ul>
+      <li>您事先已同意</li>
+      <li>适用法律要求或执法机构的合法请求</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2><span class="section-num">6</span>您的权利</h2>
+    <p>您可以随时请求查阅、更正或删除您的数据。如需行使上述权利，请通过以下方式联系我们。</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="section-num">7</span>Cookie</h2>
+    <p>机器人本身不使用 Cookie。如提供网页控制台，可能仅使用最少量的会话 Cookie 以维持登录状态。</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="section-num">8</span>联系方式</h2>
+    <div class="info-box">
+      <strong>联系我们</strong>
+      DogeBot 团队 &nbsp;|&nbsp; 请通过官方 Discord 服务器或支持频道与我们联系。<br>
+      本政策如有变更，将在 Discord 服务器公告并在本页面更新。
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ Русский ═══════════════ -->
+<div class="lang-content" id="lang-ru">
+  <div class="page-badge">Политика конфиденциальности</div>
+  <h1 class="page-title">Политика конфиденциальности</h1>
+  <p class="page-meta">Дата вступления в силу: 1 января 2025 г. &nbsp;|&nbsp; Последнее обновление: 28 июня 2025 г.</p>
+
+  <div class="section">
+    <h2><span class="section-num">1</span>Введение</h2>
+    <p>Команда Dogebot («мы») управляет Discord-ботом Dogebot («Бот»). Мы серьёзно относимся к защите вашей конфиденциальности. Настоящая политика описывает, какие данные мы собираем, с какой целью и каким образом вы можете ими управлять.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="section-num">2</span>Собираемые данные</h2>
+    <p>Для предоставления услуг мы можем собирать следующие данные:</p>
+    <ul>
+      <li>Discord User ID (уникальный идентификатор)</li>
+      <li>ID сервера (гильдии) Discord</li>
+      <li>История использования команд и журналы</li>
+      <li>Данные, введённые вами при использовании функций Бота</li>
+    </ul>
+    <div class="info-box">
+      <strong>⚠️ Примечание</strong>
+      Мы не собираем конфиденциальные персональные данные: ФИО, адрес электронной почты, номер телефона и т.д.
+    </div>
+  </div>
+
+  <div class="section">
+    <h2><span class="section-num">3</span>Цели использования данных</h2>
+    <ul>
+      <li>Предоставление и работа сервиса Бота</li>
+      <li>Улучшение качества сервиса и исправление ошибок</li>
+      <li>Выявление и предотвращение злоупотреблений</li>
+      <li>Обработка обращений и запросов пользователей</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2><span class="section-num">4</span>Хранение и удаление данных</h2>
+    <p>Собранные данные удаляются незамедлительно после достижения цели их сбора.</p>
+    <ul>
+      <li>При удалении Бота с сервера: данные сервера удаляются в течение 30 дней</li>
+      <li>По запросу пользователя на удаление: немедленное удаление</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2><span class="section-num">5</span>Передача данных третьим лицам</h2>
+    <p>Мы не передаём ваши персональные данные третьим лицам, за исключением следующих случаев:</p>
+    <ul>
+      <li>Вы дали предварительное согласие</li>
+      <li>Требования применимого законодательства или законный запрос правоохранительных органов</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2><span class="section-num">6</span>Ваши права</h2>
+    <p>Вы можете в любое время запросить доступ к своим данным, их исправление или удаление. Для этого свяжитесь с нами по указанным ниже контактам.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="section-num">7</span>Файлы cookie</h2>
+    <p>Бот не использует файлы cookie. Если предоставляется веб-панель, могут использоваться минимально необходимые сессионные cookie для поддержания состояния входа.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="section-num">8</span>Контакты</h2>
+    <div class="info-box">
+      <strong>Связаться с нами</strong>
+      Команда Dogebot &nbsp;|&nbsp; Пожалуйста, обратитесь к нам через официальный сервер Discord или каналы поддержки.<br>
+      Любые изменения в политике будут объявлены на сервере Discord и обновлены на этой странице.
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ Français ═══════════════ -->
+<div class="lang-content" id="lang-fr">
+  <div class="page-badge">Politique de confidentialité</div>
+  <h1 class="page-title">Politique de confidentialité</h1>
+  <p class="page-meta">En vigueur : 1er janvier 2025 &nbsp;|&nbsp; Dernière mise à jour : 28 juin 2025</p>
+
+  <div class="section">
+    <h2><span class="section-num">1</span>Introduction</h2>
+    <p>L'équipe Dogebot («&nbsp;nous&nbsp;») exploite le bot Discord Dogebot («&nbsp;le Bot&nbsp;»). Nous nous engageons à protéger votre vie privée. Cette politique explique quelles informations nous collectons, pourquoi nous les collectons et comment vous pouvez les contrôler.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="section-num">2</span>Informations collectées</h2>
+    <p>Pour fournir le service, nous pouvons collecter les informations suivantes :</p>
+    <ul>
+      <li>Identifiant utilisateur Discord (identifiant unique)</li>
+      <li>Identifiant du serveur (guilde) Discord</li>
+      <li>Historique d'utilisation des commandes et journaux</li>
+      <li>Données que vous saisissez directement lors de l'utilisation des fonctionnalités du Bot</li>
+    </ul>
+    <div class="info-box">
+      <strong>⚠️ Remarque</strong>
+      Nous ne collectons pas d'informations personnelles sensibles telles que votre nom réel, votre adresse e-mail ou votre numéro de téléphone.
+    </div>
+  </div>
+
+  <div class="section">
+    <h2><span class="section-num">3</span>Utilisation des informations</h2>
+    <ul>
+      <li>Fournir et exploiter le service Bot</li>
+      <li>Améliorer la qualité du service et corriger les bugs</li>
+      <li>Détecter et prévenir les abus ou utilisations malveillantes</li>
+      <li>Répondre aux demandes et au support des utilisateurs</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2><span class="section-num">4</span>Conservation et suppression des données</h2>
+    <p>Les données collectées sont supprimées dès qu'elles ne sont plus nécessaires à leur finalité.</p>
+    <ul>
+      <li>Lorsque le Bot est retiré d'un serveur : données du serveur supprimées dans les 30 jours</li>
+      <li>Sur demande de suppression de l'utilisateur : suppression immédiate</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2><span class="section-num">5</span>Partage avec des tiers</h2>
+    <p>Nous ne partageons pas vos données personnelles avec des tiers, sauf dans les cas suivants :</p>
+    <ul>
+      <li>Vous avez donné votre consentement préalable</li>
+      <li>Exigé par la loi applicable ou demande légale des forces de l'ordre</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2><span class="section-num">6</span>Vos droits</h2>
+    <p>Vous pouvez à tout moment demander l'accès, la rectification ou la suppression de vos données. Pour exercer ces droits, veuillez nous contacter via les canaux indiqués ci-dessous.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="section-num">7</span>Cookies</h2>
+    <p>Le Bot lui-même n'utilise pas de cookies. Si un tableau de bord web est proposé, des cookies de session minimaux peuvent être utilisés uniquement pour maintenir votre état de connexion.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="section-num">8</span>Contact</h2>
+    <div class="info-box">
+      <strong>Nous contacter</strong>
+      Équipe Dogebot &nbsp;|&nbsp; Veuillez nous contacter via notre serveur Discord officiel ou nos canaux de support.<br>
+      Toute modification de cette politique sera annoncée sur notre serveur Discord et mise à jour sur cette page.
+    </div>
+  </div>
+</div>
+
+</main>
+
+<footer>
+  <p>🐕 <strong>도지봇 팀 · Dogebot Team</strong></p>
+  <p style="margin-top:6px;">
+    <a href="/privacy/">개인정보처리방침</a> &nbsp;·&nbsp;
+    <a href="/terms/">이용약관</a>
+  </p>
+  <p style="margin-top:10px; font-size:12px;">© 2025 Dogebot Team. All rights reserved.</p>
+</footer>
+
+<script>
+  function setLang(lang) {
+    document.querySelectorAll('.lang-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.lang-btn').forEach(el => el.classList.remove('active'));
+    document.getElementById('lang-' + lang).classList.add('active');
+    document.querySelectorAll('.lang-btn').forEach(btn=>btn.classList.toggle('active',btn.getAttribute('onclick')===`setLang('${lang}')`));
+    document.documentElement.lang = lang;
+  }
+</script>
+</body>
+</html>
