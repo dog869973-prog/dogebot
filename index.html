@@ -1126,6 +1126,12 @@ html[data-background] .bodytext strong,html[data-background] .qna-q{color:var(--
 .ds-notice-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:18px}.ds-notice-heading h2{min-width:0;overflow-wrap:anywhere}.ds-notice-thumb{width:80px;height:80px;object-fit:contain;border-radius:8px;flex:none}.ds-notice-image{display:block;max-width:100%;max-height:560px;object-fit:contain;border-radius:8px;margin:16px 0}.ds-notice-poll{max-width:540px;margin:16px 0}.ds-notice-poll .ds-note{color:#bbb!important;font-size:12px;line-height:1.6}.ds-notice-poll strong{overflow-wrap:anywhere}
 </style><style>
 .an-answer-emoji[hidden]{display:none!important}.an-answer-edit{grid-template-columns:minmax(110px,.8fr) minmax(0,1fr) auto}.an-answer-pick{justify-content:flex-start;overflow:hidden}.an-answer-pick img{flex:none}.an-answer-pick .an-emoji-name{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.an-emoji-grid{grid-template-columns:1fr}.an-emoji-cell{display:flex;align-items:center;justify-content:flex-start;gap:10px;font-size:14px;text-align:left}.an-emoji-cell img{flex:none}.an-emoji-cell .an-emoji-name{overflow-wrap:anywhere;min-width:0}.an-emoji-cell small{margin-left:auto;font-size:10px;opacity:.7}.an-emoji-grid-standard{grid-template-columns:repeat(auto-fill,minmax(38px,1fr))}.an-emoji-grid-standard .an-emoji-cell{justify-content:center;font-size:28px}
+</style><style>
+#an_target_picker,#ds_target_picker{display:block!important;max-width:640px;margin:16px 0 24px;padding:16px;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+#an_target_picker .preset-label,#ds_target_picker .preset-label{display:block;margin-bottom:8px;font-weight:700}
+#an_target_toggle,#ds_target_toggle{display:flex!important;min-height:46px;border:1px solid var(--doge-orange)}
+#an_target_panel,#ds_target_panel{position:relative;top:auto;margin-top:10px;box-shadow:none}
+#an_target_panel[hidden],#ds_target_panel[hidden],#an_target_sort_wrap[hidden],#ds_target_sort_wrap[hidden]{display:none!important}
 </style></head>
 <body>
 <div id="officeRouteIntro" hidden style="position:relative;padding:22px 24px;border-bottom:1px solid var(--line);background:var(--panel);color:var(--ink)"><strong>도지봇 문서 편집기</strong><p style="margin:8px 0;font-size:13px">디스코드로 로그인하면 문서가 열립니다. 문서는 홈페이지의 문서함에서 만들고 ‘열기’를 눌러 주세요.</p><a href="/" style="color:inherit">← 도지봇 홈페이지</a></div>
@@ -1866,6 +1872,22 @@ html[data-background] .bodytext strong,html[data-background] .qna-q{color:var(--
       <div class="section-title"><span class="tri">📢</span><span>전체공지</span></div>
       <p style="font-size:13px;color:var(--ink-faint);margin:0 0 18px;">대상 서버를 선택하거나 모든 서버에 발송할 수 있어요. 도지봇이 참여 중이고 공지채널이 활성화된 서버만 대상이에요.</p>
 
+          <div class="preset-field-group an-target" id="an_target_picker">
+            <label class="preset-label" id="an_target_label">발송 대상 서버</label>
+            <button type="button" id="an_target_toggle" class="modal-input an-target-toggle" aria-labelledby="an_target_label an_target_name" aria-haspopup="listbox" aria-expanded="false" onclick="toggleAnnounceTargets()"><span id="an_target_name">모든 서버에 발송</span><span aria-hidden="true">⌄</span></button>
+            <div id="an_target_panel" class="an-target-panel" hidden>
+              <div class="an-target-search-row">
+                <input id="an_target_search" class="modal-input" type="search" placeholder="검색하려면 여기를 누르세요.." aria-label="발송 대상 서버 검색" oninput="renderAnnounceTargets()">
+                <button type="button" id="an_target_sort_toggle" class="btn-preset-action" title="서버 정렬" aria-label="서버 정렬" aria-expanded="false" onclick="toggleAnnounceSort()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 4h18l-7 8v7l-4 2V12Z"/></svg></button>
+              </div>
+              <div id="an_target_sort_wrap" hidden><label for="an_target_sort">정렬</label><select id="an_target_sort" class="modal-input" onchange="renderAnnounceTargets()"><option value="lower">a~z · 소문자 우선</option><option value="upper">A~Z · 대문자 우선</option><option value="consonant">ㄱ~ㅎ · 한글 초성순</option><option value="vowel">ㅏ~ㅣ · 한글 모음순</option></select></div>
+              <div id="an_target_options" role="listbox" aria-label="발송 대상 서버"></div>
+              <p id="an_target_status" role="status" style="font-size:12px;margin:8px 4px;color:var(--ink-faint)"></p>
+              <button type="button" class="btn-preset-action" onclick="loadAnnounceTargets()">목록 새로고침</button>
+            </div>
+            <small style="color:var(--ink-faint)">선택하지 않으면 모든 대상 서버에 발송돼요.</small>
+          </div>
+
       <div class="preset-form-grid">
         <div class="preset-form-side">
           <div class="preset-field-group">
@@ -1932,21 +1954,6 @@ html[data-background] .bodytext strong,html[data-background] .qna-q{color:var(--
               <select class="modal-input" id="an_poll_after_paragraph" aria-label="투표 삽입 문단" onchange="updateAnnouncePreview()" hidden></select>
               <p style="font-size:12px;color:var(--ink-faint)">같은 문단 뒤에서는 이미지 → 투표 순서예요. 디스코드에는 순서대로 나눠 전송되며, 모든 서버의 투표가 하나로 집계돼요.</p>
             </div>
-          </div>
-          <div class="preset-field-group an-target" id="an_target_picker">
-            <label class="preset-label" id="an_target_label">발송 대상 서버</label>
-            <button type="button" id="an_target_toggle" class="modal-input an-target-toggle" aria-labelledby="an_target_label an_target_name" aria-haspopup="listbox" aria-expanded="false" onclick="toggleAnnounceTargets()"><span id="an_target_name">모든 서버에 발송</span><span aria-hidden="true">⌄</span></button>
-            <div id="an_target_panel" class="an-target-panel" hidden>
-              <div class="an-target-search-row">
-                <input id="an_target_search" class="modal-input" type="search" placeholder="검색하려면 여기를 누르세요.." aria-label="발송 대상 서버 검색" oninput="renderAnnounceTargets()">
-                <button type="button" id="an_target_sort_toggle" class="btn-preset-action" title="서버 정렬" aria-label="서버 정렬" aria-expanded="false" onclick="toggleAnnounceSort()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 4h18l-7 8v7l-4 2V12Z"/></svg></button>
-              </div>
-              <div id="an_target_sort_wrap" hidden><label for="an_target_sort">정렬</label><select id="an_target_sort" class="modal-input" onchange="renderAnnounceTargets()"><option value="lower">a~z · 소문자 우선</option><option value="upper">A~Z · 대문자 우선</option><option value="consonant">ㄱ~ㅎ · 한글 초성순</option><option value="vowel">ㅏ~ㅣ · 한글 모음순</option></select></div>
-              <div id="an_target_options" role="listbox" aria-label="발송 대상 서버"></div>
-              <p id="an_target_status" role="status" style="font-size:12px;margin:8px 4px;color:var(--ink-faint)"></p>
-              <button type="button" class="btn-preset-action" onclick="loadAnnounceTargets()">목록 새로고침</button>
-            </div>
-            <small style="color:var(--ink-faint)">선택하지 않으면 모든 대상 서버에 발송돼요.</small>
           </div>
           <button id="an_send" class="modal-submit" onclick="sendGlobalAnnouncement()">📤 전체 서버에 전송</button>
         </div>
@@ -2172,7 +2179,22 @@ html[data-background] .bodytext strong,html[data-background] .qna-q{color:var(--
     </section>
 
     <footer data-i18n="footer">© 2025 도지봇 | DOGE BOT. All rights reserved.</footer>
-<section class="page" id="page-notices"><div class="dsupport"><div class="ds-eyebrow">DOGE BOT · NEWS</div><h1>도지봇 공지</h1><p class="ds-sub">도지봇의 새로운 소식과 업데이트를 확인하세요.</p><button class="ds-btn" onclick="dsNotices()">새로고침</button><div id="dsNoticeEditor" hidden><form id="dsNoticeForm" class="ds-card"><h2>웹 공지 작성</h2><p class="ds-note">이곳에서 게시하면 웹에 공개돼요. 기존 ‘전체공지’에서 전송한 공지도 웹에 함께 표시됩니다.</p><label class="ds-field">공지 제목<input id="dsNoticeTitle" class="ds-input" maxlength="120" required></label><label class="ds-field">내용<textarea id="dsNoticeBody" class="ds-input" maxlength="20000" required></textarea></label><div class="ds-actions"><button class="ds-btn primary" id="dsPublish">웹 공지 게시</button></div><p id="dsPublishMsg" class="ds-msg" role="status"></p></form></div><div id="dsNotices"></div></div></section>
+<section class="page" id="page-notices"><div class="dsupport"><div class="ds-eyebrow">DOGE BOT · NEWS</div><h1>도지봇 공지</h1><p class="ds-sub">도지봇의 새로운 소식과 업데이트를 확인하세요.</p>          <div class="preset-field-group an-target" id="ds_target_picker">
+            <label class="preset-label" id="ds_target_label">조회할 서버</label>
+            <button type="button" id="ds_target_toggle" class="modal-input an-target-toggle" aria-labelledby="ds_target_label ds_target_name" aria-haspopup="listbox" aria-expanded="false" onclick="toggleNoticeServers()"><span id="ds_target_name">모든 서버 공지</span><span aria-hidden="true">⌄</span></button>
+            <div id="ds_target_panel" class="an-target-panel" hidden>
+              <div class="an-target-search-row">
+                <input id="ds_target_search" class="modal-input" type="search" placeholder="검색하려면 여기를 누르세요.." aria-label="조회할 서버 검색" oninput="renderNoticeServers()">
+                <button type="button" id="ds_target_sort_toggle" class="btn-preset-action" title="서버 정렬" aria-label="서버 정렬" aria-expanded="false" onclick="toggleNoticeServerSort()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 4h18l-7 8v7l-4 2V12Z"/></svg></button>
+              </div>
+              <div id="ds_target_sort_wrap" hidden><label for="ds_target_sort">정렬</label><select id="ds_target_sort" class="modal-input" onchange="renderNoticeServers()"><option value="lower">a~z · 소문자 우선</option><option value="upper">A~Z · 대문자 우선</option><option value="consonant">ㄱ~ㅎ · 한글 초성순</option><option value="vowel">ㅏ~ㅣ · 한글 모음순</option></select></div>
+              <div id="ds_target_options" role="listbox" aria-label="조회할 서버"></div>
+              <p id="ds_target_status" role="status" style="font-size:12px;margin:8px 4px;color:var(--ink-faint)"></p>
+              <button type="button" class="btn-preset-action" onclick="loadNoticeServers()">목록 새로고침</button>
+            </div>
+            <small style="color:var(--ink-faint)">선택한 서버에 실제 발송된 공지를 조회합니다. 웹 공통 공지도 함께 표시돼요.</small>
+          </div>
+<button class="ds-btn" onclick="dsNotices()">새로고침</button><div id="dsNoticeEditor" hidden><form id="dsNoticeForm" class="ds-card"><h2>웹 공지 작성</h2><p class="ds-note">이곳에서 게시하면 웹에 공개돼요. 기존 ‘전체공지’에서 전송한 공지도 웹에 함께 표시됩니다.</p><label class="ds-field">공지 제목<input id="dsNoticeTitle" class="ds-input" maxlength="120" required></label><label class="ds-field">내용<textarea id="dsNoticeBody" class="ds-input" maxlength="20000" required></textarea></label><div class="ds-actions"><button class="ds-btn primary" id="dsPublish">웹 공지 게시</button></div><p id="dsPublishMsg" class="ds-msg" role="status"></p></form></div><div id="dsNotices"></div></div></section>
 
 <section class="page" id="page-support"><div class="dsupport"><div class="ds-eyebrow">DOGE BOT · SUPPORT</div><h1>어떤 도움이 필요하세요?</h1><p class="ds-sub">작은 불편부터 새로운 아이디어까지.<br>도지봇 개발자에게 직접 문의를 남겨주세요.</p>
 <form id="dsForm" class="ds-card"><div class="ds-platforms"><button type="button" class="ds-choice" data-platform="kakao" aria-pressed="false"><strong>💬 카카오톡</strong><span>카카오톡 도지봇 문의</span></button><button type="button" class="ds-choice" data-platform="discord" aria-pressed="true"><strong>🎮 디스코드</strong><span>디스코드 도지봇 문의</span></button></div>
@@ -5499,6 +5521,91 @@ function dsNoticeBody(source){
 
 // Forward-only media snapshots are published by the database when delivery completes.
 // Keep the existing web-notice writer and its history intact.
+let noticeServers=[];
+let noticeServerId=null;
+let noticeServersLoading=false;
+let noticeServersLoaded=false;
+let noticeServersLoadPromise=null;
+function updateNoticeServerLabel(){
+  const label=document.getElementById('ds_target_name');label.replaceChildren();
+  const selected=noticeServers.find(g=>g.guild_id===noticeServerId);
+  if(selected){label.append(announceServerIcon(selected),document.createTextNode(selected.guild_name));}
+  else label.textContent=noticeServerId?'선택 서버 사용 불가 · 다시 선택해주세요':'모든 서버 공지';
+
+}
+function selectNoticeServer(id){
+  noticeServerId=id;
+  updateNoticeServerLabel();renderNoticeServers();
+  document.getElementById('ds_target_panel').hidden=true;
+  document.getElementById('ds_target_toggle').setAttribute('aria-expanded','false');
+  document.getElementById('ds_target_toggle').focus();
+  void dsNotices();
+}
+function renderNoticeServers(){
+  const list=document.getElementById('ds_target_options');list.replaceChildren();
+  const add=(server)=>{
+    const button=document.createElement('button');button.type='button';button.className='an-target-option'+(server?'':' an-target-all');button.setAttribute('role','option');button.setAttribute('aria-selected',String((server?.guild_id||null)===noticeServerId));
+    if(server)button.append(announceServerIcon(server));
+    const name=document.createElement('span');name.textContent=server?server.guild_name:'모든 서버 공지';button.append(name);button.onclick=()=>selectNoticeServer(server?.guild_id||null);list.append(button);
+  };
+  add(null); // Always first, including during searches and every sort mode.
+  const search=document.getElementById('ds_target_search').value.trim().toLocaleLowerCase();
+  const mode=document.getElementById('ds_target_sort').value;
+  const filtered=noticeServers.filter(g=>g.guild_name.toLocaleLowerCase().includes(search)).sort((a,b)=>compareAnnounceTargets(a,b,mode));
+  filtered.forEach(add);
+  if(!filtered.length){const empty=document.createElement('p');empty.textContent=noticeServersLoading?'불러오는 중…':search?'검색 결과가 없어요.':'선택할 수 있는 서버가 없어요.';list.append(empty);}
+}
+async function loadNoticeServers(){
+  if(noticeServersLoadPromise)return noticeServersLoadPromise;
+  noticeServersLoadPromise=(async()=>{
+    const status=document.getElementById('ds_target_status');noticeServersLoading=true;status.textContent='서버 목록을 불러오는 중…';renderNoticeServers();
+    try{
+      const {data:catalog,error}=await sb.from('announcement_server_catalog').select('servers,updated_at').eq('id',1).maybeSingle();
+      if(error)throw error;if(!catalog)throw new Error('SQL 적용 후 봇을 재시작해주세요.');
+      // Recheck current settings so disabling the channel immediately removes its entry.
+      const {data:settings,error:settingsError}=await sb.from('guild_settings').select('guild_id,announce_channel').not('announce_channel','is',null);
+      if(settingsError)throw settingsError;
+      const channels=new Map((settings||[]).map(s=>[s.guild_id,s.announce_channel]));
+      noticeServers=(Array.isArray(catalog.servers)?catalog.servers:[]).filter(g=>/^\d{17,20}$/.test(g.guild_id)&&channels.get(g.guild_id)===g.announce_channel);
+      noticeServersLoaded=true;
+      status.textContent=`선택 가능한 서버 ${noticeServers.length}개 · 봇 확인 ${new Date(catalog.updated_at).toLocaleString()}`;
+      return true;
+    }catch(e){noticeServers=[];noticeServersLoaded=false;status.textContent='목록을 불러오지 못했어요: '+e.message;return false;}
+    finally{noticeServersLoading=false;renderNoticeServers();updateNoticeServerLabel();}
+  })();
+  try{return await noticeServersLoadPromise;}finally{noticeServersLoadPromise=null;}
+}
+async function toggleNoticeServers(){
+  const panel=document.getElementById('ds_target_panel');panel.hidden=!panel.hidden;
+  document.getElementById('ds_target_toggle').setAttribute('aria-expanded',String(!panel.hidden));
+  if(!panel.hidden){document.getElementById('ds_target_search').focus();await loadNoticeServers();}
+}
+function toggleNoticeServerSort(){
+  const wrap=document.getElementById('ds_target_sort_wrap');wrap.hidden=!wrap.hidden;
+  document.getElementById('ds_target_sort_toggle').setAttribute('aria-expanded',String(!wrap.hidden));
+  if(!wrap.hidden)document.getElementById('ds_target_sort').focus();
+}
+document.addEventListener('click',e=>{
+  const picker=document.getElementById('ds_target_picker');
+  if(picker && !picker.contains(e.target)){document.getElementById('ds_target_panel').hidden=true;document.getElementById('ds_target_toggle').setAttribute('aria-expanded','false');}
+});
+document.getElementById('ds_target_picker').addEventListener('keydown',e=>{
+  const panel=document.getElementById('ds_target_panel');
+  if(e.key==='Escape'){panel.hidden=true;document.getElementById('ds_target_toggle').setAttribute('aria-expanded','false');document.getElementById('ds_target_toggle').focus();return;}
+  if(panel.hidden || !['ArrowDown','ArrowUp','Home','End'].includes(e.key) || e.target.tagName==='SELECT')return;
+  if(e.target.id==='ds_target_search' && ['Home','End'].includes(e.key))return;
+  const options=[...document.querySelectorAll('#ds_target_options button')];if(!options.length)return;
+  e.preventDefault();const i=options.indexOf(document.activeElement);
+  const next=e.key==='Home'?0:e.key==='End'?options.length-1:e.key==='ArrowDown'?(i+1)%options.length:(i-1+options.length)%options.length;
+  options[next].focus();
+});
+
+
+function dsNoticeMatchesServer(row,id){
+ if(!id)return true;
+ if(!row.announcement_id)return true; // Web-only notices are common to all servers.
+ return row.scope_known===true && Array.isArray(row.delivered_guild_ids) && row.delivered_guild_ids.includes(id);
+}
 function dsMergeNoticeMedia(notices,media){
  const rows=notices.map(n=>({...n})),used=new Set();
  const sameText=(a,b)=>String(a.title||'')===String(b.title||'')&&String(a.body||'')===String(b.body||'');
@@ -5538,6 +5645,7 @@ function dsNoticePoll(poll,state){
 }
 function dsNoticeCard(r){
  const card=dsText('article','','ds-card');card.append(dsText('p',dsDate(r.created_at),'ds-note'));
+ if(r.scope_known)card.append(dsText('p',r.target_guild_id?`발송 대상: ${r.target_guild_name||'선택 서버'}`:'발송 대상: 모든 서버','ds-note'));
  const heading=dsText('div','','ds-notice-heading');heading.append(dsText('h2',r.title));
  if(r.image_url && r.image_position==='thumbnail'){const img=dsNoticeImage(r.image_url,true);if(img)heading.append(img);}
  card.append(heading);
@@ -5555,17 +5663,18 @@ async function dsNotices(){
  try{
   const [noticesResult,mediaResult]=await Promise.all([
    sb.from('doge_web_notices').select('*').order('created_at',{ascending:false}).limit(100),
-   sb.from('doge_announcement_log_media').select('announcement_id,title,body,created_at,image_url,image_position,image_after_paragraph,poll').order('created_at',{ascending:false}).limit(100)
+   sb.from('doge_announcement_log_media').select('announcement_id,title,body,created_at,image_url,image_position,image_after_paragraph,poll,target_guild_id,target_guild_name,delivered_guild_ids,scope_known').order('created_at',{ascending:false}).limit(100)
   ]);
   if(request!==dsNoticesRequest)return;
   const notices=dsCheck(noticesResult),media=mediaResult.error?[]:(mediaResult.data||[]);
+  if(noticeServerId && mediaResult.error){target.replaceChildren(dsText('p','서버별 공지 기록을 확인하지 못했어요. SQL 적용 후 다시 조회해주세요.','ds-msg'));return;}
   const pollIds=media.filter(m=>m.poll).map(m=>String(m.announcement_id));
   const pollsResult=pollIds.length?await sb.from('doge_global_poll_results').select('*').in('announcement_id',pollIds):{data:[]};
   if(request!==dsNoticesRequest)return;
   const states=new Map((pollsResult.data||[]).map(p=>[String(p.announcement_id),p]));
-  const rows=dsMergeNoticeMedia(notices||[],media).map(r=>({...r,global_poll:states.get(String(r.announcement_id))}));target.replaceChildren();
+  const rows=dsMergeNoticeMedia(notices||[],media).filter(r=>dsNoticeMatchesServer(r,noticeServerId)).map(r=>({...r,global_poll:states.get(String(r.announcement_id))}));target.replaceChildren();
   if(mediaResult.error)target.append(dsText('p','이미지·투표 로그를 불러오지 못했어요. SQL 적용 여부를 확인한 후 새로고침해주세요.','ds-msg'));
-  if(!rows.length)target.append(dsText('div','아직 등록된 공지가 없어요.','ds-empty'));
+  if(!rows.length)target.append(dsText('div',noticeServerId?'최근 공지 중 선택한 서버에 발송된 기록이 없어요.':'아직 등록된 공지가 없어요.','ds-empty'));
   for(const r of rows)target.append(dsNoticeCard(r));
  }catch(e){if(request===dsNoticesRequest)target.replaceChildren(dsText('p',dsError(e),'ds-msg'));}
 }
