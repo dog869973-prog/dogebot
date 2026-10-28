@@ -1118,7 +1118,11 @@ html[data-background] .bodytext strong,html[data-background] .qna-q{color:var(--
 <style>
 .an-answer-edit{display:grid;grid-template-columns:1fr 1fr auto;gap:6px;margin:10px 0}.an-poll-card{background:#232220;color:#eee;border:1px solid #353432;border-radius:9px;padding:14px;margin:10px 0;font-size:14px}.an-poll-choice{display:flex;gap:10px;align-items:center;background:#2e2c29;border-radius:8px;padding:12px;margin:8px 0}.an-poll-emoji{width:28px;height:28px;object-fit:contain}.an-poll-circle{margin-left:auto;font-size:22px}.an-poll-footer{display:flex;justify-content:space-between;gap:12px;font-size:12px;margin-top:16px}.an-poll-vote{background:#5865f2;color:white;border-radius:5px;padding:6px 12px}.an-message-boundary{border-top:1px dashed #666;margin:12px 0 6px;padding-top:4px;font-size:10px;color:#aaa}
 </style>
-</head>
+<style>
+.an-target{position:relative}.an-target-toggle{display:flex;align-items:center;justify-content:space-between;cursor:pointer;text-align:left;width:100%}.an-target-panel{position:absolute;left:0;right:0;top:68px;z-index:30;padding:12px;border:1px solid var(--line,#666);border-radius:12px;background:var(--panel,#fff);color:var(--ink,#222);box-shadow:0 12px 35px #0003}.an-target-search-row{display:flex;gap:8px;align-items:center;margin-bottom:8px}.an-target-search-row input{min-width:0;flex:1}.an-target-search-row button{display:flex;align-items:center}.an-target-panel [role=listbox]{max-height:280px;overflow-y:auto;margin-top:8px}.an-target-option{display:flex;align-items:center;gap:10px;width:100%;border:0;border-radius:8px;background:transparent;color:inherit;padding:10px;text-align:left;cursor:pointer;font:inherit}.an-target-option:hover,.an-target-option:focus-visible{background:#ff8a1f22;outline:2px solid #ff8a1f}.an-target-option[aria-selected=true]{background:#ff8a1f22;font-weight:bold}.an-target-icon{width:30px;height:30px;flex:none;object-fit:cover;border-radius:50%;display:grid;place-items:center;background:#8882}.an-target-option span:last-child{overflow-wrap:anywhere}.an-target-all{position:sticky;top:0;background:var(--panel,#fff);z-index:1}#an_target_name{display:flex;align-items:center;gap:8px;overflow-wrap:anywhere}
+</style><style>
+.an-answer-edit{grid-template-columns:70px minmax(0,1fr) auto;align-items:center}.an-answer-pick{height:42px;display:flex;align-items:center;justify-content:center;gap:4px;cursor:pointer}.an-answer-pick img{width:28px;height:28px;object-fit:contain}.an-answer-pick span{font-size:24px}.an-emoji-picker{margin:10px 0;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--ink)}.an-emoji-toolbar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 10px}.an-emoji-toolbar:last-child{font-size:12px;margin:10px 0 0}.an-emoji-browser{display:flex;gap:10px;margin-top:10px;max-height:330px;overflow:hidden}.an-emoji-servers{display:flex;flex-direction:column;gap:5px;width:44px;flex-shrink:0;overflow-y:auto}.an-emoji-server{border:0;background:var(--panel-2);color:inherit;border-radius:50%;width:36px;height:36px;flex-shrink:0;cursor:pointer;display:grid;place-items:center}.an-emoji-server[aria-pressed=true]{outline:2px solid var(--doge-orange)}.an-emoji-server img{width:30px;height:30px;border-radius:50%}.an-emoji-grid-wrap{min-width:0;flex:1;overflow-y:auto}.an-emoji-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(38px,1fr));gap:4px}.an-emoji-cell{border:0;border-radius:6px;background:transparent;color:inherit;height:42px;padding:3px;cursor:pointer;font-size:28px;display:grid;place-items:center}.an-emoji-cell:hover,.an-emoji-cell:focus-visible{background:var(--panel-2);outline:2px solid var(--doge-orange)}.an-emoji-cell img{width:34px;height:34px;object-fit:contain}.an-emoji-group-title{font-size:12px;margin:12px 0 6px}.an-emoji-group-title:first-child{margin-top:0}
+</style></head>
 <body>
 <div id="officeRouteIntro" hidden style="position:relative;padding:22px 24px;border-bottom:1px solid var(--line);background:var(--panel);color:var(--ink)"><strong>도지봇 문서 편집기</strong><p style="margin:8px 0;font-size:13px">디스코드로 로그인하면 문서가 열립니다. 문서는 홈페이지의 문서함에서 만들고 ‘열기’를 눌러 주세요.</p><a href="/" style="color:inherit">← 도지봇 홈페이지</a></div>
 <script>if(location.pathname.startsWith('/editer-'))document.getElementById('officeRouteIntro').hidden=false;</script>
@@ -1856,7 +1860,7 @@ html[data-background] .bodytext strong,html[data-background] .qna-q{color:var(--
     <!-- 전체공지 페이지 (오너 전용) -->
     <section class="page" id="page-announce">
       <div class="section-title"><span class="tri">📢</span><span>전체공지</span></div>
-      <p style="font-size:13px;color:var(--ink-faint);margin:0 0 18px;">모든 서버 중 공지채널이 설정된 곳으로 즉시 발송돼요. 되돌릴 수 없으니 신중하게 작성해주세요.</p>
+      <p style="font-size:13px;color:var(--ink-faint);margin:0 0 18px;">대상 서버를 선택하거나 모든 서버에 발송할 수 있어요. 도지봇이 참여 중이고 공지채널이 활성화된 서버만 대상이에요.</p>
 
       <div class="preset-form-grid">
         <div class="preset-form-side">
@@ -1902,6 +1906,13 @@ html[data-background] .bodytext strong,html[data-background] .qna-q{color:var(--
               <label class="preset-label" for="an_poll_question">투표 질문</label>
               <input class="modal-input" id="an_poll_question" maxlength="300" placeholder="어떤 의견인가요?" oninput="updateAnnouncePreview()">
               <div id="an_poll_answers"></div>
+              <div id="an_emoji_picker" class="an-emoji-picker" hidden role="region" aria-label="선택지 이모지 선택">
+                <div class="an-emoji-toolbar"><strong>이모지</strong><button type="button" class="btn-preset-action" onclick="closeAnnounceEmojiPicker()" aria-label="이모지 선택 닫기">✕</button></div>
+                <input id="an_emoji_search" type="search" class="modal-input" placeholder="이모지 또는 서버 이름 검색…" aria-label="이모지 검색" oninput="renderAnnounceEmojiPicker()">
+                <div class="an-emoji-browser"><div id="an_emoji_servers" class="an-emoji-servers" aria-label="서버별 이모지"></div><div id="an_emoji_grid_wrap" class="an-emoji-grid-wrap"></div></div>
+                <div class="an-emoji-toolbar"><span id="an_emoji_hint">이모지를 선택하세요</span><button type="button" class="btn-preset-action" onclick="chooseAnnounceEmoji('')">이모지 없음</button></div>
+              </div>
+
               <button type="button" class="btn-preset-action" id="an_poll_add" onclick="addAnnounceAnswer()">+ 선택지 추가 (최대 10개)</button>
               <button type="button" class="btn-preset-action" onclick="loadAnnounceEmojis()">서버 이모지 새로고침</button>
               <p id="an_emoji_status" style="font-size:12px;" role="status"></p>
@@ -1917,6 +1928,21 @@ html[data-background] .bodytext strong,html[data-background] .qna-q{color:var(--
               <select class="modal-input" id="an_poll_after_paragraph" aria-label="투표 삽입 문단" onchange="updateAnnouncePreview()" hidden></select>
               <p style="font-size:12px;color:var(--ink-faint)">같은 문단 뒤에서는 이미지 → 투표 순서예요. 디스코드에는 순서대로 나눠 전송되며, 서버마다 별도로 집계돼요.</p>
             </div>
+          </div>
+          <div class="preset-field-group an-target" id="an_target_picker">
+            <label class="preset-label" id="an_target_label">발송 대상 서버</label>
+            <button type="button" id="an_target_toggle" class="modal-input an-target-toggle" aria-labelledby="an_target_label an_target_name" aria-haspopup="listbox" aria-expanded="false" onclick="toggleAnnounceTargets()"><span id="an_target_name">모든 서버에 발송</span><span aria-hidden="true">⌄</span></button>
+            <div id="an_target_panel" class="an-target-panel" hidden>
+              <div class="an-target-search-row">
+                <input id="an_target_search" class="modal-input" type="search" placeholder="검색하려면 여기를 누르세요.." aria-label="발송 대상 서버 검색" oninput="renderAnnounceTargets()">
+                <button type="button" id="an_target_sort_toggle" class="btn-preset-action" title="서버 정렬" aria-label="서버 정렬" aria-expanded="false" onclick="toggleAnnounceSort()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 4h18l-7 8v7l-4 2V12Z"/></svg></button>
+              </div>
+              <div id="an_target_sort_wrap" hidden><label for="an_target_sort">정렬</label><select id="an_target_sort" class="modal-input" onchange="renderAnnounceTargets()"><option value="lower">a~z · 소문자 우선</option><option value="upper">A~Z · 대문자 우선</option><option value="consonant">ㄱ~ㅎ · 한글 초성순</option><option value="vowel">ㅏ~ㅣ · 한글 모음순</option></select></div>
+              <div id="an_target_options" role="listbox" aria-label="발송 대상 서버"></div>
+              <p id="an_target_status" role="status" style="font-size:12px;margin:8px 4px;color:var(--ink-faint)"></p>
+              <button type="button" class="btn-preset-action" onclick="loadAnnounceTargets()">목록 새로고침</button>
+            </div>
+            <small style="color:var(--ink-faint)">선택하지 않으면 모든 대상 서버에 발송돼요.</small>
           </div>
           <button id="an_send" class="modal-submit" onclick="sendGlobalAnnouncement()">📤 전체 서버에 전송</button>
         </div>
@@ -2930,7 +2956,7 @@ function announcementBlocks(ann) {
 let announceEmojis = [];
 let announceEmojiLoaded = false;
 let announceSending = false;
-const announceDefaultEmojis = ['✅','❌','👍','👎','❤️','🎉','🤔','🔥'];
+const announceDefaultEmojis = ["😀", "😃", "😄", "😁", "😆", "😅", "😂", "🤣", "😊", "😇", "🙂", "🙃", "😉", "😌", "😍", "🥰", "😘", "😋", "😛", "😜", "🤪", "😎", "🤓", "🧐", "🤔", "🤨", "😐", "😑", "🙄", "😏", "😒", "😔", "😢", "😭", "😤", "😡", "🤬", "😱", "😨", "😰", "😥", "😓", "🤗", "🤭", "🤫", "🤥", "😶", "😴", "🤤", "😪", "😵", "🤐", "🥴", "🤢", "🤮", "🤧", "😷", "🤒", "🤕", "🤑", "🤠", "😈", "👿", "👹", "👺", "🤡", "💩", "👻", "💀", "☠️", "👽", "🤖", "🎃", "😺", "😸", "😹", "😻", "😼", "😽", "🙀", "😿", "😾", "👋", "🤚", "🖐️", "✋", "🖖", "👌", "✌️", "🤞", "🤟", "🤘", "🤙", "👈", "👉", "👆", "👇", "☝️", "👍", "👎", "✊", "👊", "🤛", "🤜", "👏", "🙌", "👐", "🤲", "🤝", "🙏", "💪", "❤️", "🧡", "💛", "💚", "💙", "💜", "🖤", "🤍", "🤎", "💔", "💕", "💖", "💯", "💢", "💥", "💫", "💦", "💨", "🐶", "🐕", "🐱", "🐈", "🐭", "🐹", "🐰", "🦊", "🐻", "🐼", "🐨", "🐯", "🦁", "🐮", "🐷", "🐸", "🐵", "🐔", "🐧", "🐦", "🐤", "🦆", "🦅", "🦉", "🐺", "🐗", "🐴", "🦄", "🐝", "🦋", "🐌", "🐞", "🐢", "🐍", "🦎", "🦖", "🐙", "🦑", "🦀", "🐟", "🐬", "🐳", "🦈", "🌸", "🌹", "🌻", "🌲", "🌵", "🍀", "🍁", "🌈", "☀️", "🌤️", "☁️", "🌧️", "⛈️", "❄️", "⚡", "🔥", "💧", "🌊", "🍎", "🍊", "🍋", "🍌", "🍉", "🍇", "🍓", "🍒", "🍑", "🍍", "🥝", "🍅", "🍔", "🍟", "🍕", "🌭", "🍿", "🍩", "🍪", "🎂", "🍰", "🍫", "🍬", "☕", "🍵", "🥤", "🎉", "🎊", "🎈", "🎁", "🏆", "🥇", "🥈", "🥉", "⚽", "🏀", "🏈", "⚾", "🎮", "🎲", "🎯", "🎵", "🎶", "🎤", "🎧", "🎬", "🚗", "🚕", "🚌", "🚑", "🚒", "🚓", "🚀", "✈️", "🚢", "🏠", "🏢", "🏫", "💻", "⌨️", "🖱️", "📱", "📷", "💡", "📢", "🔔", "📌", "📎", "✏️", "📝", "📚", "🔒", "🔓", "🔑", "🔨", "⚙️", "🛠️", "⚖️", "✅", "❌", "❎", "⭕", "❗", "❓", "⚠️", "🚫", "⛔", "🛑", "🔴", "🟠", "🟡", "🟢", "🔵", "🟣", "⚫", "⚪", "🟤", "⭐", "🌟", "✨"];
 function announceEmojiSelect(select) {
   const old = select.value;
   select.replaceChildren(new Option('이모지 없음', ''));
@@ -2953,26 +2979,92 @@ async function loadAnnounceEmojis() {
     announceEmojis=Array.isArray(data.emojis)?data.emojis:[];
     announceEmojiLoaded=true;
     document.querySelectorAll('.an-answer-emoji').forEach(announceEmojiSelect);
-    status.textContent=`서버 이모지 ${announceEmojis.length}개 · ${new Date(data.updated_at).toLocaleString()} 기준 (봇이 5분마다 동기화)`;
+    updateAnnounceEmojiButtons();renderAnnounceEmojiPicker();
+    status.textContent=`서버 이모지 ${announceEmojis.length}개 · ${new Date(data.updated_at).toLocaleString()} 기준 (봇이 1분마다 동기화)`;
     updateAnnouncePreview();
-  } catch(e) {status.textContent='서버 이모지를 불러오지 못했어요: '+e.message;}
+  } catch(e) {announceEmojiLoaded=false;status.textContent='서버 이모지를 불러오지 못했어요: '+e.message;}
 }
+
+let announceEmojiRow=null;
+let announceEmojiGuild='all';
+function announceEmojiImage(e){
+  const img=document.createElement('img');img.alt=':'+e.name+':';img.loading='lazy';
+  img.src=`https://cdn.discordapp.com/emojis/${e.id}.${e.animated?'gif':'png'}?size=48`;
+  return img;
+}
+function updateAnnounceEmojiButtons(){
+  document.querySelectorAll('.an-answer-edit').forEach(row=>{
+    const value=row.querySelector('select').value;const button=row.querySelector('.an-answer-pick');if(!button)return;
+    button.replaceChildren();const e=announceEmojis.find(e=>e.id===value);
+    if(e){button.append(announceEmojiImage(e));button.title=`:${e.name}: · ${e.guild_name}`;}
+    else {const icon=document.createElement('span');icon.textContent=value.startsWith('unicode:')?value.slice(8):value?'⚠':'☺';button.append(icon);button.title=value&&!value.startsWith('unicode:')?'사용할 수 없는 이모지 · 다시 선택하세요':'이모지 선택';}
+  });
+}
+function closeAnnounceEmojiPicker(){
+  document.getElementById('an_emoji_picker').hidden=true;
+  if(announceEmojiRow?.isConnected){const button=announceEmojiRow.querySelector('.an-answer-pick');button.setAttribute('aria-expanded','false');button.focus();}
+  announceEmojiRow=null;
+}
+async function openAnnounceEmojiPicker(row){
+  if(announceEmojiRow===row && !document.getElementById('an_emoji_picker').hidden){closeAnnounceEmojiPicker();return;}
+  if(announceEmojiRow)announceEmojiRow.querySelector('.an-answer-pick').setAttribute('aria-expanded','false');
+  announceEmojiRow=row;row.querySelector('.an-answer-pick').setAttribute('aria-expanded','true');
+  document.getElementById('an_emoji_picker').hidden=false;
+  document.getElementById('an_emoji_search').value='';announceEmojiGuild='all';
+  renderAnnounceEmojiPicker();document.getElementById('an_emoji_search').focus();
+  await loadAnnounceEmojis();
+}
+function chooseAnnounceEmoji(value){
+  if(!announceEmojiRow?.isConnected)return;
+  const row=announceEmojiRow;row.querySelector('select').value=value;
+  closeAnnounceEmojiPicker();updateAnnounceEmojiButtons();updateAnnouncePreview();
+  row.querySelector('.an-answer-text').focus();
+}
+function renderAnnounceEmojiPicker(){
+  const side=document.getElementById('an_emoji_servers'),content=document.getElementById('an_emoji_grid_wrap');side.replaceChildren();content.replaceChildren();
+  const groups=new Map();for(const e of announceEmojis){if(!groups.has(e.guild_id))groups.set(e.guild_id,[]);groups.get(e.guild_id).push(e);}
+  const tab=(id,name,e)=>{
+    const b=document.createElement('button');b.type='button';b.className='an-emoji-server';b.title=name;b.setAttribute('aria-label',name);b.setAttribute('aria-pressed',String(id===announceEmojiGuild));
+    if(e?.guild_icon && /^https:\/\/cdn\.discordapp\.com\/icons\//.test(e.guild_icon)){const img=document.createElement('img');img.src=e.guild_icon;img.alt='';img.onerror=()=>{b.textContent=Array.from(name)[0];};b.append(img);}else b.textContent=id==='all'?'☷':id==='standard'?'☺':Array.from(name)[0];
+    b.onclick=()=>{announceEmojiGuild=id;renderAnnounceEmojiPicker();};side.append(b);
+  };
+  tab('all','전체');for(const [id,items] of groups)tab(id,items[0].guild_name,items[0]);tab('standard','기본 이모지');
+  const q=document.getElementById('an_emoji_search').value.trim().toLowerCase().replace(/^:|:$/g,'');let count=0;
+  const section=(name,items)=>{
+    if(!items.length)return;const title=document.createElement('h4');title.className='an-emoji-group-title';title.textContent=name;content.append(title);
+    const grid=document.createElement('div');grid.className='an-emoji-grid';
+    for(const e of items){const b=document.createElement('button');b.type='button';b.className='an-emoji-cell';b.title=e.id?`:${e.name}: · ${e.guild_name}${e.animated?' · GIF':''}`:e.name;b.setAttribute('aria-label',b.title);
+      if(e.id)b.append(announceEmojiImage(e));else b.textContent=e.name;
+      b.onfocus=b.onmouseenter=()=>{document.getElementById('an_emoji_hint').textContent=b.title;};
+      b.onclick=()=>chooseAnnounceEmoji(e.id||'unicode:'+e.name);grid.append(b);count++;}
+    content.append(grid);
+  };
+  for(const [id,items] of groups)if(announceEmojiGuild==='all'||announceEmojiGuild===id)section(items[0].guild_name,items.filter(e=>!q||e.name.toLowerCase().includes(q)||e.guild_name.toLowerCase().includes(q)));
+  if(['all','standard'].includes(announceEmojiGuild))section('기본 이모지',announceDefaultEmojis.filter(e=>!q||e.includes(q)).map(name=>({name})));
+  if(!count){const empty=document.createElement('p');empty.textContent='검색 결과가 없어요.';content.append(empty);}
+  if(!announceEmojis.length){const note=document.createElement('p');note.style.fontSize='12px';note.textContent='서버 이모지가 아직 없어요. 수정된 봇을 재시작한 뒤 서버 이모지 새로고침을 눌러주세요. 조회 오류는 아래 상태 안내와 봇 로그에서 확인할 수 있어요.';content.append(note);}
+}
+document.getElementById('an_emoji_picker').addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();closeAnnounceEmojiPicker();}});
+
 function addAnnounceAnswer(text='',emoji='') {
   const wrap=document.getElementById('an_poll_answers');
   if(wrap.children.length>=10)return;
   const row=document.createElement('div');row.className='an-answer-edit';
   const input=document.createElement('input');input.className='modal-input an-answer-text';input.maxLength=55;input.placeholder='선택지 내용';input.value=text;input.setAttribute('aria-label','선택지 내용');input.oninput=updateAnnouncePreview;
   const select=document.createElement('select');select.className='modal-input an-answer-emoji';select.setAttribute('aria-label','선택지 이모지');announceEmojiSelect(select);select.value=emoji;select.onchange=updateAnnouncePreview;
-  const remove=document.createElement('button');remove.type='button';remove.className='btn-preset-action';remove.textContent='삭제';remove.onclick=()=>{if(wrap.children.length<=2)return;row.remove();onAnnouncePollChange();};
-  row.append(input,select,remove);wrap.append(row);onAnnouncePollChange();
+  select.hidden=true;
+  const pick=document.createElement('button');pick.type='button';pick.className='modal-input an-answer-pick';pick.setAttribute('aria-label','이모지 선택');pick.setAttribute('aria-expanded','false');pick.onclick=()=>openAnnounceEmojiPicker(row);
+  const remove=document.createElement('button');remove.type='button';remove.className='btn-preset-action';remove.textContent='삭제';remove.onclick=()=>{if(wrap.children.length<=2)return;if(announceEmojiRow===row)closeAnnounceEmojiPicker();row.remove();onAnnouncePollChange();};
+  row.append(pick,input,select,remove);wrap.append(row);updateAnnounceEmojiButtons();onAnnouncePollChange();
 }
 function onAnnouncePollChange() {
   const enabled=document.getElementById('an_poll_enabled').checked;
   document.getElementById('an_poll_editor').hidden=!enabled;
+  if(!enabled)closeAnnounceEmojiPicker();
   const wrap=document.getElementById('an_poll_answers');
   if(enabled && !wrap.children.length){ addAnnounceAnswer('찬성','unicode:✅');addAnnounceAnswer('반대','unicode:❌'); }
   document.getElementById('an_poll_add').disabled=wrap.children.length>=10;
-  wrap.querySelectorAll('button').forEach(b=>b.disabled=wrap.children.length<=2);
+  wrap.querySelectorAll('.an-answer-edit > .btn-preset-action').forEach(b=>b.disabled=wrap.children.length<=2);
   updateAnnouncePreview();
   if(enabled && !announceEmojiLoaded){announceEmojiLoaded=true;loadAnnounceEmojis();}
 }
@@ -3005,6 +3097,7 @@ function announcePollPreview(poll) {
   const vote=document.createElement('span');vote.className='an-poll-vote';vote.textContent='투표하기';foot.append(count,result,vote);card.append(foot);return card;
 }
 function updateAnnouncePreview(){
+  updateAnnounceEmojiButtons();
   const title=document.getElementById('an_title').value||'공지 제목';
   const body=document.getElementById('an_body').value||'공지 내용이 여기 표시됩니다.';
   const color=document.getElementById('an_color').value||'#FF8A1F';
@@ -3029,42 +3122,143 @@ function updateAnnouncePreview(){
     const text=document.createElement('div');text.className='dc-embed-desc';text.innerHTML=renderMarkdown(block.text);wrap.append(text);
   });
 }
+
+// The bot publishes only live guilds with a usable configured announcement channel.
+let announceTargets=[];
+let announceTargetId=null;
+let announceTargetsLoading=false;
+let announceTargetsLoaded=false;
+let announceTargetsLoadPromise=null;
+function announceSortKey(name,mode){
+  const s=String(name||'').trim();const c=s[0]||'';const cp=s.codePointAt(0)||0;
+  const syllable=cp>=0xAC00 && cp<=0xD7A3;
+  const consonants='ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
+  const vowels='ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ';
+  if(mode==='lower'||mode==='upper'){
+    const preferred=mode==='lower'?/[a-z]/:/[A-Z]/;
+    return [preferred.test(c)?0:/[a-zA-Z]/.test(c)?1:2,s.toLowerCase()];
+  }
+  if(mode==='consonant'){
+    const index=syllable?Math.floor((cp-0xAC00)/588):consonants.indexOf(c);
+    return [index>=0?0:1,index>=0?index:99];
+  }
+  const index=syllable?Math.floor(((cp-0xAC00)%588)/28):vowels.indexOf(c);
+  return [index>=0?0:1,index>=0?index:99];
+}
+function compareAnnounceTargets(a,b,mode){
+  const ka=announceSortKey(a.guild_name,mode),kb=announceSortKey(b.guild_name,mode);
+  return ka[0]-kb[0] || (typeof ka[1]==='number'?ka[1]-kb[1]:ka[1].localeCompare(kb[1],'en')) || a.guild_name.localeCompare(b.guild_name,'ko') || a.guild_id.localeCompare(b.guild_id);
+}
+function announceServerIcon(server){
+  const fallback=document.createElement('span');fallback.className='an-target-icon';fallback.textContent=Array.from(server.guild_name||'?')[0];fallback.setAttribute('aria-hidden','true');
+  // Catalog URLs originate from Discord, but still avoid arbitrary URL schemes/hosts.
+  if(!server.guild_icon || !/^https:\/\/cdn\.discordapp\.com\/icons\//.test(server.guild_icon))return fallback;
+  const img=document.createElement('img');img.className='an-target-icon';img.alt='';img.src=server.guild_icon;img.loading='lazy';img.onerror=()=>img.replaceWith(fallback);return img;
+}
+function updateAnnounceTargetLabel(){
+  const label=document.getElementById('an_target_name');label.replaceChildren();
+  const selected=announceTargets.find(g=>g.guild_id===announceTargetId);
+  if(selected){label.append(announceServerIcon(selected),document.createTextNode(selected.guild_name));}
+  else label.textContent=announceTargetId?'선택 서버 사용 불가 · 다시 선택해주세요':'모든 서버에 발송';
+  document.getElementById('an_send').textContent=announceTargetId?'📤 선택한 서버에 전송':'📤 전체 서버에 전송';
+}
+function selectAnnounceTarget(id){
+  announceTargetId=id;
+  updateAnnounceTargetLabel();renderAnnounceTargets();
+  document.getElementById('an_target_panel').hidden=true;
+  document.getElementById('an_target_toggle').setAttribute('aria-expanded','false');
+  document.getElementById('an_target_toggle').focus();
+}
+function renderAnnounceTargets(){
+  const list=document.getElementById('an_target_options');list.replaceChildren();
+  const add=(server)=>{
+    const button=document.createElement('button');button.type='button';button.className='an-target-option'+(server?'':' an-target-all');button.setAttribute('role','option');button.setAttribute('aria-selected',String((server?.guild_id||null)===announceTargetId));
+    if(server)button.append(announceServerIcon(server));
+    const name=document.createElement('span');name.textContent=server?server.guild_name:'모든 서버에 발송';button.append(name);button.onclick=()=>selectAnnounceTarget(server?.guild_id||null);list.append(button);
+  };
+  add(null); // Always first, including during searches and every sort mode.
+  const search=document.getElementById('an_target_search').value.trim().toLocaleLowerCase();
+  const mode=document.getElementById('an_target_sort').value;
+  const filtered=announceTargets.filter(g=>g.guild_name.toLocaleLowerCase().includes(search)).sort((a,b)=>compareAnnounceTargets(a,b,mode));
+  filtered.forEach(add);
+  if(!filtered.length){const empty=document.createElement('p');empty.textContent=announceTargetsLoading?'불러오는 중…':search?'검색 결과가 없어요.':'선택할 수 있는 서버가 없어요.';list.append(empty);}
+}
+async function loadAnnounceTargets(){
+  if(announceTargetsLoadPromise)return announceTargetsLoadPromise;
+  announceTargetsLoadPromise=(async()=>{
+    const status=document.getElementById('an_target_status');announceTargetsLoading=true;status.textContent='서버 목록을 불러오는 중…';renderAnnounceTargets();
+    try{
+      const {data:catalog,error}=await sb.from('announcement_server_catalog').select('servers,updated_at').eq('id',1).maybeSingle();
+      if(error)throw error;if(!catalog)throw new Error('SQL 적용 후 봇을 재시작해주세요.');
+      // Recheck current settings so disabling the channel immediately removes its entry.
+      const {data:settings,error:settingsError}=await sb.from('guild_settings').select('guild_id,announce_channel').not('announce_channel','is',null);
+      if(settingsError)throw settingsError;
+      const channels=new Map((settings||[]).map(s=>[s.guild_id,s.announce_channel]));
+      announceTargets=(Array.isArray(catalog.servers)?catalog.servers:[]).filter(g=>/^\d{17,20}$/.test(g.guild_id)&&channels.get(g.guild_id)===g.announce_channel);
+      announceTargetsLoaded=true;
+      status.textContent=`선택 가능한 서버 ${announceTargets.length}개 · 봇 확인 ${new Date(catalog.updated_at).toLocaleString()}`;
+      return true;
+    }catch(e){announceTargets=[];announceTargetsLoaded=false;status.textContent='목록을 불러오지 못했어요: '+e.message;return false;}
+    finally{announceTargetsLoading=false;renderAnnounceTargets();updateAnnounceTargetLabel();}
+  })();
+  try{return await announceTargetsLoadPromise;}finally{announceTargetsLoadPromise=null;}
+}
+async function toggleAnnounceTargets(){
+  const panel=document.getElementById('an_target_panel');panel.hidden=!panel.hidden;
+  document.getElementById('an_target_toggle').setAttribute('aria-expanded',String(!panel.hidden));
+  if(!panel.hidden){document.getElementById('an_target_search').focus();await loadAnnounceTargets();}
+}
+function toggleAnnounceSort(){
+  const wrap=document.getElementById('an_target_sort_wrap');wrap.hidden=!wrap.hidden;
+  document.getElementById('an_target_sort_toggle').setAttribute('aria-expanded',String(!wrap.hidden));
+  if(!wrap.hidden)document.getElementById('an_target_sort').focus();
+}
+document.addEventListener('click',e=>{
+  const picker=document.getElementById('an_target_picker');
+  if(picker && !picker.contains(e.target)){document.getElementById('an_target_panel').hidden=true;document.getElementById('an_target_toggle').setAttribute('aria-expanded','false');}
+});
+document.getElementById('an_target_picker').addEventListener('keydown',e=>{
+  const panel=document.getElementById('an_target_panel');
+  if(e.key==='Escape'){panel.hidden=true;document.getElementById('an_target_toggle').setAttribute('aria-expanded','false');document.getElementById('an_target_toggle').focus();return;}
+  if(panel.hidden || !['ArrowDown','ArrowUp','Home','End'].includes(e.key) || e.target.tagName==='SELECT')return;
+  if(e.target.id==='an_target_search' && ['Home','End'].includes(e.key))return;
+  const options=[...document.querySelectorAll('#an_target_options button')];if(!options.length)return;
+  e.preventDefault();const i=options.indexOf(document.activeElement);
+  const next=e.key==='Home'?0:e.key==='End'?options.length-1:e.key==='ArrowDown'?(i+1)%options.length:(i-1+options.length)%options.length;
+  options[next].focus();
+});
+
 async function sendGlobalAnnouncement(){
-  if(!isBotOwner){ alert('봇 오너만 사용할 수 있어요.'); return; }
+  if(!isBotOwner){alert('봇 오너만 사용할 수 있어요.');return;}
   if(announceSending)return;
   let poll;try{poll=getAnnouncePoll(true);}catch(e){alert(e.message);return;}
-  const title = document.getElementById('an_title').value.trim();
-  const body  = document.getElementById('an_body').value.trim();
-  const color = document.getElementById('an_color').value.replace('#','');
-  const imageUrl = document.getElementById('an_image_url').value.trim();
-  const imagePosition = imageUrl ? (document.getElementById('an_image_position').value || 'bottom') : 'none';
-  const imageAfterParagraph = imagePosition === 'middle' ? Number(document.getElementById('an_image_after_paragraph').value || 1) : null;
-
-  if(!title || !body){ alert('제목과 내용을 입력해주세요.'); return; }
-  if(!confirm('공지채널이 설정된 모든 서버에 즉시 발송돼요. 되돌릴 수 없어요. 전송할까요?')) return;
-
+  const title=document.getElementById('an_title').value.trim();
+  const body=document.getElementById('an_body').value.trim();
+  if(!title || !body){alert('제목과 내용을 입력해주세요.');return;}
+  const color=document.getElementById('an_color').value.replace('#','');
+  const imageUrl=document.getElementById('an_image_url').value.trim();
+  const imagePosition=imageUrl?(document.getElementById('an_image_position').value||'bottom'):'none';
+  const imageAfterParagraph=imagePosition==='middle'?Number(document.getElementById('an_image_after_paragraph').value||1):null;
+  const targetId=announceTargetId; // Capture the target once; never fall back to ALL after a failed selection.
   announceSending=true;document.getElementById('an_send').disabled=true;
-  try {
-  const { error } = await sb.from('global_announcements').insert({
-    title, body, color, status: 'pending',
-    image_url: imageUrl || null,
-    image_position: imagePosition,
-    image_after_paragraph: imageAfterParagraph,
-    poll
-  });
-  if(error){ alert('전송 실패: ' + error.message); return; }
-  showToast('✅ 공지 전송 요청 완료! 30초 내로 각 서버에 발송돼요.');
-  document.getElementById('an_title').value = '';
-  document.getElementById('an_body').value = '';
-  document.getElementById('an_image_url').value = '';
-  document.getElementById('an_image_file').value = '';
-  document.getElementById('an_image_upload_status').textContent = '';
-  document.getElementById('an_poll_enabled').checked=false;
-  document.getElementById('an_poll_question').value='';
-  document.getElementById('an_poll_answers').replaceChildren();
-  onAnnouncePollChange();
-  onAnnounceImageChange();
-  } catch(e){alert('전송 실패: '+e.message);} finally{announceSending=false;document.getElementById('an_send').disabled=false;}
+  try{
+    if(!await loadAnnounceTargets()){alert('서버 목록을 확인하지 못했어요. 목록 새로고침 후 다시 전송해주세요.');return;}
+    const selected=targetId?announceTargets.find(g=>g.guild_id===targetId):null;
+    if(targetId && !selected){alert('선택한 서버가 없거나 공지채널이 비활성화됐어요. 대상을 다시 선택해주세요.');return;}
+    if(!targetId && !announceTargets.length){alert('발송 가능한 서버가 없어요. 공지채널 설정과 봇 상태를 확인해주세요.');return;}
+    const targetLabel=selected?`「${selected.guild_name}」 서버 한 곳`:'공지채널이 활성화된 모든 서버';
+    if(!confirm(`${targetLabel}에 발송해요. 되돌릴 수 없어요. 전송할까요?`))return;
+    const {error}=await sb.from('global_announcements').insert({title,body,color,status:'pending',image_url:imageUrl||null,image_position:imagePosition,image_after_paragraph:imageAfterParagraph,poll,target_guild_id:targetId});
+    if(error)throw error;
+    showToast(`✅ ${targetLabel}에 공지 전송 요청 완료!`);
+    for(const id of ['an_title','an_body','an_image_url','an_image_file','an_poll_question'])document.getElementById(id).value='';
+    document.getElementById('an_image_upload_status').textContent='';
+    document.getElementById('an_poll_enabled').checked=false;
+    document.getElementById('an_poll_answers').replaceChildren();
+    // Preserve the chosen server across submissions to avoid an accidental switch to ALL.
+    onAnnouncePollChange();onAnnounceImageChange();
+  }catch(e){alert('전송 실패: '+e.message);}
+  finally{announceSending=false;document.getElementById('an_send').disabled=false;}
 }
 
 /* ══════════ 문서함 ══════════ */
@@ -5422,3 +5616,4 @@ dsHash();dsRefreshAuth();
 </html>
 
 
+  
