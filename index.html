@@ -2030,7 +2030,14 @@ window.alert=message=>{void dogeAlert(message);};
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;margin-bottom:18px;">
         <div>
           <label class="preset-label">서버</label>
-          <select class="modal-input" id="doc_guild_select" style="width:180px;" onchange="onDocGuildChange()">
+          <details id="docGuildPicker" style="position:relative;min-width:220px;max-width:320px">
+            <summary class="modal-input" id="docGuildLabel" style="cursor:pointer;display:flex;align-items:center;gap:8px">불러오는 중...</summary>
+            <div class="an-target-panel" style="position:absolute;top:100%;left:0;width:320px;max-width:80vw;z-index:30;padding:8px">
+              <input class="modal-input" id="docGuildSearch" placeholder="서버 검색" aria-label="문서함 서버 검색" oninput="renderDocGuildPicker()">
+              <div id="docGuildOptions" style="max-height:320px;overflow:auto"></div>
+            </div>
+          </details>
+          <select class="modal-input" id="doc_guild_select" style="display:none" aria-hidden="true" tabindex="-1" onchange="onDocGuildChange()">
             <option value="">불러오는 중...</option>
           </select>
         </div>
@@ -3348,40 +3355,44 @@ let docsCache = [];
 let docPermsCache = {}; // document_id -> [{id,user_id,user_name,role}]
 
 // 문서함은 관리패널을 거치지 않고도 바로 들어올 수 있어서, 여기서 자체적으로 서버 목록을 불러와 선택하게 함
-async function populateDocGuildSelect(){
-  const sel = document.getElementById('doc_guild_select');
-  if(!sel) return;
-
-  if(cachedDisplayGuilds.length === 0){
-    sel.innerHTML = '<option value="">불러오는 중...</option>';
-    try {
-      const resolved = await resolveDisplayGuilds(currentProviderToken || sessionStorage.getItem('dc_token'));
-      cachedDisplayGuilds = resolved || [];
-    } catch(e){
-      console.error('서버 목록 로드 실패:', e);
-      sel.innerHTML = '<option value="">⚠ 불러오기 실패 (클릭해서 재시도)</option>';
-      sel.onclick = () => { sel.onclick = null; populateDocGuildSelect(); };
-      return;
-    }
-  }
-
-  if(cachedDisplayGuilds.length === 0){
-    sel.innerHTML = '<option value="">서버 없음</option>';
-    return;
-  }
-
-  sel.innerHTML = cachedDisplayGuilds.map(g => `<option value="${g.id}">${escapeHtml(g.name || g.id)}</option>`).join('');
-
-  if(!currentGuildId || !cachedDisplayGuilds.find(g => g.id === currentGuildId)){
-    currentGuildId = cachedDisplayGuilds[0].id;
-  }
-  sel.value = currentGuildId;
+function renderDocGuildPicker(){
+ const select=document.getElementById('doc_guild_select'),label=document.getElementById('docGuildLabel'),list=document.getElementById('docGuildOptions');
+ if(!select||!label||!list)return;
+ const icon=g=>announceServerIcon({guild_name:g.name||g.id,guild_icon:g.icon});
+ const selected=cachedDisplayGuilds.find(g=>g.id===select.value);label.replaceChildren();
+ if(selected)label.append(icon(selected));
+ label.append(document.createTextNode(selected?(selected.name||selected.id)+' ▾':select.options[0]?.textContent||'서버 선택'));
+ list.replaceChildren();const query=document.getElementById('docGuildSearch').value.trim().toLocaleLowerCase();
+ for(const option of select.options){
+  const g=cachedDisplayGuilds.find(g=>g.id===option.value);if(!g||!(g.name||g.id).toLocaleLowerCase().includes(query))continue;
+  const button=document.createElement('button');button.type='button';button.className='an-target-option';button.setAttribute('aria-pressed',String(g.id===select.value));
+  button.append(icon(g),document.createTextNode(g.name||g.id));button.onclick=()=>{select.value=g.id;document.getElementById('docGuildPicker').open=false;onDocGuildChange();};list.append(button);
+ }
+ if(!list.children.length){const text=document.createElement('p');text.textContent=query?'검색 결과가 없어요.':select.options[0]?.textContent||'서버 없음';list.append(text);}
+ if(select.dataset.failed){const retry=document.createElement('button');retry.type='button';retry.className='ds-btn';retry.textContent='다시 불러오기';retry.onclick=populateDocGuildSelect;list.append(retry);}
 }
+async function populateDocGuildSelect(){
+ const sel=document.getElementById('doc_guild_select');if(!sel)return;
+ delete sel.dataset.failed;
+ if(cachedDisplayGuilds.length===0){
+  sel.innerHTML='<option value="">불러오는 중...</option>';renderDocGuildPicker();
+  try{cachedDisplayGuilds=await resolveDisplayGuilds(currentProviderToken||sessionStorage.getItem('dc_token'))||[];}
+  catch(e){console.error('서버 목록 로드 실패:',e);sel.innerHTML='<option value="">서버 목록 불러오기 실패</option>';sel.dataset.failed='true';renderDocGuildPicker();return;}
+ }
+ sel.replaceChildren();
+ for(const g of cachedDisplayGuilds){const option=document.createElement('option');option.value=g.id;option.textContent=g.name||g.id;sel.append(option);}
+ if(!sel.options.length){sel.innerHTML='<option value="">서버 없음</option>';renderDocGuildPicker();return;}
+ if(!cachedDisplayGuilds.some(g=>g.id===currentGuildId))currentGuildId=cachedDisplayGuilds[0].id;
+ sel.value=currentGuildId;renderDocGuildPicker();
+}
+document.addEventListener('click',e=>{const picker=document.getElementById('docGuildPicker');if(picker&&!picker.contains(e.target))picker.open=false;});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){const picker=document.getElementById('docGuildPicker');if(picker?.open){picker.open=false;document.getElementById('docGuildLabel').focus();}}});
 
 function onDocGuildChange(){
   const sel = document.getElementById('doc_guild_select');
   if(!sel || !sel.value) return;
   currentGuildId = sel.value;
+  renderDocGuildPicker();
   loadDocuments();
 }
 
@@ -5955,3 +5966,4 @@ dsHash();dsRefreshAuth();
 </html>
 
 
+                                                                                                              
