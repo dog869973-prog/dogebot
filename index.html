@@ -1132,8 +1132,45 @@ html[data-background] .bodytext strong,html[data-background] .qna-q{color:var(--
 #an_target_toggle,#ds_target_toggle{display:flex!important;min-height:46px;border:1px solid var(--doge-orange)}
 #an_target_panel,#ds_target_panel{position:relative;top:auto;margin-top:10px;box-shadow:none}
 #an_target_panel[hidden],#ds_target_panel[hidden],#an_target_sort_wrap[hidden],#ds_target_sort_wrap[hidden]{display:none!important}
+</style><style>
+.ds-unread-count{margin-left:auto;background:#db3e4b;color:white;border-radius:999px;min-width:22px;padding:2px 6px;text-align:center;font-size:12px;font-weight:700}.ds-unread-count[hidden]{display:none!important}.ds-inbox-toolbar{flex-wrap:wrap;padding:14px 0;border-bottom:1px solid var(--line)}.ds-inbox-toolbar label{display:flex;align-items:center;gap:7px;font-size:13px}.ds-inbox-check{width:18px;height:18px;flex:none;accent-color:var(--doge-orange)}.ds-row.ds-is-unread h3:before{content:'●';color:#db3e4b;font-size:10px;margin-right:8px}
+#dogeDialog{width:min(460px,calc(100vw - 36px));padding:24px;border:1px solid var(--line);border-radius:14px;background:var(--panel);color:var(--ink);box-shadow:0 20px 80px #0005}#dogeDialog::backdrop{background:#0008;backdrop-filter:blur(3px)}#dogeDialog h2{margin:0 0 16px;font-size:20px}#dogeDialogMessage{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.7;margin-bottom:24px}#dogeDialog .ds-actions{justify-content:flex-end;margin-top:20px}#dogeDialog [hidden]{display:none!important}
+</style><style>
+.ui-color-settings{padding:18px 0;border-top:1px solid var(--line);margin-top:14px}#uiColorPicker{width:60px;height:38px;padding:3px}#uiColorHex{min-width:0;width:120px}
+html[data-ui-color] :is(.sidebar,.mobile-topbar,.lang-dropdown,.lang-menu,.settings-dropdown,.ds-card,.card,.modal-content,.modal-box,.doc-editor-toolbar,.an-target,.an-target-panel,.an-emoji-picker,#dogeDialog,#uiColorSettings){--ink:var(--ui-ink);--ink-dim:var(--ui-ink);--ink-faint:var(--ui-ink);background:var(--ui-panel)!important;color:var(--ui-ink)!important;border-color:var(--ui-line)!important}
+html[data-ui-color] :is(.modal-input,.modal-textarea,.ds-input,.search-box,.search-box input,.rgb-controls input,.rgb-hex,.ds-drop,.setting-btn,.btn-preset-action,.ds-btn,.modal-submit,.theme-option,.an-target-option,.an-emoji-cell){background:var(--ui-input)!important;color:var(--ui-input-ink)!important;border-color:var(--ui-line)!important}
+html[data-ui-color] :is(.modal-input,.modal-textarea,.ds-input,.search-box input)::placeholder{color:var(--ui-input-ink)!important;opacity:.7}
+html[data-ui-color] .sidebar :is(.nav-item,.brand-text,.user-name,.user-tag){color:var(--ui-ink)!important}
+html[data-ui-color] .sidebar .nav-item:is(:hover,.active),html[data-ui-color] .an-target-option[aria-selected=true]{background:var(--ui-input)!important;color:var(--ui-input-ink)!important}
+html[data-ui-color] .ds-btn.primary,html[data-ui-color] .modal-submit{outline:2px solid var(--ui-input-ink);outline-offset:-2px}
 </style></head>
 <body>
+<dialog id="dogeDialog" aria-labelledby="dogeDialogTitle" aria-describedby="dogeDialogMessage"><form method="dialog" id="dogeDialogForm"><h2 id="dogeDialogTitle">도지봇</h2><p id="dogeDialogMessage"></p><input id="dogeDialogInput" class="modal-input" aria-label="입력 내용" hidden><div class="ds-actions"><button type="button" class="ds-btn" id="dogeDialogCancel">취소</button><button type="submit" class="ds-btn primary" id="dogeDialogOK">확인</button></div></form></dialog>
+<script>
+const dogeDialogQueue=[];let dogeDialogActive=null;
+function dogeShowDialog(kind,message,initial=''){return new Promise(resolve=>{dogeDialogQueue.push({kind,message:String(message),initial,resolve});dogeNextDialog();});}
+function dogeNextDialog(){
+ if(dogeDialogActive||!dogeDialogQueue.length)return;
+ const item=dogeDialogActive=dogeDialogQueue.shift(),dialog=document.getElementById('dogeDialog');item.previous=document.activeElement;
+ document.getElementById('dogeDialogTitle').textContent=item.kind==='alert'?'안내':item.kind==='prompt'?'내용 입력':'확인해주세요';
+ document.getElementById('dogeDialogMessage').textContent=item.message;
+ const input=document.getElementById('dogeDialogInput');input.hidden=item.kind!=='prompt';input.value=item.initial||'';
+ document.getElementById('dogeDialogCancel').hidden=item.kind==='alert';
+ dialog.showModal();(item.kind==='prompt'?input:document.getElementById(item.kind==='alert'?'dogeDialogOK':'dogeDialogCancel')).focus();
+}
+function dogeFinishDialog(ok){
+ const item=dogeDialogActive;if(!item)return;dogeDialogActive=null;document.getElementById('dogeDialog').close();
+ item.previous?.isConnected&&item.previous.focus();item.resolve(item.kind==='prompt'?(ok?document.getElementById('dogeDialogInput').value:null):ok);dogeNextDialog();
+}
+document.getElementById('dogeDialogForm').addEventListener('submit',e=>{e.preventDefault();dogeFinishDialog(true);});
+document.getElementById('dogeDialogCancel').onclick=()=>dogeFinishDialog(false);
+document.getElementById('dogeDialog').addEventListener('cancel',e=>{e.preventDefault();dogeFinishDialog(false);});
+function dogeAlert(message){return dogeShowDialog('alert',message);}
+function dogeConfirm(message){return dogeShowDialog('confirm',message);}
+function dogePrompt(message,initial=''){return dogeShowDialog('prompt',message,initial);}
+window.alert=message=>{void dogeAlert(message);};
+</script>
+
 <div id="officeRouteIntro" hidden style="position:relative;padding:22px 24px;border-bottom:1px solid var(--line);background:var(--panel);color:var(--ink)"><strong>도지봇 문서 편집기</strong><p style="margin:8px 0;font-size:13px">디스코드로 로그인하면 문서가 열립니다. 문서는 홈페이지의 문서함에서 만들고 ‘열기’를 눌러 주세요.</p><a href="/" style="color:inherit">← 도지봇 홈페이지</a></div>
 <script>if(location.pathname.startsWith('/editer-'))document.getElementById('officeRouteIntro').hidden=false;</script>
 <div class="app">
@@ -1184,7 +1221,7 @@ html[data-background] .bodytext strong,html[data-background] .qna-q{color:var(--
 <button class="nav-item" data-page="notices"><span class="ic"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 16-6v14L3 14ZM6 15l2 6h4l-2-5M21 9v6"/></svg></span><span>도지봇 공지</span></button>
 <button class="nav-item" data-page="support"><span class="ic"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 6 9 7 9-7"/></svg></span><span>문의하기</span></button>
 <button class="nav-item" data-page="my-support"><span class="ic"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg></span><span>내 문의</span></button>
-<button class="nav-item" data-page="support-inbox" id="navSupportInbox" style="display:none"><span class="ic"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14 6 4h12l3 10v6H3Z"/><path d="M3 14h6l1 3h4l1-3h6"/></svg></span><span>문의접수</span></button>
+<button class="nav-item" data-page="support-inbox" id="navSupportInbox" style="display:none"><span class="ic"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14 6 4h12l3 10v6H3Z"/><path d="M3 14h6l1 3h4l1-3h6"/></svg></span><span>문의접수</span><span id="dsUnreadBadge" class="ds-unread-count" hidden aria-live="polite"></span></button>
 <button class="nav-item" id="navFreeTrials" data-page="free-trials" style="display:none"><span class="ic" aria-hidden="true">◷</span><span>무료체험</span></button>
     </nav>
 
@@ -1221,7 +1258,7 @@ html[data-background] .bodytext strong,html[data-background] .qna-q{color:var(--
             <button type="button" class="theme-option" data-theme-mode="dark" aria-pressed="false">다크</button>
             <button type="button" class="theme-option" data-theme-mode="white" aria-pressed="false">화이트</button>
             <button type="button" class="theme-option" data-theme-mode="system" aria-pressed="false">시스템</button>
-          </div><div class="bg-settings"><p class="settings-label">배경 색 설정</p><div class="bg-palette" role="group" aria-label="배경 색상 팔레트"><button type="button" class="bg-swatch" data-rgb="255,193,193" style="--swatch:rgb(255,193,193)" title="연한 빨강" aria-label="연한 빨강" aria-pressed="false"><i aria-hidden="true"></i><span>연빨</span></button><button type="button" class="bg-swatch" data-rgb="225,62,62" style="--swatch:rgb(225,62,62)" title="빨강" aria-label="빨강" aria-pressed="false"><i aria-hidden="true"></i><span>빨</span></button><button type="button" class="bg-swatch" data-rgb="255,210,166" style="--swatch:rgb(255,210,166)" title="연한 주황" aria-label="연한 주황" aria-pressed="false"><i aria-hidden="true"></i><span>연주</span></button><button type="button" class="bg-swatch" data-rgb="239,145,45" style="--swatch:rgb(239,145,45)" title="주황" aria-label="주황" aria-pressed="false"><i aria-hidden="true"></i><span>주</span></button><button type="button" class="bg-swatch" data-rgb="255,244,177" style="--swatch:rgb(255,244,177)" title="연한 노랑" aria-label="연한 노랑" aria-pressed="false"><i aria-hidden="true"></i><span>연노</span></button><button type="button" class="bg-swatch" data-rgb="242,212,62" style="--swatch:rgb(242,212,62)" title="노랑" aria-label="노랑" aria-pressed="false"><i aria-hidden="true"></i><span>노</span></button><button type="button" class="bg-swatch" data-rgb="200,231,185" style="--swatch:rgb(200,231,185)" title="연한 초록" aria-label="연한 초록" aria-pressed="false"><i aria-hidden="true"></i><span>연초</span></button><button type="button" class="bg-swatch" data-rgb="68,143,72" style="--swatch:rgb(68,143,72)" title="초록" aria-label="초록" aria-pressed="false"><i aria-hidden="true"></i><span>초</span></button><button type="button" class="bg-swatch" data-rgb="188,219,247" style="--swatch:rgb(188,219,247)" title="연한 파랑" aria-label="연한 파랑" aria-pressed="false"><i aria-hidden="true"></i><span>연파</span></button><button type="button" class="bg-swatch" data-rgb="55,132,211" style="--swatch:rgb(55,132,211)" title="파랑" aria-label="파랑" aria-pressed="false"><i aria-hidden="true"></i><span>파</span></button><button type="button" class="bg-swatch" data-rgb="173,185,220" style="--swatch:rgb(173,185,220)" title="연한 남색" aria-label="연한 남색" aria-pressed="false"><i aria-hidden="true"></i><span>연남</span></button><button type="button" class="bg-swatch" data-rgb="29,50,102" style="--swatch:rgb(29,50,102)" title="남색" aria-label="남색" aria-pressed="false"><i aria-hidden="true"></i><span>남</span></button><button type="button" class="bg-swatch" data-rgb="207,178,234" style="--swatch:rgb(207,178,234)" title="연한 보라" aria-label="연한 보라" aria-pressed="false"><i aria-hidden="true"></i><span>연보</span></button><button type="button" class="bg-swatch" data-rgb="117,66,166" style="--swatch:rgb(117,66,166)" title="보라" aria-label="보라" aria-pressed="false"><i aria-hidden="true"></i><span>보</span></button><button type="button" class="bg-swatch" data-rgb="250,203,223" style="--swatch:rgb(250,203,223)" title="연한 핑크" aria-label="연한 핑크" aria-pressed="false"><i aria-hidden="true"></i><span>연핑</span></button><button type="button" class="bg-swatch" data-rgb="239,114,167" style="--swatch:rgb(239,114,167)" title="핑크" aria-label="핑크" aria-pressed="false"><i aria-hidden="true"></i><span>핑</span></button><button type="button" class="bg-swatch" data-rgb="228,172,202" style="--swatch:rgb(228,172,202)" title="연한 자홍색" aria-label="연한 자홍색" aria-pressed="false"><i aria-hidden="true"></i><span>연자</span></button><button type="button" class="bg-swatch" data-rgb="181,38,98" style="--swatch:rgb(181,38,98)" title="자홍색" aria-label="자홍색" aria-pressed="false"><i aria-hidden="true"></i><span>자</span></button><button type="button" class="bg-swatch" data-rgb="236,238,237" style="--swatch:rgb(236,238,237)" title="연한 회색" aria-label="연한 회색" aria-pressed="false"><i aria-hidden="true"></i><span>연회</span></button><button type="button" class="bg-swatch" data-rgb="135,142,138" style="--swatch:rgb(135,142,138)" title="회색" aria-label="회색" aria-pressed="false"><i aria-hidden="true"></i><span>회</span></button><button type="button" class="bg-swatch" data-rgb="21,25,22" style="--swatch:rgb(21,25,22)" title="검정색" aria-label="검정색" aria-pressed="false"><i aria-hidden="true"></i><span>검정</span></button><button type="button" class="bg-swatch" data-rgb="255,255,255" style="--swatch:rgb(255,255,255)" title="하얀색" aria-label="하얀색" aria-pressed="false"><i aria-hidden="true"></i><span>하양</span></button></div><p id="bgAccessNotice" class="bg-note" role="status"></p><button class="ds-btn" id="bgReset" type="button" style="margin:10px 0 18px">테마 기본 배경으로</button><p class="settings-label">또는 커스텀 색상 지정 (RGB)</p><div class="rgb-editor"><div><div id="rgbSpectrum" class="rgb-spectrum" role="slider" tabindex="0" aria-label="색상판: 좌우로 채도, 위아래로 밝기 조절" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="채도와 밝기"><span id="rgbMarker" class="rgb-marker"></span></div><label class="rgb-hue-label" for="rgbHue">색상<input id="rgbHue" class="rgb-hue" type="range" min="0" max="360" step="1" value="45" aria-label="색상 (색상환 각도)"></label></div><div><label class="rgb-hex-label">HEX<input id="bgHex" class="rgb-hex" type="text" value="#F7F7F4" maxlength="7" spellcheck="false" aria-label="HEX 색상 코드"></label><div id="rgbControls" class="rgb-controls"><label>R<input id="bgR" type="number" min="0" max="255" step="1" value="247" inputmode="numeric" aria-label="빨강 R"></label><label>G<input id="bgG" type="number" min="0" max="255" step="1" value="247" inputmode="numeric" aria-label="초록 G"></label><label>B<input id="bgB" type="number" min="0" max="255" step="1" value="244" inputmode="numeric" aria-label="파랑 B"></label></div><div class="rgb-preview-label">미리보기</div><span id="rgbPreview" class="rgb-preview" role="img" aria-label="RGB 색상 미리보기"></span></div></div><output id="rgbValue" class="rgb-value" aria-live="polite"></output><div class="rgb-actions"><button id="rgbApply" class="ds-btn" type="button">적용</button></div><p id="rgbInputNotice" class="bg-note" role="status"></p><p id="rgbTrialNotice" class="trial-note">*이 기능은 곧 유료로 전환됩니다! (남은 기간: -)</p></div><div class="settings-language"><p class="settings-label">언어</p>
+          </div><div class="bg-settings"><p class="settings-label">배경 색 설정</p><div class="bg-palette" role="group" aria-label="배경 색상 팔레트"><button type="button" class="bg-swatch" data-rgb="255,193,193" style="--swatch:rgb(255,193,193)" title="연한 빨강" aria-label="연한 빨강" aria-pressed="false"><i aria-hidden="true"></i><span>연빨</span></button><button type="button" class="bg-swatch" data-rgb="225,62,62" style="--swatch:rgb(225,62,62)" title="빨강" aria-label="빨강" aria-pressed="false"><i aria-hidden="true"></i><span>빨</span></button><button type="button" class="bg-swatch" data-rgb="255,210,166" style="--swatch:rgb(255,210,166)" title="연한 주황" aria-label="연한 주황" aria-pressed="false"><i aria-hidden="true"></i><span>연주</span></button><button type="button" class="bg-swatch" data-rgb="239,145,45" style="--swatch:rgb(239,145,45)" title="주황" aria-label="주황" aria-pressed="false"><i aria-hidden="true"></i><span>주</span></button><button type="button" class="bg-swatch" data-rgb="255,244,177" style="--swatch:rgb(255,244,177)" title="연한 노랑" aria-label="연한 노랑" aria-pressed="false"><i aria-hidden="true"></i><span>연노</span></button><button type="button" class="bg-swatch" data-rgb="242,212,62" style="--swatch:rgb(242,212,62)" title="노랑" aria-label="노랑" aria-pressed="false"><i aria-hidden="true"></i><span>노</span></button><button type="button" class="bg-swatch" data-rgb="200,231,185" style="--swatch:rgb(200,231,185)" title="연한 초록" aria-label="연한 초록" aria-pressed="false"><i aria-hidden="true"></i><span>연초</span></button><button type="button" class="bg-swatch" data-rgb="68,143,72" style="--swatch:rgb(68,143,72)" title="초록" aria-label="초록" aria-pressed="false"><i aria-hidden="true"></i><span>초</span></button><button type="button" class="bg-swatch" data-rgb="188,219,247" style="--swatch:rgb(188,219,247)" title="연한 파랑" aria-label="연한 파랑" aria-pressed="false"><i aria-hidden="true"></i><span>연파</span></button><button type="button" class="bg-swatch" data-rgb="55,132,211" style="--swatch:rgb(55,132,211)" title="파랑" aria-label="파랑" aria-pressed="false"><i aria-hidden="true"></i><span>파</span></button><button type="button" class="bg-swatch" data-rgb="173,185,220" style="--swatch:rgb(173,185,220)" title="연한 남색" aria-label="연한 남색" aria-pressed="false"><i aria-hidden="true"></i><span>연남</span></button><button type="button" class="bg-swatch" data-rgb="29,50,102" style="--swatch:rgb(29,50,102)" title="남색" aria-label="남색" aria-pressed="false"><i aria-hidden="true"></i><span>남</span></button><button type="button" class="bg-swatch" data-rgb="207,178,234" style="--swatch:rgb(207,178,234)" title="연한 보라" aria-label="연한 보라" aria-pressed="false"><i aria-hidden="true"></i><span>연보</span></button><button type="button" class="bg-swatch" data-rgb="117,66,166" style="--swatch:rgb(117,66,166)" title="보라" aria-label="보라" aria-pressed="false"><i aria-hidden="true"></i><span>보</span></button><button type="button" class="bg-swatch" data-rgb="250,203,223" style="--swatch:rgb(250,203,223)" title="연한 핑크" aria-label="연한 핑크" aria-pressed="false"><i aria-hidden="true"></i><span>연핑</span></button><button type="button" class="bg-swatch" data-rgb="239,114,167" style="--swatch:rgb(239,114,167)" title="핑크" aria-label="핑크" aria-pressed="false"><i aria-hidden="true"></i><span>핑</span></button><button type="button" class="bg-swatch" data-rgb="228,172,202" style="--swatch:rgb(228,172,202)" title="연한 자홍색" aria-label="연한 자홍색" aria-pressed="false"><i aria-hidden="true"></i><span>연자</span></button><button type="button" class="bg-swatch" data-rgb="181,38,98" style="--swatch:rgb(181,38,98)" title="자홍색" aria-label="자홍색" aria-pressed="false"><i aria-hidden="true"></i><span>자</span></button><button type="button" class="bg-swatch" data-rgb="236,238,237" style="--swatch:rgb(236,238,237)" title="연한 회색" aria-label="연한 회색" aria-pressed="false"><i aria-hidden="true"></i><span>연회</span></button><button type="button" class="bg-swatch" data-rgb="135,142,138" style="--swatch:rgb(135,142,138)" title="회색" aria-label="회색" aria-pressed="false"><i aria-hidden="true"></i><span>회</span></button><button type="button" class="bg-swatch" data-rgb="21,25,22" style="--swatch:rgb(21,25,22)" title="검정색" aria-label="검정색" aria-pressed="false"><i aria-hidden="true"></i><span>검정</span></button><button type="button" class="bg-swatch" data-rgb="255,255,255" style="--swatch:rgb(255,255,255)" title="하얀색" aria-label="하얀색" aria-pressed="false"><i aria-hidden="true"></i><span>하양</span></button></div><p id="bgAccessNotice" class="bg-note" role="status"></p><button class="ds-btn" id="bgReset" type="button" style="margin:10px 0 18px">테마 기본 배경으로</button><p class="settings-label">또는 커스텀 색상 지정 (RGB)</p><div class="rgb-editor"><div><div id="rgbSpectrum" class="rgb-spectrum" role="slider" tabindex="0" aria-label="색상판: 좌우로 채도, 위아래로 밝기 조절" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="채도와 밝기"><span id="rgbMarker" class="rgb-marker"></span></div><label class="rgb-hue-label" for="rgbHue">색상<input id="rgbHue" class="rgb-hue" type="range" min="0" max="360" step="1" value="45" aria-label="색상 (색상환 각도)"></label></div><div><label class="rgb-hex-label">HEX<input id="bgHex" class="rgb-hex" type="text" value="#F7F7F4" maxlength="7" spellcheck="false" aria-label="HEX 색상 코드"></label><div id="rgbControls" class="rgb-controls"><label>R<input id="bgR" type="number" min="0" max="255" step="1" value="247" inputmode="numeric" aria-label="빨강 R"></label><label>G<input id="bgG" type="number" min="0" max="255" step="1" value="247" inputmode="numeric" aria-label="초록 G"></label><label>B<input id="bgB" type="number" min="0" max="255" step="1" value="244" inputmode="numeric" aria-label="파랑 B"></label></div><div class="rgb-preview-label">미리보기</div><span id="rgbPreview" class="rgb-preview" role="img" aria-label="RGB 색상 미리보기"></span></div></div><output id="rgbValue" class="rgb-value" aria-live="polite"></output><div class="rgb-actions"><button id="rgbApply" class="ds-btn" type="button">적용</button></div><p id="rgbInputNotice" class="bg-note" role="status"></p><p id="rgbTrialNotice" class="trial-note">*이 기능은 곧 유료로 전환됩니다! (남은 기간: -)</p></div><div class="ui-color-settings" id="uiColorSettings"><p class="settings-label">UI 색상 설정</p><p class="bg-note">배경과 별개로 메뉴·패널·입력창·버튼 색을 정해요.</p><div class="rgb-controls"><label>색상<input type="color" id="uiColorPicker" value="#29302A" aria-label="UI 색상 선택"></label><label>HEX<input id="uiColorHex" value="#29302A" maxlength="7" aria-label="UI HEX 색상"></label></div><div class="rgb-controls"><label>R<input id="uiColorR" type="number" min="0" max="255" value="41"></label><label>G<input id="uiColorG" type="number" min="0" max="255" value="48"></label><label>B<input id="uiColorB" type="number" min="0" max="255" value="42"></label></div><div id="uiColorPreview" style="padding:12px;border-radius:8px;margin:12px 0">UI 색상 미리보기</div><div class="ds-actions" style="flex-wrap:wrap"><button class="ds-btn" type="button" id="uiColorApply">UI 색상 적용</button><button class="ds-btn" type="button" id="uiColorFromBg">배경보다 조금 어둡게</button><button class="ds-btn" type="button" id="uiColorReset">테마 기본 UI로</button></div><p class="bg-note" id="uiColorNotice" role="status">이 브라우저에 저장됩니다.</p></div><div class="settings-language"><p class="settings-label">언어</p>
           <div class="lang-opt" data-lang="ko"><span class="lang-flag">🇰🇷</span>한국어</div>
           <div class="lang-opt" data-lang="en"><span class="lang-flag">🇺🇸</span>English</div>
           <div class="lang-opt" data-lang="ja"><span class="lang-flag">🇯🇵</span>日本語</div>
@@ -2205,7 +2242,7 @@ html[data-background] .bodytext strong,html[data-background] .qna-q{color:var(--
 <p class="ds-note">카카오톡 문의도 Discord 로그인 후 접수할 수 있어요. 답변은 이 사이트의 ‘내 문의’에서 확인해주세요.<br>비밀번호·인증번호 등 민감한 정보는 첨부하지 마세요.</p><label class="ds-note"><input type="checkbox" id="dsConsent" required> 문의 처리에 필요한 계정 정보, 문의 내용과 첨부파일 제공에 동의합니다.</label>
 <div class="ds-actions"><button class="ds-btn primary" id="dsSubmit" type="submit">문의 제출하기 →</button><span class="ds-note">개발자와 문의 작성자만 확인할 수 있어요.</span></div><p id="dsNotice" class="ds-msg" role="status" aria-live="polite"></p></form></div></section>
 <section class="page" id="page-my-support"><div class="dsupport"><div class="ds-eyebrow">MY REQUESTS</div><h1>내 문의</h1><p class="ds-sub">접수 상태와 개발자의 답변을 확인하세요.</p><button class="ds-btn" onclick="dsLoad(false)">새로고침</button><div id="dsMyList"></div><div id="dsMyDetail"></div></div></section>
-<section class="page" id="page-support-inbox"><div class="dsupport"><div class="ds-eyebrow">DEVELOPER DESK</div><h1>문의접수</h1><p class="ds-sub">첨부파일을 확인하고 답변하거나 문의를 완료하세요.</p><div class="ds-actions"><select class="ds-input" id="dsFilter" style="width:auto;margin:0" onchange="dsLoad(true)"><option value="all">전체 문의</option><option value="open">접수됨</option><option value="done">완료됨</option></select><button class="ds-btn" onclick="dsLoad(true)">새로고침</button><span id="dsCount" class="ds-note"></span></div><div id="dsInboxList"></div><div id="dsInboxDetail"></div></div></section>
+<section class="page" id="page-support-inbox"><div class="dsupport"><div class="ds-eyebrow">DEVELOPER DESK</div><h1>문의접수</h1><p class="ds-sub">첨부파일을 확인하고 답변하거나 문의를 완료하세요.</p><div class="ds-actions"><select class="ds-input" id="dsFilter" style="width:auto;margin:0" onchange="dsLoad(true)"><option value="all">전체 문의</option><option value="open">접수됨</option><option value="done">완료됨</option></select><button class="ds-btn" onclick="dsLoad(true)">새로고침</button><span id="dsCount" class="ds-note"></span></div><div class="ds-actions ds-inbox-toolbar" id="dsInboxToolbar"><label><input type="checkbox" id="dsSelectVisible" onchange="dsSelectInboxVisible(this.checked)"> 현재 목록 선택</label><button class="ds-btn" id="dsDeleteSelected" onclick="dsInboxAction('delete',false)" disabled>삭제</button><button class="ds-btn" id="dsReadSelected" onclick="dsInboxAction('read',false)" disabled>읽음</button><button class="ds-btn" onclick="dsInboxAction('delete',true)">모두삭제</button><button class="ds-btn" onclick="dsInboxAction('read',true)">모두읽음</button><span id="dsSelectionCount" class="ds-note">0개 선택</span></div><p class="ds-note">읽음 처리한 문의는 숫자 배지에서 제외됩니다. 모두삭제·모두읽음은 필터와 관계없이 전체 문의에 적용됩니다.</p><div id="dsInboxList"></div><div id="dsInboxDetail"></div></div></section>
 
 <section class="page" id="page-free-trials"><div class="dsupport"><div class="ds-eyebrow">DEVELOPER SETTINGS</div><h1>무료체험</h1><p class="ds-sub">어떤 기능을 무료로 공개할지, 언제 체험을 시작하고 끝낼지 정하세요.</p><p id="trialAdminGate" class="ds-note">개발자만 설정할 수 있어요.</p><div id="trialAdminContent" hidden><div id="trialStates" class="trial-table"></div><form id="trialAdminForm" class="ds-card"><label class="ds-field">대상 기능<select id="trialFeature" class="ds-input"><option value="custom_rgb">커스텀 색상 지정 (RGB)</option><option value="background_palette">배경 색상 팔레트</option></select></label><label class="ds-field">이용 설정<select id="trialMode" class="ds-input"><option value="free">무료 공개 (기간 제한 없음)</option><option value="trial">기간을 정해 무료체험</option><option value="locked">무료 이용 중지</option></select></label><div class="trial-period" id="trialPeriod" hidden><label class="ds-field">시작 시간<input id="trialStart" type="datetime-local" class="ds-input"></label><label class="ds-field">종료 시간<input id="trialEnd" type="datetime-local" class="ds-input"></label></div><div class="trial-tools"><button type="button" class="ds-btn" data-trial-days="1">지금부터 1일</button><button type="button" class="ds-btn" data-trial-days="7">7일</button><button type="button" class="ds-btn" data-trial-days="30">30일</button></div><p class="ds-note">입력 시간은 현재 기기의 현지 시간 기준이며, 모든 이용자에게 같은 체험 기간이 적용됩니다. 각 기능은 따로 설정할 수 있어요.<br>체험 종료 후 해당 색상 기능이 잠기고, 적용된 배경은 테마 기본 배경으로 돌아갑니다. 개발자는 계속 사용할 수 있어요.</p><div class="ds-actions"><button id="trialSave" class="ds-btn primary" type="submit">설정 저장</button></div><p id="trialSaveNotice" class="ds-msg" role="status"></p></form></div></div></section>
   </main>
@@ -3273,7 +3310,7 @@ async function sendGlobalAnnouncement(){
     if(targetId && !selected){alert('선택한 서버가 없거나 공지채널이 비활성화됐어요. 대상을 다시 선택해주세요.');return;}
     if(!targetId && !announceTargets.length){alert('발송 가능한 서버가 없어요. 공지채널 설정과 봇 상태를 확인해주세요.');return;}
     const targetLabel=selected?`「${selected.guild_name}」 서버 한 곳`:'공지채널이 활성화된 모든 서버';
-    if(!confirm(`${targetLabel}에 발송해요. 되돌릴 수 없어요. 전송할까요?`))return;
+    if(!await dogeConfirm(`${targetLabel}에 발송해요. 되돌릴 수 없어요. 전송할까요?`))return;
     const {error}=await sb.from('global_announcements').insert({title,body,color,status:'pending',image_url:imageUrl||null,image_position:imagePosition,image_after_paragraph:imageAfterParagraph,poll,target_guild_id:targetId,log_media_enabled:true});
     if(error)throw error;
     showToast(`✅ ${targetLabel}에 공지 전송 요청 완료!`);
@@ -3505,10 +3542,10 @@ function copyShareLink(shareToken){
 }
 
 async function addCollaborator(docId){
-  const userId = prompt('추가할 사람의 디스코드 ID를 입력하세요');
+  const userId = await dogePrompt('추가할 사람의 디스코드 ID를 입력하세요');
   if(!userId) return;
-  const userName = prompt('표시할 이름(닉네임)을 입력하세요', userId) || userId;
-  const wantsEdit = confirm('편집도 가능하게 할까요?\n확인 = 편집가능 / 취소 = 보기만');
+  const userName = await dogePrompt('표시할 이름(닉네임)을 입력하세요', userId) || userId;
+  const wantsEdit = await dogeConfirm('편집도 가능하게 할까요?\n확인 = 편집가능 / 취소 = 보기만');
   const role = wantsEdit ? 'editor' : 'viewer';
 
   const { error } = await sb.from('bot_document_permissions').upsert(
@@ -3521,7 +3558,7 @@ async function addCollaborator(docId){
 }
 
 async function removeCollaborator(permId){
-  if(!confirm('이 협업자를 제거할까요?')) return;
+  if(!await dogeConfirm('이 협업자를 제거할까요?')) return;
   const { error } = await sb.from('bot_document_permissions').delete().eq('id', permId);
   if(error){ alert('제거 실패: ' + error.message); return; }
   loadDocuments();
@@ -3529,7 +3566,7 @@ async function removeCollaborator(permId){
 
 async function deleteDocument(docId){
   const doc = docsCache.find(d => d.id === docId);
-  if(!confirm(`"${doc?.title || '이 문서'}"를 삭제할까요? 되돌릴 수 없어요.`)) return;
+  if(!await dogeConfirm(`"${doc?.title || '이 문서'}"를 삭제할까요? 되돌릴 수 없어요.`)) return;
   const { error } = await sb.from('bot_documents').delete().eq('id', docId);
   if(error){ alert('삭제 실패: ' + error.message); return; }
   showToast('🗑 삭제됐어요');
@@ -3569,7 +3606,7 @@ async function openDocumentEditor(doc){
  oe('officeImport').disabled=!docCanEdit(doc);oe('officeSave').disabled=!docCanEdit(doc);oe('officeRename').disabled=!docCanEdit(doc);
  oe('officeFile').accept=doc.doc_type==='excel'?'.xlsx,.csv,.json':doc.doc_type==='ppt'?'.pptx,.json':'.docx,.txt,.json';
  oe('officeExport').textContent=doc.doc_type==='excel'?'XLSX 다운로드':doc.doc_type==='ppt'?'PPTX 다운로드':'DOCX 다운로드';
- if(docCanEdit(doc)){try{const draft=JSON.parse(localStorage.getItem(officeKey())||'null');if(draft&&JSON.stringify(draft.content)!==JSON.stringify(office.model)&&confirm('이 기기에 저장되지 않은 편집 내용이 있어요. 복구할까요?')){office.model=officeValidate(draft.content,doc.doc_type);office.dirty=true;}}catch{}}
+ if(docCanEdit(doc)){try{const draft=JSON.parse(localStorage.getItem(officeKey())||'null');if(draft&&JSON.stringify(draft.content)!==JSON.stringify(office.model)&&await dogeConfirm('이 기기에 저장되지 않은 편집 내용이 있어요. 복구할까요?')){office.model=officeValidate(draft.content,doc.doc_type);office.dirty=true;}}catch{}}
  officeRender();if(office.dirty)scheduleDocSave();
 }
 function officeRender(){oe('officeSheet').hidden=docEditorCurrentDoc.doc_type!=='excel';oe('officeSlides').hidden=docEditorCurrentDoc.doc_type!=='ppt';oe('officeText').hidden=docEditorCurrentDoc.doc_type!=='hwp';if(docEditorCurrentDoc.doc_type==='excel')officeRenderSheet();else if(docEditorCurrentDoc.doc_type==='ppt')officeRenderSlides();else officeRenderText();}
@@ -3583,7 +3620,7 @@ async function officeSave(){
  office.saving=(async()=>{try{const{data,error}=await sb.rpc('doge_document_save',{p_document_id:String(doc.id),p_content:content,p_revision:office.revision});if(error)throw error;office.revision=Number(data.editor_revision);doc.content=content;doc.editor_revision=office.revision;if(serial===office.serial){office.dirty=false;try{localStorage.removeItem(officeKey(doc));}catch{}}officeStatus(office.dirty?'새 변경 저장 대기':'저장됨');return true;}catch(e){officeStatus(String(e.message||e).includes('DOGE_DOCUMENT_CONFLICT')?'다른 사람이 먼저 저장했어요. 백업을 받은 뒤 다시 열어 주세요.':`저장 실패: ${e.message||e}`);return false;}finally{oe('officeSave').disabled=!docCanEdit(doc);}})();
  const result=await office.saving;office.saving=null;if(result&&office.dirty)scheduleDocSave();return result;
 }
-async function closeDocumentEditor(){clearTimeout(docEditorSaveTimer);if(office.dirty&&!await officeSave()&&!confirm('서버에 저장되지 않았어요. 이 기기에 복구본을 남기고 닫을까요?'))return;oe('docEditorOverlay').style.display='none';docEditorCurrentDoc=null;if(isDedicatedDocTab){window.close();if(!window.closed)location.href=location.pathname;}else loadDocuments();}
+async function closeDocumentEditor(){clearTimeout(docEditorSaveTimer);if(office.dirty&&!await officeSave()&&!await dogeConfirm('서버에 저장되지 않았어요. 이 기기에 복구본을 남기고 닫을까요?'))return;oe('docEditorOverlay').style.display='none';docEditorCurrentDoc=null;if(isDedicatedDocTab){window.close();if(!window.closed)location.href=location.pathname;}else loadDocuments();}
 function officeUndo(redo=false){if(!docCanEdit(docEditorCurrentDoc))return;if(docEditorCurrentDoc.doc_type==='hwp'){docEditorQuillInstance.history[redo?'redo':'undo']();return;}const from=redo?office.future:office.history,to=redo?office.history:office.future;if(!from.length)return;to.push(structuredClone(office.model));office.model=from.pop();officeRender();officeChanged();}
 function officeColumn(index){let s='';for(index++;index>0;index=Math.floor((index-1)/26))s=String.fromCharCode(65+(index-1)%26)+s;return s;}
 function officeCoords(ref){const m=/^([A-Z]+)([1-9]\d*)$/.exec(ref);if(!m)throw Error('#REF!');let col=0;for(const c of m[1])col=col*26+c.charCodeAt(0)-64;return[Number(m[2])-1,col-1];}
@@ -3674,8 +3711,8 @@ function officeFillSelection(axis){if(!docCanEdit(docEditorCurrentDoc))return;of
  const source=vertical?{r1:b.r1,r2:b.r1+n-1,c1:line,c2:line}:{r1:line,r2:line,c1:b.c1,c2:b.c1+n-1},target=vertical?{...b,c1:line,c2:line}:{...b,r1:line,r2:line};values={...values,...officeFillData(s,source,target,axis,'series')};
  }officeSnapshot();Object.assign(s.cells,values);officeRenderSheet();officeChanged();
 }
-function officeSheetAction(action){if(!docCanEdit(docEditorCurrentDoc))return;officeSetCell();const s=officeSheet();if(action==='add'){if(office.model.sheets.length>=20)return;const name=prompt('시트 이름',`시트${office.model.sheets.length+1}`);if(!name?.trim()||/[\\/?*\[\]:]/.test(name)||name.length>31||office.model.sheets.some(x=>x.name.toLowerCase()===name.toLowerCase())){alert('시트 이름은 중복 없이 31자 이내로 입력해 주세요.');return;}officeSnapshot();office.model.sheets.push({name,rows:40,cols:12,cells:{}});office.sheet=office.model.sheets.length-1;officeRangeReset();}
- else if(action==='delete'){if(office.model.sheets.length===1)return;if(!confirm('현재 시트를 삭제할까요?'))return;officeSnapshot();office.model.sheets.splice(office.sheet,1);office.sheet=0;officeRangeReset();}
+async function officeSheetAction(action){if(!docCanEdit(docEditorCurrentDoc))return;officeSetCell();const s=officeSheet();if(action==='add'){if(office.model.sheets.length>=20)return;const name=await dogePrompt('시트 이름',`시트${office.model.sheets.length+1}`);if(!name?.trim()||/[\\/?*\[\]:]/.test(name)||name.length>31||office.model.sheets.some(x=>x.name.toLowerCase()===name.toLowerCase())){alert('시트 이름은 중복 없이 31자 이내로 입력해 주세요.');return;}officeSnapshot();office.model.sheets.push({name,rows:40,cols:12,cells:{}});office.sheet=office.model.sheets.length-1;officeRangeReset();}
+ else if(action==='delete'){if(office.model.sheets.length===1)return;if(!await dogeConfirm('현재 시트를 삭제할까요?'))return;officeSnapshot();office.model.sheets.splice(office.sheet,1);office.sheet=0;officeRangeReset();}
  else if(action==='row'||action==='col'){if(action==='row'&&s.rows>=300||action==='col'&&s.cols>=50)return;officeSnapshot();if(action==='row')s.rows++;else s.cols++;}
  else{officeSnapshot();const bold=!s.cells[office.cell]?.bold;for(const ref of officeRangeRefs()){s.cells[ref]={...s.cells[ref]};if(action==='bold')s.cells[ref].bold=bold;else s.cells[ref][action]=oe(action==='color'?'officeCellColor':'officeCellBg').value;}}
  officeRenderSheet();officeChanged();
@@ -3767,11 +3804,11 @@ function officeBackup(){officeDownload(new Blob([JSON.stringify({format:'dogebot
 async function officeImport(file){if(!file||!docCanEdit(docEditorCurrentDoc))return;if(file.size>10*1024*1024){alert('파일은 10MB 이하로 선택해 주세요.');return;}try{let model;const ext=file.name.split('.').pop().toLowerCase(),type=docEditorCurrentDoc.doc_type;
  if(ext==='json'){const json=JSON.parse(await file.text());if(json.format!=='dogebot-document-v1'||json.type!==type)throw Error('같은 문서 종류의 도지봇 백업을 선택해 주세요.');model=officeValidate(json.content,type);}
  else if(type==='excel'&&['xlsx','csv'].includes(ext)){const XLSX=await officeLoadScript('https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js','XLSX'),book=XLSX.read(await file.arrayBuffer(),{type:'array',cellFormula:true});if(book.SheetNames.length>20)throw Error('최대 20개 시트를 지원해요.');model={kind:'excel',version:1,sheets:[]};for(const name of book.SheetNames){const ws=book.Sheets[name],range=XLSX.utils.decode_range(ws['!ref']||'A1');if(range.e.r>=300||range.e.c>=50)throw Error('최대 300행 × 50열 문서를 지원해요.');const sheet={name,rows:Math.max(20,range.e.r+1),cols:Math.max(10,range.e.c+1),cells:{}};for(const[key,cell]of Object.entries(ws))if(!key.startsWith('!'))sheet.cells[key]={value:cell.f?'='+cell.f:cell.v??''};model.sheets.push(sheet);}}
- else if(type==='ppt'&&ext==='pptx'){if(!confirm('제목·본문·첫 사진을 가져와 도지봇 슬라이드로 변환합니다. 원본 도형·배치·애니메이션은 유지되지 않아요. 계속할까요?'))return;model=await officeReadPptx(file);}
+ else if(type==='ppt'&&ext==='pptx'){if(!await dogeConfirm('제목·본문·첫 사진을 가져와 도지봇 슬라이드로 변환합니다. 원본 도형·배치·애니메이션은 유지되지 않아요. 계속할까요?'))return;model=await officeReadPptx(file);}
  else if(type==='hwp'&&ext==='txt'){model={ops:[{insert:(await file.text())+'\n'}]};}
  else if(type==='hwp'&&ext==='docx'){const mammoth=await officeLoadScript('https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js','mammoth');const result=await mammoth.convertToHtml({arrayBuffer:await file.arrayBuffer()});model=JSON.parse(JSON.stringify(docEditorQuillInstance.clipboard.convert(result.value)));}
  else throw Error(type==='ppt'?'PPTX 또는 도지봇 JSON 백업을 선택해 주세요.':'지원하지 않는 파일 형식이에요.');
- if(!confirm('현재 내용을 가져온 파일로 바꿀까요? 먼저 JSON 백업을 받을 수 있어요.'))return;officeSnapshot();office.model=officeValidate(model,type);office.sheet=office.slide=0;officeRangeReset();officeSlideSelected=null;officeRender();officeChanged();
+ if(!await dogeConfirm('현재 내용을 가져온 파일로 바꿀까요? 먼저 JSON 백업을 받을 수 있어요.'))return;officeSnapshot();office.model=officeValidate(model,type);office.sheet=office.slide=0;officeRangeReset();officeSlideSelected=null;officeRender();officeChanged();
  }catch(e){alert('가져오기 실패: '+e.message);}finally{oe('officeFile').value='';}}
 
 async function officeImageData(source){
@@ -3793,7 +3830,7 @@ function officePrint(){const w=window.open('','_blank');if(!w){alert('인쇄 창
 async function renameDocument(id){
  const doc=docsCache.find(d=>String(d.id)===String(id))||(String(docEditorCurrentDoc?.id)===String(id)?docEditorCurrentDoc:null);
  if(!doc||!docCanEdit(doc))return;
- const entered=prompt('문서 이름 변경',doc.title);if(entered===null)return;
+ const entered=await dogePrompt('문서 이름 변경',doc.title);if(entered===null)return;
  const title=entered.trim();if(!title){alert('문서 이름을 입력해 주세요.');return;}if(title.length>120){alert('문서 이름은 120자 이내로 입력해 주세요.');return;}if(title===doc.title)return;
  try{const{data,error}=await sb.from('bot_documents').update({title}).eq('id',doc.id).select('id,title').maybeSingle();if(error)throw error;if(!data)throw Error('이름을 변경할 권한이 없거나 문서가 삭제됐어요.');
  doc.title=data.title;
@@ -4041,7 +4078,7 @@ function loadCodeSnippet(id){
 }
 
 async function deleteCodeSnippet(id){
-  if(!confirm('이 코드를 삭제할까요?')) return;
+  if(!await dogeConfirm('이 코드를 삭제할까요?')) return;
   const { error } = await sb.from('code_snippets').delete().eq('id', id);
   if(error){ alert('삭제 실패: ' + error.message); return; }
   await loadCodeSnippets();
@@ -4264,7 +4301,7 @@ async function loadAdminConsole(){
 }
 
 async function requestDeregister(guildId, guildName){
-  if(!confirm(`정말 "${guildName}" 서버의 계약을 해지할까요? 해당 서버는 다시 /도지봇 으로 등록해야 해요.`)) return;
+  if(!await dogeConfirm(`정말 "${guildName}" 서버의 계약을 해지할까요? 해당 서버는 다시 /도지봇 으로 등록해야 해요.`)) return;
   const { error } = await sb.from('admin_commands').insert({ command_type: 'deregister', guild_id: guildId, status: 'pending' });
   if(error){ alert('요청 실패: ' + error.message); return; }
   showToast('✅ 계약 해지 요청 완료! 30초 내로 반영돼요.');
@@ -4311,7 +4348,7 @@ async function submitBulkPoints(scope, action){
     confirmMsg = `정말 "${guildName}" 서버의 모든 유저에게 ${amount.toLocaleString()}P를 ${action === 'grant' ? '지급' : '차감'}할까요?`;
   }
 
-  if(!confirm(confirmMsg)) return;
+  if(!await dogeConfirm(confirmMsg)) return;
 
   const { error } = await sb.from('admin_commands').insert(payload);
   if(error){ alert('요청 실패: ' + error.message); return; }
@@ -4572,7 +4609,7 @@ async function savePreset(){
 
 // 삭제
 async function deletePreset(id, name){
-  if(!confirm(`"${name}" 프리셋을 삭제할까요?`)) return;
+  if(!await dogeConfirm(`"${name}" 프리셋을 삭제할까요?`)) return;
   const { error } = await sb.from('ticket_presets').delete().eq('id', id);
   if(error){ alert('삭제 실패: '+error.message); return; }
   showToast('✅ 프리셋이 삭제됐어요.');
@@ -5044,7 +5081,7 @@ async function doInstantRegister(){
 
 async function doDeregister(){
   if(!isBotOwner){ alert('봇 오너만 사용할 수 있어요.'); return; }
-  if(!confirm('정말 이 서버의 라이선스 승인을 해제할까요? 모든 슬래시 명령어가 비활성화돼요.')) return;
+  if(!await dogeConfirm('정말 이 서버의 라이선스 승인을 해제할까요? 모든 슬래시 명령어가 비활성화돼요.')) return;
   const { error } = await sb.from('acknowledged').delete().eq('guild_id', currentGuildId);
   if(error){ alert('실패: ' + error.message); return; }
   showToast('✅ 등록이 해제됐어요.');
@@ -5438,11 +5475,42 @@ const dsCheck=r=>{if(r.error)throw r.error;return r.data;};
 const dsDate=d=>new Date(d).toLocaleString('ko-KR');
 function dsError(e){console.error('Support:',e);return '처리하지 못했어요. 로그인 상태와 문의 시스템 설정을 확인한 뒤 다시 시도해주세요.';}
 function dsGo(page){document.querySelector(`.nav-item[data-page="${page}"]`).click();}
+
+let dsInboxSelected=new Set(),dsInboxRows=[],dsInboxBusy=false,dsUnreadRequest=0;
+function dsInboxSelectionUI(){
+ dsEl('dsSelectionCount').textContent=`${dsInboxSelected.size}개 선택`;
+ dsEl('dsDeleteSelected').disabled=dsInboxBusy||!dsInboxSelected.size;dsEl('dsReadSelected').disabled=dsInboxBusy||!dsInboxSelected.size;
+ const all=dsEl('dsSelectVisible');all.checked=dsInboxRows.length>0&&dsInboxRows.every(r=>dsInboxSelected.has(String(r.id)));all.indeterminate=dsInboxSelected.size>0&&!all.checked;
+}
+function dsSelectInboxVisible(checked){dsInboxSelected=new Set(checked?dsInboxRows.map(r=>String(r.id)):[]);document.querySelectorAll('.ds-inbox-check').forEach(c=>c.checked=checked);dsInboxSelectionUI();}
+async function dsRefreshUnread(){
+ const req=++dsUnreadRequest,epoch=dsEpoch,badge=dsEl('dsUnreadBadge');
+ if(!dsUser||!dsDeveloper){badge.hidden=true;return;}
+ try{const data=dsCheck(await sb.rpc('doge_support_inbox_snapshot'));if(req!==dsUnreadRequest||epoch!==dsEpoch||!dsDeveloper)return;const count=Number(data.unread_count)||0;badge.textContent=String(count);badge.setAttribute('aria-label',`안 읽은 문의 ${count}개`);badge.hidden=count===0;}
+ catch(e){if(epoch===dsEpoch){badge.hidden=false;badge.textContent='!';badge.setAttribute('aria-label','안 읽은 문의 수 조회 실패');}}
+}
+async function dsInboxAction(action,all){
+ if(!dsDeveloper||dsInboxBusy)return;
+ dsInboxBusy=true;dsEl('dsInboxToolbar').querySelectorAll('button,input').forEach(b=>b.disabled=true);
+ try{
+  const snapshot=all?dsCheck(await sb.rpc('doge_support_inbox_snapshot')):null;
+  const ids=all?(action==='read'?snapshot.unread_ids:snapshot.ids):[...dsInboxSelected];
+  if(!ids?.length){await dogeAlert('처리할 문의가 없어요.');return;}
+  const verb=action==='delete'?'삭제':'읽음처리';
+  if(!await dogeConfirm(`정말 ${all?'전체 문의 '+ids.length+'개를':ids.length===1?'이 문의를':'선택한 문의 '+ids.length+'개를'} ${verb} 하시겠습니까?${action==='delete'?'\n문의접수 목록에서 숨겨지며 문의자의 기록은 보존됩니다.':''}`))return;
+  dsCheck(await sb.rpc('doge_support_inbox_action',{p_action:action,p_ids:ids}));
+  dsInboxSelected.clear();dsEl('dsInboxDetail').replaceChildren();await dsLoad(true);await dsRefreshUnread();
+ }catch(e){await dogeAlert(dsError(e));}
+ finally{dsInboxBusy=false;dsEl('dsInboxToolbar').querySelectorAll('button,input').forEach(b=>b.disabled=false);dsInboxSelectionUI();}
+}
+setInterval(()=>{if(!document.hidden)void dsRefreshUnread();},30_000);
+window.addEventListener('focus',()=>{void dsRefreshUnread();});
+
 async function dsRefreshAuth(){
  const epoch=++dsEpoch;const {data,error}=await sb.auth.getSession();if(epoch!==dsEpoch)return;
  dsUser=error?null:data.session?.user||null;dsDeveloper=false;
  if(dsUser){try{const permitted=dsCheck(await sb.rpc('doge_support_is_developer'));if(epoch!==dsEpoch)return;dsDeveloper=permitted===true;}catch(e){console.warn('Support setup needed');}}
- if(epoch!==dsEpoch)return;dsEl('navSupportInbox').style.display=dsDeveloper?'flex':'none';
+ if(epoch!==dsEpoch)return;dsEl('navSupportInbox').style.display=dsDeveloper?'flex':'none';dsInboxSelected.clear();dsInboxRows=[];dsInboxSelectionUI();void dsRefreshUnread();
  dsEl('dsMyDetail').replaceChildren();dsEl('dsInboxDetail').replaceChildren();dsEl('dsMyList').replaceChildren();dsEl('dsInboxList').replaceChildren();
  if(!dsDeveloper&&dsEl('page-support-inbox').classList.contains('active'))dsGo('support');
  if(dsEl('page-my-support').classList.contains('active'))dsLoad(false);
@@ -5470,8 +5538,18 @@ dsEl('dsForm').addEventListener('submit',async e=>{
 async function dsLoad(admin){
  const container=dsEl(admin?'dsInboxList':'dsMyList'),epoch=dsEpoch;container.replaceChildren(dsText('div','불러오는 중…','ds-empty'));
  if(!dsUser||admin&&!dsDeveloper){container.replaceChildren(dsText('div',admin?'개발자만 확인할 수 있어요.':'Discord 로그인 후 확인할 수 있어요.','ds-empty'));return;}
- try{let q=sb.from('doge_support_tickets').select('*').neq('status','draft').order('created_at',{ascending:false}).limit(200);if(!admin)q=q.eq('owner_id',dsUser.id);if(admin&&dsEl('dsFilter').value!=='all')q=q.eq('status',dsEl('dsFilter').value);const rows=dsCheck(await q);if(epoch!==dsEpoch)return;container.replaceChildren();if(admin)dsEl('dsCount').textContent=`최근 ${rows.length}건 (최대 200건)`;if(!rows.length)container.append(dsText('div','아직 문의가 없어요.','ds-empty'));for(const r of rows){const row=dsText('div','','ds-row'),info=document.createElement('div');info.append(dsText('h3',r.title),dsText('div',`${r.platform==='kakao'?'카카오톡':'디스코드'} · ${r.category} · ${dsDate(r.created_at)}`,'ds-note'));const badge=dsText('span',r.status==='done'?'완료됨':'접수됨','ds-badge'+(r.status==='done'?' done':''));const btn=dsText('button','문의 보기 →','ds-btn');btn.onclick=()=>dsOpen(r.id,admin);row.append(info,badge,btn);container.append(row);}}
- catch(e){if(epoch===dsEpoch)container.replaceChildren(dsText('div',dsError(e),'ds-empty'));}
+ try{
+ const rows=admin?dsCheck(await sb.rpc('doge_support_inbox_list',{p_status:dsEl('dsFilter').value})):dsCheck(await sb.from('doge_support_tickets').select('*').neq('status','draft').eq('owner_id',dsUser.id).order('created_at',{ascending:false}).limit(200));
+ if(epoch!==dsEpoch)return;container.replaceChildren();
+ if(admin){dsInboxRows=rows||[];dsInboxSelected=new Set([...dsInboxSelected].filter(id=>dsInboxRows.some(r=>String(r.id)===id)));dsEl('dsCount').textContent=`최근 ${rows.length}건 (최대 200건)`;dsInboxSelectionUI();void dsRefreshUnread();}
+ if(!rows.length)container.append(dsText('div','아직 문의가 없어요.','ds-empty'));
+ for(const r of rows){
+ const row=dsText('div','','ds-row'+(admin&&!r.inbox_read_at?' ds-is-unread':'')),info=document.createElement('div');
+ if(admin){const check=document.createElement('input');check.type='checkbox';check.className='ds-inbox-check';check.checked=dsInboxSelected.has(String(r.id));check.setAttribute('aria-label',r.title+' 선택');check.onchange=()=>{if(check.checked)dsInboxSelected.add(String(r.id));else dsInboxSelected.delete(String(r.id));dsInboxSelectionUI();};row.append(check);}
+ info.append(dsText('h3',r.title),dsText('div',`${r.platform==='kakao'?'카카오톡':'디스코드'} · ${r.category} · ${dsDate(r.created_at)}${admin?' · '+(r.inbox_read_at?'읽음':'안 읽음'):''}`,'ds-note'));
+ const badge=dsText('span',r.status==='done'?'완료됨':'접수됨','ds-badge'+(r.status==='done'?' done':''));const btn=dsText('button','문의 보기 →','ds-btn');btn.onclick=()=>dsOpen(r.id,admin);row.append(info,badge,btn);container.append(row);
+ }
+ }catch(e){if(epoch===dsEpoch)container.replaceChildren(dsText('div',dsError(e),'ds-empty'));}
 }
 async function dsOpen(id,admin){
  const target=dsEl(admin?'dsInboxDetail':'dsMyDetail'),epoch=dsEpoch;target.replaceChildren(dsText('div','문의 불러오는 중…','ds-card'));
@@ -5814,8 +5892,40 @@ dsHash();dsRefreshAuth();
 })();
 
 </script>
+
+<script>
+(()=>{
+ const key='doge_ui_color',root=document.documentElement,$=id=>document.getElementById(id);
+ const valid=rgb=>Array.isArray(rgb)&&rgb.length===3&&rgb.every(n=>Number.isInteger(n)&&n>=0&&n<=255);
+ const hex=rgb=>'#'+rgb.map(n=>n.toString(16).padStart(2,'0')).join('').toUpperCase();
+ function ink(rgb){const v=rgb.map(n=>{n/=255;return n<=.04045?n/12.92:((n+.055)/1.055)**2.4});return v[0]*.2126+v[1]*.7152+v[2]*.0722>.179?'#000000':'#FFFFFF';}
+ function fill(rgb){$('uiColorPicker').value=hex(rgb);$('uiColorHex').value=hex(rgb);['R','G','B'].forEach((n,i)=>$('uiColor'+n).value=rgb[i]);$('uiColorPreview').style.background=hex(rgb);$('uiColorPreview').style.color=ink(rgb);}
+ function apply(rgb){
+  if(!valid(rgb))return;
+  const input=rgb.map(n=>Math.round(n*.90));root.dataset.uiColor='custom';
+  const vars={'--ui-panel':hex(rgb),'--ui-input':hex(input),'--ui-ink':ink(rgb),'--ui-input-ink':ink(input),'--ui-line':ink(rgb)==='#FFFFFF'?'#FFFFFF55':'#00000044'};
+  for(const [name,value] of Object.entries(vars))root.style.setProperty(name,value);
+ }
+ function persist(rgb){apply(rgb);try{localStorage.setItem(key,JSON.stringify(rgb));$('uiColorNotice').textContent='UI 색상을 적용했어요. 이 브라우저에 저장됩니다.';}catch{$('uiColorNotice').textContent='색상은 적용했지만 브라우저에 저장하지 못했어요.';}}
+ $('uiColorPicker').oninput=()=>{const s=$('uiColorPicker').value.slice(1);fill([0,2,4].map(i=>parseInt(s.slice(i,i+2),16)));};
+ $('uiColorHex').oninput=()=>{const match=/^#?([0-9a-f]{6})$/i.exec($('uiColorHex').value.trim());if(match)fill([0,2,4].map(i=>parseInt(match[1].slice(i,i+2),16)));};
+ const read=()=>['R','G','B'].map(n=>$('uiColor'+n).value.trim()===''?NaN:Number($('uiColor'+n).value));
+ for(const n of ['R','G','B'])$('uiColor'+n).oninput=()=>{const rgb=read();if(valid(rgb))fill(rgb);};
+ $('uiColorApply').onclick=()=>{const rgb=read();if(!valid(rgb)||!/^#?[0-9a-f]{6}$/i.test($('uiColorHex').value.trim())){$('uiColorNotice').textContent='HEX 6자리 또는 R/G/B 0~255 정수를 입력해주세요.';return;}persist(rgb);};
+ $('uiColorFromBg').onclick=()=>{
+  const style=getComputedStyle(root),value=style.getPropertyValue(root.dataset.background?'--canvas-bg':'--bg').trim();let rgb;
+  if(/^#[0-9a-f]{6}$/i.test(value))rgb=[1,3,5].map(i=>parseInt(value.slice(i,i+2),16));else {const match=value.match(/^rgba?\(\s*(\d+)[, ]+\s*(\d+)[, ]+\s*(\d+)/);if(match)rgb=match.slice(1,4).map(Number);}
+  if(!valid(rgb)){$('uiColorNotice').textContent='현재 배경색을 확인하지 못했어요. 색상을 직접 선택해주세요.';return;}
+  const darker=rgb.map(n=>Math.round(n*.88));fill(darker);persist(darker);
+ };
+ function reset(){delete root.dataset.uiColor;for(const name of ['--ui-panel','--ui-input','--ui-ink','--ui-input-ink','--ui-line'])root.style.removeProperty(name);}
+ $('uiColorReset').onclick=()=>{reset();try{localStorage.removeItem(key);}catch{}$('uiColorNotice').textContent='현재 테마의 기본 UI 색상으로 돌아갔어요.';};
+ try{const saved=JSON.parse(localStorage.getItem(key)||'null');if(valid(saved)){fill(saved);apply(saved);}else fill([41,48,42]);}catch{fill([41,48,42]);}
+ window.addEventListener('storage',e=>{if(e.key!==key)return;try{const value=JSON.parse(e.newValue);if(valid(value)){fill(value);apply(value);}else reset();}catch{reset();}});
+ window.dogeUIColorHelpers={valid,ink};
+})();
+</script>
 </body>
 </html>
 
 
-  
