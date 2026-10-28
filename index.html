@@ -1956,7 +1956,8 @@ window.alert=message=>{void dogeAlert(message);};
             <select class="modal-input" id="an_image_position" onchange="onAnnounceImageChange()">
               <option value="thumbnail">제목 옆 (작은 썸네일)</option>
               <option value="middle">본문 중간 (문단 사이)</option>
-              <option value="bottom">맨 아래 (큰 이미지)</option>
+              <option value="bottom">본문 맨 아래 (큰 이미지)</option>
+              <option value="after_poll" id="an_image_after_poll_option" hidden disabled>투표 밑 (큰 이미지)</option>
             </select>
           </div>
           <div class="preset-field-group" id="an_image_para_group" style="display:none;">
@@ -1966,6 +1967,12 @@ window.alert=message=>{void dogeAlert(message);};
           <div class="preset-field-group">
             <label class="preset-label"><input type="checkbox" id="an_poll_enabled" onchange="onAnnouncePollChange()"> 투표 첨부</label>
             <div id="an_poll_editor" hidden>
+              <label class="preset-label" for="an_poll_scope">투표 방식</label>
+              <select class="modal-input" id="an_poll_scope" onchange="updateAnnouncePreview()">
+                <option value="global">글로벌 투표 (전체 서버 합산)</option>
+                <option value="local">로컬 투표 (발송한 서버별 집계)</option>
+              </select>
+              <p class="bg-note">로컬은 각 서버의 디스코드 기본 투표로 따로 집계합니다. 글로벌은 모든 발송 서버의 표를 합산합니다.</p>
               <label class="preset-label" for="an_poll_question">투표 질문</label>
               <input class="modal-input" id="an_poll_question" maxlength="300" placeholder="어떤 의견인가요?" oninput="updateAnnouncePreview()">
               <div id="an_poll_answers"></div>
@@ -3013,6 +3020,12 @@ function announcementBlocks(ann) {
   flush();
   if(ann.image_url && ann.image_position === 'bottom') blocks.push({type:'image',url:ann.image_url});
   if(poll?.position === 'bottom') blocks.push({type:'poll'});
+  if(ann.image_url && (ann.image_position === 'after_poll' || poll?.image_after_poll)){
+    const existing=blocks.findIndex(b=>b.type==='image');
+    if(existing>=0)blocks.splice(existing,1);
+    const pollIndex=blocks.findIndex(b=>b.type==='poll');
+    blocks.splice(pollIndex>=0?pollIndex+1:blocks.length,0,{type:'image',url:ann.image_url});
+  }
   return blocks;
 }
 
@@ -3123,6 +3136,9 @@ function addAnnounceAnswer(text='',emoji='') {
 function onAnnouncePollChange() {
   const enabled=document.getElementById('an_poll_enabled').checked;
   document.getElementById('an_poll_editor').hidden=!enabled;
+  const imageOption=document.getElementById('an_image_after_poll_option');
+  imageOption.hidden=!enabled;imageOption.disabled=!enabled;
+  if(!enabled && document.getElementById('an_image_position').value==='after_poll')document.getElementById('an_image_position').value='bottom';
   if(!enabled)closeAnnounceEmojiPicker();
   const wrap=document.getElementById('an_poll_answers');
   if(enabled && !wrap.children.length){ addAnnounceAnswer('찬성','unicode:✅');addAnnounceAnswer('반대','unicode:❌'); }
@@ -3141,7 +3157,7 @@ function getAnnouncePoll(strict=false) {
   });
   const question=document.getElementById('an_poll_question').value.trim();
   if(strict && (!question || question.length>300 || answers.length<2 || answers.length>10 || answers.some(a=>!a.text || a.text.length>55))) throw new Error('투표 질문과 2~10개의 선택지를 입력해주세요. (질문 300자, 선택지 55자 이내)');
-  return {question,answers,duration:Number(document.getElementById('an_poll_duration').value),allow_multiselect:document.getElementById('an_poll_multi').checked,position:document.getElementById('an_poll_position').value,after_paragraph:Number(document.getElementById('an_poll_after_paragraph').value||1)};
+  return {scope:document.getElementById('an_poll_scope').value,question,answers,duration:Number(document.getElementById('an_poll_duration').value),allow_multiselect:document.getElementById('an_poll_multi').checked,position:document.getElementById('an_poll_position').value,after_paragraph:Number(document.getElementById('an_poll_after_paragraph').value||1)};
 }
 function announcePollPreview(poll) {
   const card=document.createElement('div');card.className='an-poll-card';
@@ -3155,9 +3171,9 @@ function announcePollPreview(poll) {
     const text=document.createElement('strong');text.textContent=answer.text||'선택지';const circle=document.createElement('span');circle.className='an-poll-circle';circle.style.fontSize='12px';circle.textContent='0표';row.append(text,circle);card.append(row);
   }
   const foot=document.createElement('div');foot.className='an-poll-footer';
-  const count=document.createElement('span');count.textContent=`전체 서버 0명 참여 · ${poll.duration}시간 · 미리보기`;
-  const result=document.createElement('span');result.textContent='전체 서버 공통';
-  const vote=document.createElement('span');vote.className='an-poll-vote';vote.textContent='선택지 버튼으로 투표';foot.append(count,result,vote);card.append(foot);return card;
+  const count=document.createElement('span');count.textContent=`${poll.scope==='local'?'이 서버':'전체 서버'} 0명 참여 · ${poll.duration}시간 · 미리보기`;
+  const result=document.createElement('span');result.textContent=poll.scope==='local'?'서버별 독립 집계':'전체 서버 공통';
+  const vote=document.createElement('span');vote.className='an-poll-vote';vote.textContent=poll.scope==='local'?'디스코드 기본 투표':'선택지 버튼으로 투표';foot.append(count,result,vote);card.append(foot);return card;
 }
 function updateAnnouncePreview(){
   updateAnnounceEmojiButtons();
@@ -3311,7 +3327,7 @@ async function sendGlobalAnnouncement(){
     if(!targetId && !announceTargets.length){alert('발송 가능한 서버가 없어요. 공지채널 설정과 봇 상태를 확인해주세요.');return;}
     const targetLabel=selected?`「${selected.guild_name}」 서버 한 곳`:'공지채널이 활성화된 모든 서버';
     if(!await dogeConfirm(`${targetLabel}에 발송해요. 되돌릴 수 없어요. 전송할까요?`))return;
-    const {error}=await sb.from('global_announcements').insert({title,body,color,status:'pending',image_url:imageUrl||null,image_position:imagePosition,image_after_paragraph:imageAfterParagraph,poll,target_guild_id:targetId,log_media_enabled:true});
+    const {error}=await sb.from('global_announcements').insert({title,body,color,status:'pending',image_url:imageUrl||null,image_position:imagePosition==='after_poll'?'bottom':imagePosition,image_after_paragraph:imageAfterParagraph,poll:poll?{...poll,image_after_poll:imagePosition==='after_poll'}:null,target_guild_id:targetId,log_media_enabled:true});
     if(error)throw error;
     showToast(`✅ ${targetLabel}에 공지 전송 요청 완료!`);
     for(const id of ['an_title','an_body','an_image_url','an_image_file','an_poll_question'])document.getElementById(id).value='';
@@ -5705,6 +5721,7 @@ function dsNoticeImage(url,thumbnail=false){
  img.onerror=()=>{const message=dsText('p','이미지를 불러오지 못했어요.','ds-note');img.replaceWith(message);};return img;
 }
 function dsNoticePoll(poll,state){
+ if(poll?.scope==='local')state=null;
  if(!poll || typeof poll.question!=='string' || !Array.isArray(poll.answers))return null;
  const card=dsText('section','','an-poll-card ds-notice-poll');card.setAttribute('aria-label','공지 투표 내용');
  card.append(dsText('strong',poll.question),dsText('p',poll.allow_multiselect?'여러 답변 선택 가능':'한 가지 답변 선택','ds-note'));
@@ -5718,7 +5735,7 @@ function dsNoticePoll(poll,state){
  }
  const hours=Number(poll.duration);
  if(state){const ended=Date.parse(state.closes_at)<=Date.now();card.append(dsText('p',`전체 서버 ${Number(state.total_voters)||0}명 참여 · ${ended?'종료':'진행 중'} · 마감 ${dsDate(state.closes_at)}`,'ds-note'));}
- card.append(dsText('p',`${!state&&Number.isFinite(hours)?'설정된 투표 기간: '+hours+'시간 · ':''}${state?'':'현재 집계 정보를 불러오지 못했어요. '}모든 서버 공통 투표 · 참여는 디스코드 공지의 버튼을 눌러주세요.`,'ds-note'));
+ card.append(dsText('p',poll.scope==='local'?`로컬 투표 · 서버별 독립 집계 · ${hours}시간 · 결과와 참여는 각 서버의 디스코드 공지에서 확인해주세요.`:`${!state&&Number.isFinite(hours)?'설정된 투표 기간: '+hours+'시간 · ':''}${state?'':'현재 집계 정보를 불러오지 못했어요. '}모든 서버 공통 투표 · 참여는 디스코드 공지의 버튼을 눌러주세요.`,'ds-note'));
  return card;
 }
 function dsNoticeCard(r){
@@ -5731,7 +5748,7 @@ function dsNoticeCard(r){
  for(const block of announcementBlocks(r)){
   if(block.type==='text')card.append(dsNoticeBody(block.text));
   else if(block.type==='image'){const img=dsNoticeImage(block.url);if(img)card.append(img);}
-  else if(block.type==='poll'){const poll=dsNoticePoll(r.poll,r.global_poll);if(poll){poll.dataset.announcementId=String(r.announcement_id);card.append(poll);}}
+  else if(block.type==='poll'){const poll=dsNoticePoll(r.poll,r.global_poll);if(poll){if(r.poll.scope!=='local')poll.dataset.announcementId=String(r.announcement_id);card.append(poll);}}
  }
  return card;
 }
@@ -5746,7 +5763,7 @@ async function dsNotices(){
   if(request!==dsNoticesRequest)return;
   const notices=dsCheck(noticesResult),media=mediaResult.error?[]:(mediaResult.data||[]);
   if(noticeServerId && mediaResult.error){target.replaceChildren(dsText('p','서버별 공지 기록을 확인하지 못했어요. SQL 적용 후 다시 조회해주세요.','ds-msg'));return;}
-  const pollIds=media.filter(m=>m.poll).map(m=>String(m.announcement_id));
+  const pollIds=media.filter(m=>m.poll && m.poll.scope!=='local').map(m=>String(m.announcement_id));
   const pollsResult=pollIds.length?await sb.from('doge_global_poll_results').select('*').in('announcement_id',pollIds):{data:[]};
   if(request!==dsNoticesRequest)return;
   const states=new Map((pollsResult.data||[]).map(p=>[String(p.announcement_id),p]));
@@ -5938,4 +5955,3 @@ dsHash();dsRefreshAuth();
 </html>
 
 
-  
