@@ -1122,6 +1122,10 @@ html[data-background] .bodytext strong,html[data-background] .qna-q{color:var(--
 .an-target{position:relative}.an-target-toggle{display:flex;align-items:center;justify-content:space-between;cursor:pointer;text-align:left;width:100%}.an-target-panel{position:absolute;left:0;right:0;top:68px;z-index:30;padding:12px;border:1px solid var(--line,#666);border-radius:12px;background:var(--panel,#fff);color:var(--ink,#222);box-shadow:0 12px 35px #0003}.an-target-search-row{display:flex;gap:8px;align-items:center;margin-bottom:8px}.an-target-search-row input{min-width:0;flex:1}.an-target-search-row button{display:flex;align-items:center}.an-target-panel [role=listbox]{max-height:280px;overflow-y:auto;margin-top:8px}.an-target-option{display:flex;align-items:center;gap:10px;width:100%;border:0;border-radius:8px;background:transparent;color:inherit;padding:10px;text-align:left;cursor:pointer;font:inherit}.an-target-option:hover,.an-target-option:focus-visible{background:#ff8a1f22;outline:2px solid #ff8a1f}.an-target-option[aria-selected=true]{background:#ff8a1f22;font-weight:bold}.an-target-icon{width:30px;height:30px;flex:none;object-fit:cover;border-radius:50%;display:grid;place-items:center;background:#8882}.an-target-option span:last-child{overflow-wrap:anywhere}.an-target-all{position:sticky;top:0;background:var(--panel,#fff);z-index:1}#an_target_name{display:flex;align-items:center;gap:8px;overflow-wrap:anywhere}
 </style><style>
 .an-answer-edit{grid-template-columns:70px minmax(0,1fr) auto;align-items:center}.an-answer-pick{height:42px;display:flex;align-items:center;justify-content:center;gap:4px;cursor:pointer}.an-answer-pick img{width:28px;height:28px;object-fit:contain}.an-answer-pick span{font-size:24px}.an-emoji-picker{margin:10px 0;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--ink)}.an-emoji-toolbar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 10px}.an-emoji-toolbar:last-child{font-size:12px;margin:10px 0 0}.an-emoji-browser{display:flex;gap:10px;margin-top:10px;max-height:330px;overflow:hidden}.an-emoji-servers{display:flex;flex-direction:column;gap:5px;width:44px;flex-shrink:0;overflow-y:auto}.an-emoji-server{border:0;background:var(--panel-2);color:inherit;border-radius:50%;width:36px;height:36px;flex-shrink:0;cursor:pointer;display:grid;place-items:center}.an-emoji-server[aria-pressed=true]{outline:2px solid var(--doge-orange)}.an-emoji-server img{width:30px;height:30px;border-radius:50%}.an-emoji-grid-wrap{min-width:0;flex:1;overflow-y:auto}.an-emoji-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(38px,1fr));gap:4px}.an-emoji-cell{border:0;border-radius:6px;background:transparent;color:inherit;height:42px;padding:3px;cursor:pointer;font-size:28px;display:grid;place-items:center}.an-emoji-cell:hover,.an-emoji-cell:focus-visible{background:var(--panel-2);outline:2px solid var(--doge-orange)}.an-emoji-cell img{width:34px;height:34px;object-fit:contain}.an-emoji-group-title{font-size:12px;margin:12px 0 6px}.an-emoji-group-title:first-child{margin-top:0}
+</style><style>
+.ds-notice-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:18px}.ds-notice-heading h2{min-width:0;overflow-wrap:anywhere}.ds-notice-thumb{width:80px;height:80px;object-fit:contain;border-radius:8px;flex:none}.ds-notice-image{display:block;max-width:100%;max-height:560px;object-fit:contain;border-radius:8px;margin:16px 0}.ds-notice-poll{max-width:540px;margin:16px 0}.ds-notice-poll .ds-note{color:#bbb!important;font-size:12px;line-height:1.6}.ds-notice-poll strong{overflow-wrap:anywhere}
+</style><style>
+.an-answer-emoji[hidden]{display:none!important}.an-answer-edit{grid-template-columns:minmax(110px,.8fr) minmax(0,1fr) auto}.an-answer-pick{justify-content:flex-start;overflow:hidden}.an-answer-pick img{flex:none}.an-answer-pick .an-emoji-name{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.an-emoji-grid{grid-template-columns:1fr}.an-emoji-cell{display:flex;align-items:center;justify-content:flex-start;gap:10px;font-size:14px;text-align:left}.an-emoji-cell img{flex:none}.an-emoji-cell .an-emoji-name{overflow-wrap:anywhere;min-width:0}.an-emoji-cell small{margin-left:auto;font-size:10px;opacity:.7}.an-emoji-grid-standard{grid-template-columns:repeat(auto-fill,minmax(38px,1fr))}.an-emoji-grid-standard .an-emoji-cell{justify-content:center;font-size:28px}
 </style></head>
 <body>
 <div id="officeRouteIntro" hidden style="position:relative;padding:22px 24px;border-bottom:1px solid var(--line);background:var(--panel);color:var(--ink)"><strong>도지봇 문서 편집기</strong><p style="margin:8px 0;font-size:13px">디스코드로 로그인하면 문서가 열립니다. 문서는 홈페이지의 문서함에서 만들고 ‘열기’를 눌러 주세요.</p><a href="/" style="color:inherit">← 도지봇 홈페이지</a></div>
@@ -1926,7 +1930,7 @@ html[data-background] .bodytext strong,html[data-background] .qna-q{color:var(--
                 <option value="top">제목 아래 · 본문 위</option><option value="middle">본문 중간 (문단 사이)</option><option value="bottom" selected>맨 아래 (이미지 뒤)</option>
               </select>
               <select class="modal-input" id="an_poll_after_paragraph" aria-label="투표 삽입 문단" onchange="updateAnnouncePreview()" hidden></select>
-              <p style="font-size:12px;color:var(--ink-faint)">같은 문단 뒤에서는 이미지 → 투표 순서예요. 디스코드에는 순서대로 나눠 전송되며, 서버마다 별도로 집계돼요.</p>
+              <p style="font-size:12px;color:var(--ink-faint)">같은 문단 뒤에서는 이미지 → 투표 순서예요. 디스코드에는 순서대로 나눠 전송되며, 모든 서버의 투표가 하나로 집계돼요.</p>
             </div>
           </div>
           <div class="preset-field-group an-target" id="an_target_picker">
@@ -2996,7 +3000,7 @@ function updateAnnounceEmojiButtons(){
   document.querySelectorAll('.an-answer-edit').forEach(row=>{
     const value=row.querySelector('select').value;const button=row.querySelector('.an-answer-pick');if(!button)return;
     button.replaceChildren();const e=announceEmojis.find(e=>e.id===value);
-    if(e){button.append(announceEmojiImage(e));button.title=`:${e.name}: · ${e.guild_name}`;}
+    if(e){button.append(announceEmojiImage(e));const name=document.createElement('span');name.className='an-emoji-name';name.textContent=e.name;button.append(name);button.title=`:${e.name}: · ${e.guild_name}`;}
     else {const icon=document.createElement('span');icon.textContent=value.startsWith('unicode:')?value.slice(8):value?'⚠':'☺';button.append(icon);button.title=value&&!value.startsWith('unicode:')?'사용할 수 없는 이모지 · 다시 선택하세요':'이모지 선택';}
   });
 }
@@ -3032,9 +3036,9 @@ function renderAnnounceEmojiPicker(){
   const q=document.getElementById('an_emoji_search').value.trim().toLowerCase().replace(/^:|:$/g,'');let count=0;
   const section=(name,items)=>{
     if(!items.length)return;const title=document.createElement('h4');title.className='an-emoji-group-title';title.textContent=name;content.append(title);
-    const grid=document.createElement('div');grid.className='an-emoji-grid';
+    const grid=document.createElement('div');grid.className='an-emoji-grid'+(items.every(e=>!e.id)?' an-emoji-grid-standard':'');
     for(const e of items){const b=document.createElement('button');b.type='button';b.className='an-emoji-cell';b.title=e.id?`:${e.name}: · ${e.guild_name}${e.animated?' · GIF':''}`:e.name;b.setAttribute('aria-label',b.title);
-      if(e.id)b.append(announceEmojiImage(e));else b.textContent=e.name;
+      if(e.id){b.append(announceEmojiImage(e));const name=document.createElement('span');name.className='an-emoji-name';name.textContent=e.name;b.append(name);if(e.animated){const badge=document.createElement('small');badge.textContent='GIF';b.append(badge);}}else b.textContent=e.name;
       b.onfocus=b.onmouseenter=()=>{document.getElementById('an_emoji_hint').textContent=b.title;};
       b.onclick=()=>chooseAnnounceEmoji(e.id||'unicode:'+e.name);grid.append(b);count++;}
     content.append(grid);
@@ -3089,12 +3093,12 @@ function announcePollPreview(poll) {
     const row=document.createElement('div');row.className='an-poll-choice';
     if(answer.emoji?.id){const img=document.createElement('img');img.className='an-poll-emoji';img.alt=answer.emoji.name;img.src=`https://cdn.discordapp.com/emojis/${answer.emoji.id}.${answer.emoji.animated?'gif':'png'}?size=48`;row.append(img);}
     else if(answer.emoji?.name){const emoji=document.createElement('span');emoji.textContent=answer.emoji.name;row.append(emoji);}
-    const text=document.createElement('strong');text.textContent=answer.text||'선택지';const circle=document.createElement('span');circle.className='an-poll-circle';circle.textContent=poll.allow_multiselect?'□':'○';row.append(text,circle);card.append(row);
+    const text=document.createElement('strong');text.textContent=answer.text||'선택지';const circle=document.createElement('span');circle.className='an-poll-circle';circle.style.fontSize='12px';circle.textContent='0표';row.append(text,circle);card.append(row);
   }
   const foot=document.createElement('div');foot.className='an-poll-footer';
-  const count=document.createElement('span');count.textContent=`0표 · ${poll.duration}시간 · 미리보기`;
-  const result=document.createElement('span');result.textContent='결과 표시';
-  const vote=document.createElement('span');vote.className='an-poll-vote';vote.textContent='투표하기';foot.append(count,result,vote);card.append(foot);return card;
+  const count=document.createElement('span');count.textContent=`전체 서버 0명 참여 · ${poll.duration}시간 · 미리보기`;
+  const result=document.createElement('span');result.textContent='전체 서버 공통';
+  const vote=document.createElement('span');vote.className='an-poll-vote';vote.textContent='선택지 버튼으로 투표';foot.append(count,result,vote);card.append(foot);return card;
 }
 function updateAnnouncePreview(){
   updateAnnounceEmojiButtons();
@@ -3248,7 +3252,7 @@ async function sendGlobalAnnouncement(){
     if(!targetId && !announceTargets.length){alert('발송 가능한 서버가 없어요. 공지채널 설정과 봇 상태를 확인해주세요.');return;}
     const targetLabel=selected?`「${selected.guild_name}」 서버 한 곳`:'공지채널이 활성화된 모든 서버';
     if(!confirm(`${targetLabel}에 발송해요. 되돌릴 수 없어요. 전송할까요?`))return;
-    const {error}=await sb.from('global_announcements').insert({title,body,color,status:'pending',image_url:imageUrl||null,image_position:imagePosition,image_after_paragraph:imageAfterParagraph,poll,target_guild_id:targetId});
+    const {error}=await sb.from('global_announcements').insert({title,body,color,status:'pending',image_url:imageUrl||null,image_position:imagePosition,image_after_paragraph:imageAfterParagraph,poll,target_guild_id:targetId,log_media_enabled:true});
     if(error)throw error;
     showToast(`✅ ${targetLabel}에 공지 전송 요청 완료!`);
     for(const id of ['an_title','an_body','an_image_url','an_image_file','an_poll_question'])document.getElementById(id).value='';
@@ -5492,7 +5496,96 @@ function dsNoticeBody(source){
  }
  return root;
 }
-async function dsNotices(){const target=dsEl('dsNotices');target.replaceChildren(dsText('p','공지를 불러오는 중…','ds-note'));try{const rows=dsCheck(await sb.from('doge_web_notices').select('*').order('created_at',{ascending:false}).limit(100));target.replaceChildren();if(!rows.length)target.append(dsText('div','아직 등록된 공지가 없어요.','ds-empty'));for(const r of rows){const card=dsText('article','','ds-card');card.append(dsText('p',dsDate(r.created_at),'ds-note'),dsText('h2',r.title),dsNoticeBody(r.body));target.append(card);}}catch(e){target.replaceChildren(dsText('p',dsError(e),'ds-msg'));}}
+
+// Forward-only media snapshots are published by the database when delivery completes.
+// Keep the existing web-notice writer and its history intact.
+function dsMergeNoticeMedia(notices,media){
+ const rows=notices.map(n=>({...n})),used=new Set();
+ const sameText=(a,b)=>String(a.title||'')===String(b.title||'')&&String(a.body||'')===String(b.body||'');
+ for(const m of media){
+  // Prefer a source reference when exposed by the existing log schema.
+  let candidates=rows.map((r,i)=>({r,i})).filter(({r,i})=>!used.has(i)&&sameText(r,m));
+  let match=candidates.find(({r})=>[r.global_announcement_id,r.source_global_id,r.announcement_id].some(id=>id!=null&&String(id)===String(m.announcement_id)));
+  if(!match)match=candidates.find(({r})=>Number.isFinite(Date.parse(r.created_at))&&Date.parse(r.created_at)===Date.parse(m.created_at));
+  // Some existing mirrors stamp their own creation time. Only reconcile unambiguous pairs.
+  if(!match && candidates.length===1 && media.filter(other=>sameText(other,m)).length===1)match=candidates[0];
+  if(match){rows[match.i]={...match.r,...m};used.add(match.i);}
+  else rows.push({...m});
+ }
+ return rows.sort((a,b)=>(Date.parse(b.created_at)||0)-(Date.parse(a.created_at)||0)).slice(0,100);
+}
+function dsNoticeImage(url,thumbnail=false){
+ try{const parsed=new URL(url);if(!['https:','http:'].includes(parsed.protocol))return null;}catch{return null;}
+ const img=document.createElement('img');img.src=url;img.alt='공지 첨부 이미지';img.loading='lazy';img.className=thumbnail?'ds-notice-thumb':'ds-notice-image';
+ img.onerror=()=>{const message=dsText('p','이미지를 불러오지 못했어요.','ds-note');img.replaceWith(message);};return img;
+}
+function dsNoticePoll(poll,state){
+ if(!poll || typeof poll.question!=='string' || !Array.isArray(poll.answers))return null;
+ const card=dsText('section','','an-poll-card ds-notice-poll');card.setAttribute('aria-label','공지 투표 내용');
+ card.append(dsText('strong',poll.question),dsText('p',poll.allow_multiselect?'여러 답변 선택 가능':'한 가지 답변 선택','ds-note'));
+ for(const answer of poll.answers.slice(0,10)){
+  const row=dsText('div','','an-poll-choice');const e=answer.emoji;
+  if(e?.id && /^\d{17,20}$/.test(e.id)){const img=document.createElement('img');img.className='an-poll-emoji';img.alt=':'+String(e.name||'이모지')+':';img.loading='lazy';img.src=`https://cdn.discordapp.com/emojis/${e.id}.${e.animated?'gif':'png'}?size=48`;row.append(img);}
+  else if(e?.name && !e.id)row.append(dsText('span',e.name));
+  row.append(dsText('strong',String(answer.text||'')));
+  if(state){const index=poll.answers.indexOf(answer);row.append(dsText('span',`${Number(state.answer_counts?.[String(index)])||0}표`));}
+  card.append(row);
+ }
+ const hours=Number(poll.duration);
+ if(state){const ended=Date.parse(state.closes_at)<=Date.now();card.append(dsText('p',`전체 서버 ${Number(state.total_voters)||0}명 참여 · ${ended?'종료':'진행 중'} · 마감 ${dsDate(state.closes_at)}`,'ds-note'));}
+ card.append(dsText('p',`${!state&&Number.isFinite(hours)?'설정된 투표 기간: '+hours+'시간 · ':''}${state?'':'현재 집계 정보를 불러오지 못했어요. '}모든 서버 공통 투표 · 참여는 디스코드 공지의 버튼을 눌러주세요.`,'ds-note'));
+ return card;
+}
+function dsNoticeCard(r){
+ const card=dsText('article','','ds-card');card.append(dsText('p',dsDate(r.created_at),'ds-note'));
+ const heading=dsText('div','','ds-notice-heading');heading.append(dsText('h2',r.title));
+ if(r.image_url && r.image_position==='thumbnail'){const img=dsNoticeImage(r.image_url,true);if(img)heading.append(img);}
+ card.append(heading);
+ if(!r.announcement_id){card.append(dsNoticeBody(r.body));return card;}
+ for(const block of announcementBlocks(r)){
+  if(block.type==='text')card.append(dsNoticeBody(block.text));
+  else if(block.type==='image'){const img=dsNoticeImage(block.url);if(img)card.append(img);}
+  else if(block.type==='poll'){const poll=dsNoticePoll(r.poll,r.global_poll);if(poll){poll.dataset.announcementId=String(r.announcement_id);card.append(poll);}}
+ }
+ return card;
+}
+let dsNoticesRequest=0;
+async function dsNotices(){
+ const request=++dsNoticesRequest,target=dsEl('dsNotices');target.replaceChildren(dsText('p','공지를 불러오는 중…','ds-note'));
+ try{
+  const [noticesResult,mediaResult]=await Promise.all([
+   sb.from('doge_web_notices').select('*').order('created_at',{ascending:false}).limit(100),
+   sb.from('doge_announcement_log_media').select('announcement_id,title,body,created_at,image_url,image_position,image_after_paragraph,poll').order('created_at',{ascending:false}).limit(100)
+  ]);
+  if(request!==dsNoticesRequest)return;
+  const notices=dsCheck(noticesResult),media=mediaResult.error?[]:(mediaResult.data||[]);
+  const pollIds=media.filter(m=>m.poll).map(m=>String(m.announcement_id));
+  const pollsResult=pollIds.length?await sb.from('doge_global_poll_results').select('*').in('announcement_id',pollIds):{data:[]};
+  if(request!==dsNoticesRequest)return;
+  const states=new Map((pollsResult.data||[]).map(p=>[String(p.announcement_id),p]));
+  const rows=dsMergeNoticeMedia(notices||[],media).map(r=>({...r,global_poll:states.get(String(r.announcement_id))}));target.replaceChildren();
+  if(mediaResult.error)target.append(dsText('p','이미지·투표 로그를 불러오지 못했어요. SQL 적용 여부를 확인한 후 새로고침해주세요.','ds-msg'));
+  if(!rows.length)target.append(dsText('div','아직 등록된 공지가 없어요.','ds-empty'));
+  for(const r of rows)target.append(dsNoticeCard(r));
+ }catch(e){if(request===dsNoticesRequest)target.replaceChildren(dsText('p',dsError(e),'ds-msg'));}
+}
+
+
+let dsLogPollRefreshBusy=false;
+async function dsRefreshLogPollCounts(){
+ if(dsLogPollRefreshBusy || document.hidden || !document.getElementById('page-notices')?.classList.contains('active'))return;
+ const cards=[...document.querySelectorAll('#dsNotices .ds-notice-poll[data-announcement-id]')];
+ if(!cards.length)return;
+ dsLogPollRefreshBusy=true;
+ try{
+  const {data,error}=await sb.from('doge_global_poll_results').select('*').in('announcement_id',cards.map(c=>c.dataset.announcementId));
+  if(error)return;
+  const states=new Map((data||[]).map(r=>[String(r.announcement_id),r]));
+  for(const card of cards){const state=states.get(card.dataset.announcementId);if(!state || !card.isConnected)continue;const next=dsNoticePoll(state.config,state);if(next){next.dataset.announcementId=card.dataset.announcementId;card.replaceWith(next);}}
+ }finally{dsLogPollRefreshBusy=false;}
+}
+setInterval(()=>{void dsRefreshLogPollCounts().catch(()=>{});},15_000);
+
 const dsAuthOriginal=dsRefreshAuth;
 dsRefreshAuth=async()=>{await dsAuthOriginal();dsEl('dsNoticeEditor').hidden=!dsDeveloper;};
 dsEl('dsNoticeForm').onsubmit=async e=>{e.preventDefault();if(!dsDeveloper)return;const btn=dsEl('dsPublish');btn.disabled=true;try{dsCheck(await sb.from('doge_web_notices').insert({title:dsEl('dsNoticeTitle').value.trim(),body:dsEl('dsNoticeBody').value.trim()}));dsEl('dsNoticeForm').reset();dsEl('dsPublishMsg').textContent='웹 공지가 게시됐어요.';await dsNotices();}catch(err){dsEl('dsPublishMsg').textContent=dsError(err);}finally{btn.disabled=false;}};
