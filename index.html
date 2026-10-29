@@ -1220,7 +1220,7 @@ window.alert=message=>{void dogeAlert(message);};
       <button class="nav-item nav-owner-only" data-page="admin" id="navAdmin" style="display:none;"><span class="ic"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/><circle cx="12" cy="12" r="5"/></svg></span><span data-i18n="navAdmin">관리</span></button>
 <button class="nav-item" data-page="notices"><span class="ic"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 16-6v14L3 14ZM6 15l2 6h4l-2-5M21 9v6"/></svg></span><span>도지봇 공지</span></button>
 <button class="nav-item" data-page="support"><span class="ic"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 6 9 7 9-7"/></svg></span><span>문의하기</span></button>
-<button class="nav-item" data-page="my-support"><span class="ic"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg></span><span>내 문의</span></button>
+<button class="nav-item" data-page="my-support"><span class="ic"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg></span><span>내 문의</span><span id="dsMyCompletionBadge" class="ds-unread-count" hidden aria-live="polite"></span></button>
 <button class="nav-item" data-page="support-inbox" id="navSupportInbox" style="display:none"><span class="ic"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14 6 4h12l3 10v6H3Z"/><path d="M3 14h6l1 3h4l1-3h6"/></svg></span><span>문의접수</span><span id="dsUnreadBadge" class="ds-unread-count" hidden aria-live="polite"></span></button>
 <button class="nav-item" id="navFreeTrials" data-page="free-trials" style="display:none"><span class="ic" aria-hidden="true">◷</span><span>무료체험</span></button>
     </nav>
@@ -2255,8 +2255,8 @@ window.alert=message=>{void dogeAlert(message);};
 <label class="ds-field">첨부파일 (선택)</label><label class="ds-drop" id="dsDrop" for="dsFiles">＋ 사진 · 영상 · 파일 첨부<br><span class="ds-note">클릭하거나 파일을 끌어 놓으세요 · 최대 5개, 각 20MB, 총 50MB</span></label><input id="dsFiles" type="file" multiple hidden accept="image/jpeg,image/png,image/gif,image/webp,video/mp4,video/webm,.pdf,.txt,.log,.zip"><div id="dsFileList"></div>
 <p class="ds-note">카카오톡 문의도 Discord 로그인 후 접수할 수 있어요. 답변은 이 사이트의 ‘내 문의’에서 확인해주세요.<br>비밀번호·인증번호 등 민감한 정보는 첨부하지 마세요.</p><label class="ds-note"><input type="checkbox" id="dsConsent" required> 문의 처리에 필요한 계정 정보, 문의 내용과 첨부파일 제공에 동의합니다.</label>
 <div class="ds-actions"><button class="ds-btn primary" id="dsSubmit" type="submit">문의 제출하기 →</button><span class="ds-note">개발자와 문의 작성자만 확인할 수 있어요.</span></div><p id="dsNotice" class="ds-msg" role="status" aria-live="polite"></p></form></div></section>
-<section class="page" id="page-my-support"><div class="dsupport"><div class="ds-eyebrow">MY REQUESTS</div><h1>내 문의</h1><p class="ds-sub">접수 상태와 개발자의 답변을 확인하세요.</p><button class="ds-btn" onclick="dsLoad(false)">새로고침</button><div id="dsMyList"></div><div id="dsMyDetail"></div></div></section>
-<section class="page" id="page-support-inbox"><div class="dsupport"><div class="ds-eyebrow">DEVELOPER DESK</div><h1>문의접수</h1><p class="ds-sub">첨부파일을 확인하고 답변하거나 문의를 완료하세요.</p><div class="ds-actions"><select class="ds-input" id="dsFilter" style="width:auto;margin:0" onchange="dsLoad(true)"><option value="all">전체 문의</option><option value="open">접수됨</option><option value="done">완료됨</option></select><button class="ds-btn" onclick="dsLoad(true)">새로고침</button><span id="dsCount" class="ds-note"></span></div><div class="ds-actions ds-inbox-toolbar" id="dsInboxToolbar"><label><input type="checkbox" id="dsSelectVisible" onchange="dsSelectInboxVisible(this.checked)"> 현재 목록 선택</label><button class="ds-btn" id="dsDeleteSelected" onclick="dsInboxAction('delete',false)" disabled>삭제</button><button class="ds-btn" id="dsReadSelected" onclick="dsInboxAction('read',false)" disabled>읽음</button><button class="ds-btn" onclick="dsInboxAction('delete',true)">모두삭제</button><button class="ds-btn" onclick="dsInboxAction('read',true)">모두읽음</button><span id="dsSelectionCount" class="ds-note">0개 선택</span></div><p class="ds-note">읽음 처리한 문의는 숫자 배지에서 제외됩니다. 모두삭제·모두읽음은 필터와 관계없이 전체 문의에 적용됩니다.</p><div id="dsInboxList"></div><div id="dsInboxDetail"></div></div></section>
+<section class="page" id="page-my-support"><div class="dsupport"><div class="ds-eyebrow">MY REQUESTS</div><h1>내 문의</h1><p class="ds-sub">접수 상태와 개발자의 답변을 확인하세요. 새 완료 알림은 해당 문의를 열어 확인하면 사라집니다.</p><button class="ds-btn" onclick="dsLoad(false)">새로고침</button><div id="dsMyList"></div><div id="dsMyDetail"></div></div></section>
+<section class="page" id="page-support-inbox"><div class="dsupport"><div class="ds-eyebrow">DEVELOPER DESK</div><h1>문의접수</h1><p class="ds-sub">첨부파일을 확인하고 답변하거나 문의를 완료하세요.</p><div class="ds-actions"><select class="ds-input" id="dsFilter" style="width:auto;margin:0" onchange="dsLoad(true)"><option value="all">전체 문의</option><option value="open">접수됨</option><option value="done">완료됨</option></select><button class="ds-btn" onclick="dsLoad(true)">새로고침</button><span id="dsCount" class="ds-note"></span></div><div class="ds-actions ds-inbox-toolbar" id="dsInboxToolbar"><label><input type="checkbox" id="dsSelectVisible" onchange="dsSelectInboxVisible(this.checked)"> 현재 목록 선택</label><button class="ds-btn" id="dsDeleteSelected" onclick="dsInboxAction('delete',false)" disabled>삭제</button><button class="ds-btn" id="dsReadSelected" onclick="dsInboxAction('read',false)" disabled>읽음</button><button class="ds-btn" onclick="dsInboxAction('delete',true)">모두삭제</button><button class="ds-btn" onclick="dsInboxAction('read',true)">모두읽음</button><span id="dsSelectionCount" class="ds-note">0개 선택</span></div><p class="ds-note">완료한 문의는 자동으로 읽음 처리됩니다. 읽음 처리한 문의는 숫자 배지에서 제외됩니다. 모두삭제·모두읽음은 필터와 관계없이 전체 문의에 적용됩니다.</p><div id="dsInboxList"></div><div id="dsInboxDetail"></div></div></section>
 
 <section class="page" id="page-free-trials"><div class="dsupport"><div class="ds-eyebrow">DEVELOPER SETTINGS</div><h1>무료체험</h1><p class="ds-sub">어떤 기능을 무료로 공개할지, 언제 체험을 시작하고 끝낼지 정하세요.</p><p id="trialAdminGate" class="ds-note">개발자만 설정할 수 있어요.</p><div id="trialAdminContent" hidden><div id="trialStates" class="trial-table"></div><form id="trialAdminForm" class="ds-card"><label class="ds-field">대상 기능<select id="trialFeature" class="ds-input"><option value="custom_rgb">커스텀 색상 지정 (RGB)</option><option value="background_palette">배경 색상 팔레트</option></select></label><label class="ds-field">이용 설정<select id="trialMode" class="ds-input"><option value="free">무료 공개 (기간 제한 없음)</option><option value="trial">기간을 정해 무료체험</option><option value="locked">무료 이용 중지</option></select></label><div class="trial-period" id="trialPeriod" hidden><label class="ds-field">시작 시간<input id="trialStart" type="datetime-local" class="ds-input"></label><label class="ds-field">종료 시간<input id="trialEnd" type="datetime-local" class="ds-input"></label></div><div class="trial-tools"><button type="button" class="ds-btn" data-trial-days="1">지금부터 1일</button><button type="button" class="ds-btn" data-trial-days="7">7일</button><button type="button" class="ds-btn" data-trial-days="30">30일</button></div><p class="ds-note">입력 시간은 현재 기기의 현지 시간 기준이며, 모든 이용자에게 같은 체험 기간이 적용됩니다. 각 기능은 따로 설정할 수 있어요.<br>체험 종료 후 해당 색상 기능이 잠기고, 적용된 배경은 테마 기본 배경으로 돌아갑니다. 개발자는 계속 사용할 수 있어요.</p><div class="ds-actions"><button id="trialSave" class="ds-btn primary" type="submit">설정 저장</button></div><p id="trialSaveNotice" class="ds-msg" role="status"></p></form></div></div></section>
   </main>
@@ -5510,6 +5510,23 @@ function dsInboxSelectionUI(){
  const all=dsEl('dsSelectVisible');all.checked=dsInboxRows.length>0&&dsInboxRows.every(r=>dsInboxSelected.has(String(r.id)));all.indeterminate=dsInboxSelected.size>0&&!all.checked;
 }
 function dsSelectInboxVisible(checked){dsInboxSelected=new Set(checked?dsInboxRows.map(r=>String(r.id)):[]);document.querySelectorAll('.ds-inbox-check').forEach(c=>c.checked=checked);dsInboxSelectionUI();}
+let dsMyCompletionRequest=0,dsMyCompletionIds=new Set(),dsOpenRequests={my:0,inbox:0};
+function dsApplyMyCompletionSnapshot(data){
+ dsMyCompletionIds=new Set((data.unread_ids||[]).map(String));
+ const badge=dsEl('dsMyCompletionBadge'),count=Number(data.unread_count)||0;
+ badge.textContent=String(count);badge.hidden=count===0;badge.setAttribute('aria-label',`확인하지 않은 완료 문의 ${count}개`);
+ document.querySelectorAll('#dsMyList [data-ticket-id]').forEach(row=>{
+  const unread=dsMyCompletionIds.has(row.dataset.ticketId);row.classList.toggle('ds-is-unread',unread);
+  const status=row.querySelector('[data-completion-status]');
+  if(status && data.versions?.[row.dataset.ticketId]){status.classList.add('done');status.textContent=unread?'완료됨 · 새 알림':'완료됨';}
+ });
+}
+async function dsRefreshMyCompletion(){
+ const req=++dsMyCompletionRequest,epoch=dsEpoch;
+ if(!dsUser){dsMyCompletionIds.clear();dsEl('dsMyCompletionBadge').hidden=true;return;}
+ try{const data=dsCheck(await sb.rpc('doge_support_my_completion_snapshot'));if(req!==dsMyCompletionRequest||epoch!==dsEpoch)return;dsApplyMyCompletionSnapshot(data);}
+ catch(e){if(req!==dsMyCompletionRequest||epoch!==dsEpoch)return;const badge=dsEl('dsMyCompletionBadge');badge.textContent='!';badge.hidden=false;badge.setAttribute('aria-label','완료 문의 알림 조회 실패');}
+}
 async function dsRefreshUnread(){
  const req=++dsUnreadRequest,epoch=dsEpoch,badge=dsEl('dsUnreadBadge');
  if(!dsUser||!dsDeveloper){badge.hidden=true;return;}
@@ -5530,14 +5547,15 @@ async function dsInboxAction(action,all){
  }catch(e){await dogeAlert(dsError(e));}
  finally{dsInboxBusy=false;dsEl('dsInboxToolbar').querySelectorAll('button,input').forEach(b=>b.disabled=false);dsInboxSelectionUI();}
 }
-setInterval(()=>{if(!document.hidden)void dsRefreshUnread();},30_000);
-window.addEventListener('focus',()=>{void dsRefreshUnread();});
+setInterval(()=>{if(!document.hidden){void dsRefreshUnread();void dsRefreshMyCompletion();}},30_000);
+window.addEventListener('focus',()=>{void dsRefreshUnread();void dsRefreshMyCompletion();});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){void dsRefreshUnread();void dsRefreshMyCompletion();}});
 
 async function dsRefreshAuth(){
- const epoch=++dsEpoch;const {data,error}=await sb.auth.getSession();if(epoch!==dsEpoch)return;
+ const epoch=++dsEpoch;dsMyCompletionRequest++;dsMyCompletionIds.clear();dsEl('dsMyCompletionBadge').hidden=true;dsEl('dsUnreadBadge').hidden=true;const {data,error}=await sb.auth.getSession();if(epoch!==dsEpoch)return;
  dsUser=error?null:data.session?.user||null;dsDeveloper=false;
  if(dsUser){try{const permitted=dsCheck(await sb.rpc('doge_support_is_developer'));if(epoch!==dsEpoch)return;dsDeveloper=permitted===true;}catch(e){console.warn('Support setup needed');}}
- if(epoch!==dsEpoch)return;dsEl('navSupportInbox').style.display=dsDeveloper?'flex':'none';dsInboxSelected.clear();dsInboxRows=[];dsInboxSelectionUI();void dsRefreshUnread();
+ if(epoch!==dsEpoch)return;dsEl('navSupportInbox').style.display=dsDeveloper?'flex':'none';dsInboxSelected.clear();dsInboxRows=[];dsInboxSelectionUI();void dsRefreshUnread();void dsRefreshMyCompletion();
  dsEl('dsMyDetail').replaceChildren();dsEl('dsInboxDetail').replaceChildren();dsEl('dsMyList').replaceChildren();dsEl('dsInboxList').replaceChildren();
  if(!dsDeveloper&&dsEl('page-support-inbox').classList.contains('active'))dsGo('support');
  if(dsEl('page-my-support').classList.contains('active'))dsLoad(false);
@@ -5569,28 +5587,39 @@ async function dsLoad(admin){
  const rows=admin?dsCheck(await sb.rpc('doge_support_inbox_list',{p_status:dsEl('dsFilter').value})):dsCheck(await sb.from('doge_support_tickets').select('*').neq('status','draft').eq('owner_id',dsUser.id).order('created_at',{ascending:false}).limit(200));
  if(epoch!==dsEpoch)return;container.replaceChildren();
  if(admin){dsInboxRows=rows||[];dsInboxSelected=new Set([...dsInboxSelected].filter(id=>dsInboxRows.some(r=>String(r.id)===id)));dsEl('dsCount').textContent=`최근 ${rows.length}건 (최대 200건)`;dsInboxSelectionUI();void dsRefreshUnread();}
+ if(!admin)void dsRefreshMyCompletion();
  if(!rows.length)container.append(dsText('div','아직 문의가 없어요.','ds-empty'));
  for(const r of rows){
  const row=dsText('div','','ds-row'+(admin&&!r.inbox_read_at?' ds-is-unread':'')),info=document.createElement('div');
  if(admin){const check=document.createElement('input');check.type='checkbox';check.className='ds-inbox-check';check.checked=dsInboxSelected.has(String(r.id));check.setAttribute('aria-label',r.title+' 선택');check.onchange=()=>{if(check.checked)dsInboxSelected.add(String(r.id));else dsInboxSelected.delete(String(r.id));dsInboxSelectionUI();};row.append(check);}
  info.append(dsText('h3',r.title),dsText('div',`${r.platform==='kakao'?'카카오톡':'디스코드'} · ${r.category} · ${dsDate(r.created_at)}${admin?' · '+(r.inbox_read_at?'읽음':'안 읽음'):''}`,'ds-note'));
- const badge=dsText('span',r.status==='done'?'완료됨':'접수됨','ds-badge'+(r.status==='done'?' done':''));const btn=dsText('button','문의 보기 →','ds-btn');btn.onclick=()=>dsOpen(r.id,admin);row.append(info,badge,btn);container.append(row);
+ const badge=dsText('span',r.status==='done'?'완료됨':'접수됨','ds-badge'+(r.status==='done'?' done':''));if(!admin){row.dataset.ticketId=String(r.id);badge.dataset.completionStatus='';if(dsMyCompletionIds.has(String(r.id))){row.classList.add('ds-is-unread');badge.textContent='완료됨 · 새 알림';}}const btn=dsText('button','문의 보기 →','ds-btn');btn.onclick=()=>dsOpen(r.id,admin);row.append(info,badge,btn);container.append(row);
  }
  }catch(e){if(epoch===dsEpoch)container.replaceChildren(dsText('div',dsError(e),'ds-empty'));}
 }
 async function dsOpen(id,admin){
+ const kind=admin?'inbox':'my',request=++dsOpenRequests[kind];
  const target=dsEl(admin?'dsInboxDetail':'dsMyDetail'),epoch=dsEpoch;target.replaceChildren(dsText('div','문의 불러오는 중…','ds-card'));
  try{
+ const completion=admin?null:dsCheck(await sb.rpc('doge_support_my_completion_snapshot'));
+ const seenVersion=completion?.versions?.[String(id)];
  const r=dsCheck(await sb.from('doge_support_tickets').select('*').eq('id',id).single());
  const replies=dsCheck(await sb.from('doge_support_replies').select('*').eq('ticket_id',id).order('created_at'));
- if(epoch!==dsEpoch)return;const card=dsText('article','','ds-card');card.append(dsText('h2',r.title),dsText('p',`${r.platform==='kakao'?'카카오톡':'디스코드'} · ${r.category} · ${dsDate(r.created_at)} · ${r.status==='done'?'완료됨':'접수됨'}`,'ds-note'),dsText('p',r.body,'ds-body'));if(admin)card.append(dsText('p',`작성자 계정: ${r.owner_id}`,'ds-note'));
+ if(epoch!==dsEpoch||request!==dsOpenRequests[kind])return;const card=dsText('article','','ds-card');card.append(dsText('h2',r.title),dsText('p',`${r.platform==='kakao'?'카카오톡':'디스코드'} · ${r.category} · ${dsDate(r.created_at)} · ${r.status==='done'?'완료됨':'접수됨'}`,'ds-note'),dsText('p',r.body,'ds-body'));if(admin)card.append(dsText('p',`작성자 계정: ${r.owner_id}`,'ds-note'));
  const assets=dsText('div','','ds-attachments');card.append(assets);
  for(const f of r.attachments||[]){const block=document.createElement('div');block.append(dsText('p',`${f.name} · ${(f.size/1048576).toFixed(1)} MB`,'ds-note'));const button=dsText('button','첨부파일 열기 / 다운로드','ds-btn');button.onclick=async()=>{button.disabled=true;try{const d=dsCheck(await sb.storage.from(dsBucket).createSignedUrl(f.path,120));const link=document.createElement('a');link.href=d.signedUrl;link.target='_blank';link.rel='noopener noreferrer';link.download=f.name;link.textContent='파일 열기 (2분간 유효)';block.append(link);if(/\.(jpe?g|png|gif|webp)$/i.test(f.path)){const img=document.createElement('img');img.src=d.signedUrl;img.alt=f.name;block.append(img);}else if(/\.(mp4|webm)$/i.test(f.path)){const video=document.createElement('video');video.controls=true;video.preload='metadata';video.src=d.signedUrl;block.append(video);}button.remove();}catch(e){block.append(dsText('p',dsError(e),'ds-msg'));button.disabled=false;}};block.append(button);assets.append(block);}
  card.append(dsText('h3','개발자 답변'));if(!replies.length)card.append(dsText('p','아직 등록된 답변이 없어요.','ds-note'));for(const reply of replies){const block=dsText('div','','ds-reply');block.append(dsText('div',dsDate(reply.created_at),'ds-note'),dsText('p',reply.body,'ds-body'));card.append(block);}
  if(admin&&dsDeveloper&&r.status!=='done'){const input=document.createElement('textarea');input.className='ds-input';input.maxLength=10000;input.placeholder='답변을 입력하세요 (문의 완료 시 선택 사항)';input.setAttribute('aria-label','개발자 답변');const actions=dsText('div','','ds-actions');const send=dsText('button','답변 보내기','ds-btn'),done=dsText('button','문의완료','ds-btn primary'),message=dsText('p','','ds-msg');
- const act=async finish=>{if(!finish&&!input.value.trim()){message.textContent='답변 내용을 입력해주세요.';return;}send.disabled=done.disabled=true;try{dsCheck(await sb.rpc('doge_support_respond',{ticket_id:id,message:input.value.trim(),finish}));await dsLoad(true);await dsOpen(id,true);}catch(e){message.textContent=dsError(e);send.disabled=done.disabled=false;}};send.onclick=()=>act(false);done.onclick=()=>act(true);actions.append(send,done);card.append(input,dsText('p','입력한 메시지는 문의자의 ‘내 문의’에 전달됩니다. 메시지 없이 완료할 수도 있어요.','ds-note'),actions,message);}
+ const act=async finish=>{if(!finish&&!input.value.trim()){message.textContent='답변 내용을 입력해주세요.';return;}send.disabled=done.disabled=true;try{dsCheck(await sb.rpc('doge_support_respond',{ticket_id:id,message:input.value.trim(),finish}));await dsLoad(true);await dsRefreshUnread();void dsRefreshMyCompletion();await dsOpen(id,true);}catch(e){message.textContent=dsError(e);send.disabled=done.disabled=false;}};send.onclick=()=>act(false);done.onclick=()=>act(true);actions.append(send,done);card.append(input,dsText('p','입력한 메시지는 문의자의 ‘내 문의’에 전달됩니다. 메시지 없이 완료할 수도 있어요.','ds-note'),actions,message);}
  target.replaceChildren(card);card.scrollIntoView({behavior:'smooth',block:'start'});
- }catch(e){if(epoch===dsEpoch)target.replaceChildren(dsText('p',dsError(e),'ds-card'));}
+ if(!admin && r.status==='done' && seenVersion && !document.hidden && dsEl('page-my-support').classList.contains('active')){
+  try{
+   dsCheck(await sb.rpc('doge_support_mark_completion_seen',{p_ticket_id:String(id),p_version:seenVersion}));
+   if(epoch===dsEpoch)await dsRefreshMyCompletion();
+  }catch(e){if(epoch===dsEpoch&&request===dsOpenRequests[kind])card.append(dsText('p','완료 알림을 읽음 처리하지 못했어요. 문의를 다시 열어주세요.','ds-msg'));}
+ }
+
+ }catch(e){if(epoch===dsEpoch&&request===dsOpenRequests[kind])target.replaceChildren(dsText('p',dsError(e),'ds-card'));}
 }
 document.querySelector('[data-page="my-support"]').addEventListener('click',()=>dsLoad(false));
 document.querySelector('[data-page="support-inbox"]').addEventListener('click',()=>dsLoad(true));
