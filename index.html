@@ -1218,6 +1218,7 @@ window.alert=message=>{void dogeAlert(message);};
       <button class="nav-item nav-panel-only" data-page="documents" id="navDocuments" style="display:none;"><span class="ic"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6ZM15 3v5h4M9 12h6M9 16h6"/></svg></span><span data-i18n="navDocuments">문서함</span></button>
       <button class="nav-item nav-owner-only" data-page="announce" id="navAnnounce" style="display:none;"><span class="ic"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 16-6v14L3 14ZM6 15l2 6h4l-2-5"/></svg></span><span data-i18n="navAnnounce">전체공지</span></button>
       <button class="nav-item nav-owner-only" data-page="admin" id="navAdmin" style="display:none;"><span class="ic"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/><circle cx="12" cy="12" r="5"/></svg></span><span data-i18n="navAdmin">관리</span></button>
+<button class="nav-item" data-page="doge-codes" id="dogeCodeNav"><span class="ic">🎁</span><span>보상 코드</span></button>
 <button class="nav-item" data-page="notices"><span class="ic"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 16-6v14L3 14ZM6 15l2 6h4l-2-5M21 9v6"/></svg></span><span>도지봇 공지</span></button>
 <button class="nav-item" data-page="support"><span class="ic"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 6 9 7 9-7"/></svg></span><span>문의하기</span></button>
 <button class="nav-item" data-page="my-support"><span class="ic"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg></span><span>내 문의</span><span id="dsMyCompletionBadge" class="ds-unread-count" hidden aria-live="polite"></span></button>
@@ -2258,6 +2259,26 @@ window.alert=message=>{void dogeAlert(message);};
 <section class="page" id="page-my-support"><div class="dsupport"><div class="ds-eyebrow">MY REQUESTS</div><h1>내 문의</h1><p class="ds-sub">접수 상태와 개발자의 답변을 확인하세요. 새 완료 알림은 해당 문의를 열어 확인하면 사라집니다.</p><button class="ds-btn" onclick="dsLoad(false)">새로고침</button><div id="dsMyList"></div><div id="dsMyDetail"></div></div></section>
 <section class="page" id="page-support-inbox"><div class="dsupport"><div class="ds-eyebrow">DEVELOPER DESK</div><h1>문의접수</h1><p class="ds-sub">첨부파일을 확인하고 답변하거나 문의를 완료하세요.</p><div class="ds-actions"><select class="ds-input" id="dsFilter" style="width:auto;margin:0" onchange="dsLoad(true)"><option value="all">전체 문의</option><option value="open">접수됨</option><option value="done">완료됨</option></select><button class="ds-btn" onclick="dsLoad(true)">새로고침</button><span id="dsCount" class="ds-note"></span></div><div class="ds-actions ds-inbox-toolbar" id="dsInboxToolbar"><label><input type="checkbox" id="dsSelectVisible" onchange="dsSelectInboxVisible(this.checked)"> 현재 목록 선택</label><button class="ds-btn" id="dsDeleteSelected" onclick="dsInboxAction('delete',false)" disabled>삭제</button><button class="ds-btn" id="dsReadSelected" onclick="dsInboxAction('read',false)" disabled>읽음</button><button class="ds-btn" onclick="dsInboxAction('delete',true)">모두삭제</button><button class="ds-btn" onclick="dsInboxAction('read',true)">모두읽음</button><span id="dsSelectionCount" class="ds-note">0개 선택</span></div><p class="ds-note">완료한 문의는 자동으로 읽음 처리됩니다. 읽음 처리한 문의는 숫자 배지에서 제외됩니다. 모두삭제·모두읽음은 필터와 관계없이 전체 문의에 적용됩니다.</p><div id="dsInboxList"></div><div id="dsInboxDetail"></div></div></section>
 
+<section class="page" id="page-doge-codes">
+ <div class="section-title">🎁 보상 코드</div><p id="dogeLoginNotice" class="ds-note">코드를 사용하려면 Discord 로그인이 필요합니다.</p>
+ <form id="dogeRedeemForm" class="ds-card" hidden><h3>코드 입력</h3>
+ <label class="ds-field">코드<input class="ds-input" id="dogeCode" placeholder="4XJA-UJNS-LAHL-IOX8" maxlength="19" required></label>
+ <label class="ds-field">사용할 서버<select class="ds-input" id="dogeRedeemGuild" required></select></label>
+ <button class="ds-btn primary" type="submit">제출</button><p id="dogeRedeemMsg" class="ds-note" role="status"></p></form>
+ <div id="dogeAdmin" hidden><h3>👑 코드 보상 생성 (봇 오너 전용)</h3>
+ <form id="dogeCreateForm" class="ds-card">
+ <label class="ds-field">사용 가능 서버<select id="dogeScope" class="ds-input"></select></label>
+ <label class="ds-field">보상 종류<select id="dogeType" class="ds-input"><option value="points">포인트</option><option value="item">상점 아이템</option><option value="role">역할</option></select></label>
+ <label class="ds-field" id="dogePointsWrap">지급 포인트<input id="dogePoints" class="ds-input" type="number" value="100" min="1" max="100000000"></label>
+ <label class="ds-field" id="dogeItemWrap" hidden>상점 아이템<select class="ds-input" id="dogeItem"><option value="rr_hp_boost">체력 부스트 5분</option><option value="rr_instant_win">즉시 승리하기</option><option value="rr_double_bullet">확률성 더블총알</option><option value="rr_rank_up">등급 상승</option><option value="rf_annihilation">확률성 전멸</option><option value="rf_instant_win">즉시 승리</option><option value="cl_hint">민감한 가시성</option></select></label>
+ <label class="ds-field" id="dogeRoleWrap" hidden>지급 역할<select class="ds-input" id="dogeRole"></select></label>
+ <label class="ds-field">유효기간 종료일 (한국 시간 23:59:59)<input class="ds-input" id="dogeExpiry" type="date" required></label>
+ <label class="ds-field">코드 (비우면 랜덤)<input class="ds-input" id="dogeNewCode" maxlength="19" placeholder="XXXX-XXXX-XXXX-XXXX"></label>
+ <button type="button" id="dogeRandom" class="ds-btn">랜덤 생성</button>
+ <label class="ds-field">최대 사용 횟수<input class="ds-input" id="dogeMaxUses" type="number" value="1" min="1" max="100000" required></label>
+ <button class="ds-btn primary" type="submit">보상 코드 생성</button><p class="ds-note" id="dogeAdminMsg" role="status"></p></form>
+ <h3>🔒 코드 로그 (오너 전용)</h3><button class="ds-btn" id="dogeRefresh">기록 새로고침</button><div id="dogeLogs" class="ds-note"></div></div>
+ </section>
 <section class="page" id="page-free-trials"><div class="dsupport"><div class="ds-eyebrow">DEVELOPER SETTINGS</div><h1>무료체험</h1><p class="ds-sub">어떤 기능을 무료로 공개할지, 언제 체험을 시작하고 끝낼지 정하세요.</p><p id="trialAdminGate" class="ds-note">개발자만 설정할 수 있어요.</p><div id="trialAdminContent" hidden><div id="trialStates" class="trial-table"></div><form id="trialAdminForm" class="ds-card"><label class="ds-field">대상 기능<select id="trialFeature" class="ds-input"><option value="custom_rgb">커스텀 색상 지정 (RGB)</option><option value="background_palette">배경 색상 팔레트</option></select></label><label class="ds-field">이용 설정<select id="trialMode" class="ds-input"><option value="free">무료 공개 (기간 제한 없음)</option><option value="trial">기간을 정해 무료체험</option><option value="locked">무료 이용 중지</option></select></label><div class="trial-period" id="trialPeriod" hidden><label class="ds-field">시작 시간<input id="trialStart" type="datetime-local" class="ds-input"></label><label class="ds-field">종료 시간<input id="trialEnd" type="datetime-local" class="ds-input"></label></div><div class="trial-tools"><button type="button" class="ds-btn" data-trial-days="1">지금부터 1일</button><button type="button" class="ds-btn" data-trial-days="7">7일</button><button type="button" class="ds-btn" data-trial-days="30">30일</button></div><p class="ds-note">입력 시간은 현재 기기의 현지 시간 기준이며, 모든 이용자에게 같은 체험 기간이 적용됩니다. 각 기능은 따로 설정할 수 있어요.<br>체험 종료 후 해당 색상 기능이 잠기고, 적용된 배경은 테마 기본 배경으로 돌아갑니다. 개발자는 계속 사용할 수 있어요.</p><div class="ds-actions"><button id="trialSave" class="ds-btn primary" type="submit">설정 저장</button></div><p id="trialSaveNotice" class="ds-msg" role="status"></p></form></div></div></section>
   </main>
 </div>
@@ -5991,8 +6012,71 @@ dsHash();dsRefreshAuth();
  window.dogeUIColorHelpers={valid,ink,luminance};
 })();
 </script>
+<script>
+// Included inside existing index.html after Supabase and Discord login initialization.
+(()=>{
+ const $=id=>document.getElementById(id);
+ const message=(id,value)=>{$(id).textContent=value;};
+ const codeRE=/^[A-Z0-9]{4}(?:-[A-Z0-9]{4}){3}$/;
+ const rand=()=>{const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';const bytes=new Uint8Array(16);crypto.getRandomValues(bytes);return Array.from({length:4},(_,g)=>Array.from({length:4},(_,i)=>chars[bytes[g*4+i]%chars.length]).join('')).join('-');};
+ const dateKST=s=>{const match=/^(\d{4})-(\d{2})-(\d{2})$/.exec(s);if(!match)throw new Error('날짜를 선택해주세요.');
+ const y=+match[1],m=+match[2],day=+match[3],check=new Date(Date.UTC(y,m-1,day));
+ if(check.getUTCFullYear()!==y||check.getUTCMonth()!==m-1||check.getUTCDate()!==day)throw new Error('날짜가 올바르지 않습니다.');
+ return new Date(Date.UTC(y,m-1,day,14,59,59,999)).toISOString();};
+ async function call(name,args){const {data,error}=await sb.rpc(name,args);if(error)throw error;return data;}
+ function guildOptions(){const list=Array.isArray(cachedDisplayGuilds)?cachedDisplayGuilds:[];return list.filter(g=>/^\d{17,20}$/.test(g.id));}
+ function populate(){const guilds=guildOptions();const scope=$('dogeScope'),redeem=$('dogeRedeemGuild');const scopeOld=scope.value,redeemOld=redeem.value;
+  scope.replaceChildren(new Option('모든 서버 (역할 보상 불가)','ALL'));
+  redeem.replaceChildren(new Option('코드를 사용할 서버 선택',''));
+  for(const g of guilds){scope.add(new Option(g.name||g.id,g.id));redeem.add(new Option(g.name||g.id,g.id));}
+  if(guilds.some(g=>g.id===scopeOld))scope.value=scopeOld;if(guilds.some(g=>g.id===redeemOld))redeem.value=redeemOld;
+  $('dogeRoleWrap').hidden=$('dogeType').value!=='role'||scope.value==='ALL';
+  if($('dogeType').value==='role')loadRoles();
+ }
+ async function loadRoles(){const select=$('dogeRole');select.replaceChildren(new Option('역할 선택',''));const gid=$('dogeScope').value;if(!/^\d{17,20}$/.test(gid))return;
+  const {data,error}=await sb.from('guild_roles').select('*').eq('guild_id',gid).limit(250);
+  if(error){message('dogeAdminMsg','역할 목록을 읽을 수 없습니다: '+error.message);return;}
+  for(const row of data||[]){const id=String(row.role_id||row.id||'');if(/^\d{17,20}$/.test(id))select.add(new Option(row.role_name||row.name||id,id));}
+ }
+ function refresh(){const logged=!!currentDiscordUser;const owner=logged&&isBotOwner;
+  $('dogeLoginNotice').hidden=logged;$('dogeRedeemForm').hidden=!logged;$('dogeAdmin').hidden=!owner;
+  if(logged)populate();
+ }
+ $('dogeType').addEventListener('change',()=>{$('dogePointsWrap').hidden=$('dogeType').value!=='points';$('dogeItemWrap').hidden=$('dogeType').value!=='item';$('dogeRoleWrap').hidden=$('dogeType').value!=='role'||$('dogeScope').value==='ALL';if($('dogeType').value==='role')loadRoles();});
+ $('dogeScope').addEventListener('change',()=>{$('dogeRoleWrap').hidden=$('dogeType').value!=='role'||$('dogeScope').value==='ALL';if($('dogeType').value==='role')loadRoles();});
+ $('dogeRandom').addEventListener('click',()=>{$('dogeNewCode').value=rand();});
+ $('dogeRedeemForm').addEventListener('submit',async e=>{e.preventDefault();message('dogeRedeemMsg','확인 중…');try{
+  if(!currentDiscordUser)throw new Error('Discord 로그인 후 사용해주세요.');const code=$('dogeCode').value.trim().toUpperCase();if(!codeRE.test(code))throw new Error('XXXX-XXXX-XXXX-XXXX 형식으로 입력해주세요.');
+  const guild=$('dogeRedeemGuild').value;if(!guild)throw new Error('서버를 선택해주세요.');
+  const result=await call('doge_code_claim_web',{p_code:code,p_guild_id:guild});if(!result.ok)throw new Error(result.message);
+  message('dogeRedeemMsg','✅ 코드가 접수됐습니다. 도지봇이 서버 소속을 확인한 뒤 보상을 지급합니다.');
+ }catch(err){message('dogeRedeemMsg','❌ '+err.message);}});
+ $('dogeCreateForm').addEventListener('submit',async e=>{e.preventDefault();message('dogeAdminMsg','생성 중…');try{
+  if(!isBotOwner)throw new Error('오너만 사용할 수 있습니다.');const type=$('dogeType').value;const gid=$('dogeScope').value==='ALL'?null:$('dogeScope').value;
+  const code=($('dogeNewCode').value.trim()||rand()).toUpperCase();if(!codeRE.test(code))throw new Error('코드 형식이 올바르지 않습니다.');
+  const reward={type};if(type==='role'){if(!gid)throw new Error('역할 보상은 특정 서버만 사용할 수 있습니다.');if(!$('dogeRole').value)throw new Error('역할을 선택해주세요.');reward.role_id=$('dogeRole').value;}
+  if(type==='points'){reward.amount=Number($('dogePoints').value);if(!Number.isSafeInteger(reward.amount)||reward.amount<1||reward.amount>100000000)throw new Error('포인트 수량 오류');}
+  if(type==='item'){reward.item_key=$('dogeItem').value;if(!reward.item_key)throw new Error('아이템을 선택해주세요.');reward.quantity=1;}
+  const expires=dateKST($('dogeExpiry').value), maxUses=Number($('dogeMaxUses').value);if(!Number.isInteger(maxUses)||maxUses<1||maxUses>100000)throw new Error('최대 사용 횟수를 확인해주세요.');
+  const result=await call('doge_code_create_web',{p_code:code,p_guild_id:gid,p_reward:reward,p_expires:expires,p_max_uses:maxUses});if(!result.ok)throw new Error(result.message);
+  $('dogeNewCode').value=code;message('dogeAdminMsg','✅ 생성 완료: '+code);await loadCodes();
+ }catch(err){message('dogeAdminMsg','❌ '+err.message);}});
+ async function loadCodes(){if(!isBotOwner)return;const gid=$('dogeScope').value;if(!gid||gid==='ALL'){message('dogeLogs','서버를 선택하면 해당 서버에서 사용된 코드 기록을 확인할 수 있습니다.');return;}
+  message('dogeLogs','불러오는 중…');try{const records=await call('doge_code_list_web',{p_guild_id:gid});const wrap=$('dogeLogs');wrap.replaceChildren();if(!records.length){wrap.textContent='등록된 코드가 없습니다.';return;}
+   for(const r of records){const card=document.createElement('div');card.className='ds-card';const info=document.createElement('p');info.style.whiteSpace='pre-wrap';info.textContent=`${r.code} · ${r.used_count}/${r.max_uses}\n만료: ${new Date(r.expires_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'})}\n보상: ${JSON.stringify(r.reward)}`;card.append(info);
+    for(const c of r.claims||[]){const p=document.createElement('p');p.className='ds-note';p.textContent=`ID: ${c.user_id} | ${new Date(c.created_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'})} | 서버 ID: ${c.guild_id} | ${c.status}${c.message?' ('+c.message+')':''}`;card.append(p);}wrap.append(card);}
+  }catch(err){message('dogeLogs','❌ '+err.message);}}
+ $('dogeRefresh').addEventListener('click',loadCodes);
+ document.querySelector('[data-page="doge-codes"]').addEventListener('click',()=>{refresh();if(isBotOwner)loadCodes();});
+ const ready=setInterval(()=>{if(typeof currentDiscordUser!=='undefined' && currentDiscordUser && guildOptions().length){refresh();clearInterval(ready);}},1200);
+ setTimeout(()=>clearInterval(ready),20000);
+ window.dogeCodeRefresh=refresh;
+})();
+</script>
 </body>
 </html>
 
+
+  
 
   
