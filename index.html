@@ -1279,8 +1279,8 @@ window.alert=message=>{void dogeAlert(message);};
     <!-- HOME / INTRO PAGE -->
     <section class="page active" id="page-home">
       <div class="home-intro">
-        <div class="hero"><div class="home-caption">DISCORD COMMUNITY BOT</div><h1>도지봇.</h1>
-          <p class="lead" data-i18n="heroLead">멤버 관리부터 미니게임까지.<br>우리 서버에서 함께 쓰는 도지봇.</p>
+        <div class="hero"><div class="home-caption">DISCORD COMMUNITY BOT</div><h1>도지봇</h1>
+          <p class="lead" data-i18n="heroLead">컨셉부터 관리까지,<br>컨셉쟁이 귀요미 도지봇</p>
           <div class="home-actions"><button class="home-action primary" onclick="document.querySelector('[data-page=invite]').click()"><span data-i18n="navInvite">도지봇 초대</span><span aria-hidden="true">↗</span></button><button class="home-action" onclick="document.querySelector('[data-page=intro]').click()"><span data-i18n="navIntro">도지봇 소개</span><span aria-hidden="true">→</span></button></div>
         </div><div class="home-wordmark" aria-hidden="true">D</div>
       </div>
@@ -2265,6 +2265,23 @@ window.alert=message=>{void dogeAlert(message);};
 <section class="page" id="page-my-support"><div class="dsupport"><div class="ds-eyebrow">MY REQUESTS</div><h1>내 문의</h1><p class="ds-sub">접수 상태와 개발자의 답변을 확인하세요. 새 완료 알림은 해당 문의를 열어 확인하면 사라집니다.</p><button class="ds-btn" onclick="dsLoad(false)">새로고침</button><div id="dsMyList"></div><div id="dsMyDetail"></div></div></section>
 <section class="page" id="page-support-inbox"><div class="dsupport"><div class="ds-eyebrow">DEVELOPER DESK</div><h1>문의접수</h1><p class="ds-sub">첨부파일을 확인하고 답변하거나 문의를 완료하세요.</p><div class="ds-actions"><select class="ds-input" id="dsFilter" style="width:auto;margin:0" onchange="dsLoad(true)"><option value="all">전체 문의</option><option value="open">접수됨</option><option value="done">완료됨</option></select><button class="ds-btn" onclick="dsLoad(true)">새로고침</button><span id="dsCount" class="ds-note"></span></div><div class="ds-actions ds-inbox-toolbar" id="dsInboxToolbar"><label><input type="checkbox" id="dsSelectVisible" onchange="dsSelectInboxVisible(this.checked)"> 현재 목록 선택</label><button class="ds-btn" id="dsDeleteSelected" onclick="dsInboxAction('delete',false)" disabled>삭제</button><button class="ds-btn" id="dsReadSelected" onclick="dsInboxAction('read',false)" disabled>읽음</button><button class="ds-btn" onclick="dsInboxAction('delete',true)">모두삭제</button><button class="ds-btn" onclick="dsInboxAction('read',true)">모두읽음</button><span id="dsSelectionCount" class="ds-note">0개 선택</span></div><p class="ds-note">완료한 문의는 자동으로 읽음 처리됩니다. 읽음 처리한 문의는 숫자 배지에서 제외됩니다. 모두삭제·모두읽음은 필터와 관계없이 전체 문의에 적용됩니다.</p><div id="dsInboxList"></div><div id="dsInboxDetail"></div></div></section>
 
+<style id="dogeCodePickerStyles">
+/* Reward-code visual pickers. Native selects remain the source of truth. */
+#page-doge-codes .doge-picker{position:relative;margin-top:7px}
+#page-doge-codes .doge-picker > select{position:absolute;opacity:0;width:1px;height:1px;left:0;bottom:0;pointer-events:none}
+#page-doge-codes .doge-picker-button{width:100%;min-height:48px;display:flex;align-items:center;gap:10px;text-align:left;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel-2);color:var(--ink);font:inherit;cursor:pointer}
+#page-doge-codes .doge-picker-button:focus-visible{outline:2px solid var(--doge-orange);outline-offset:2px}
+#page-doge-codes .doge-picker-name{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#page-doge-codes .doge-picker-icon{height:28px;width:28px;flex:none;object-fit:cover;border-radius:50%;background:var(--panel);display:grid;place-items:center;font-weight:700}
+#page-doge-codes .doge-role-chip{width:15px;height:15px;border-radius:50%;flex:none;border:1px solid #ffffff44;background:var(--role-color,#999)}
+#page-doge-codes .doge-picker-menu{position:absolute;z-index:50;top:calc(100% + 5px);left:0;right:0;max-height:275px;overflow:auto;border:1px solid var(--line);background:var(--panel);border-radius:12px;box-shadow:0 15px 30px #0007;padding:6px}
+#page-doge-codes .doge-picker-menu[hidden]{display:none!important}
+#page-doge-codes .doge-picker-option{display:flex;gap:10px;align-items:center;width:100%;min-height:40px;text-align:left;background:transparent;border:0;border-radius:8px;padding:7px 9px;color:var(--ink);font:inherit;cursor:pointer}
+#page-doge-codes .doge-picker-option:hover,#page-doge-codes .doge-picker-option:focus-visible,#page-doge-codes .doge-picker-option[aria-selected=true]{background:rgba(255,138,31,.13);outline:none}
+#page-doge-codes .doge-picker-option .doge-picker-name{overflow-wrap:anywhere;white-space:normal}
+#page-doge-codes .doge-picker-button .doge-picker-chevron{font-size:12px;color:var(--ink-dim)}
+#page-doge-codes .ds-field[hidden]{display:none!important}
+</style>
 <section class="page" id="page-doge-codes">
  <div class="section-title">🎁 보상 코드</div><p id="dogeLoginNotice" class="ds-note">코드를 사용하려면 Discord 로그인이 필요합니다.</p>
  <form id="dogeRedeemForm" class="ds-card" hidden><h3>코드 입력</h3>
@@ -6030,6 +6047,62 @@ dsHash();dsRefreshAuth();
  if(check.getUTCFullYear()!==y||check.getUTCMonth()!==m-1||check.getUTCDate()!==day)throw new Error('날짜가 올바르지 않습니다.');
  return new Date(Date.UTC(y,m-1,day,14,59,59,999)).toISOString();};
  async function call(name,args){const {data,error}=await sb.rpc(name,args);if(error)throw error;return data;}
+ // Rich server/role selectors: keep the original select for existing form and validation logic.
+ const pickerMap=new Map();
+ const safeIcon=url=>typeof url==='string'&&/^https:\/\/cdn\.discordapp\.com\/icons\//.test(url);
+ const roleColor=value=>/^#[a-f\d]{6}$/i.test(String(value||''))&&value.toLowerCase()!=='#000000'?value:'#99a0ab';
+ function pickerVisual(id,value){
+  if(id==='dogeRole'){
+   const record=(pickerMap.get(id)?.roles||[]).find(r=>String(r.id)===value);
+   return {text:record?'@'+record.name:null,color:roleColor(record?.color)};
+  }
+  if(value==='ALL')return {text:'모든 서버 (역할 보상 불가)',all:true};
+  const guild=guildOptions().find(g=>g.id===value);
+  return guild?{text:guild.name||guild.id,icon:guild.icon}:{text:null};
+ }
+ function pickerContents(id,value,el){
+  const visual=pickerVisual(id,value),native=pickerMap.get(id)?.select;
+  const option=[...(native?.options||[])].find(o=>o.value===value);
+  const name=document.createElement('span');name.className='doge-picker-name';name.textContent=visual.text||option?.textContent||'선택해주세요';
+  if(id==='dogeRole'&&visual.text){
+   const chip=document.createElement('span');chip.className='doge-role-chip';chip.style.setProperty('--role-color',visual.color);
+   name.style.color=visual.color;el.append(chip,name);
+  }else if(visual.icon&&safeIcon(visual.icon)){
+   const image=document.createElement('img');image.className='doge-picker-icon';image.src=visual.icon;image.alt='';image.loading='lazy';image.onerror=()=>{const t=document.createElement('span');t.className='doge-picker-icon';t.textContent=Array.from(name.textContent)[0]||'🐶';image.replaceWith(t);};el.append(image,name);
+  }else{
+   const icon=document.createElement('span');icon.className='doge-picker-icon';icon.textContent=id==='dogeRole'?'●':visual.all?'🌐':value?Array.from(name.textContent)[0]:'🐶';el.append(icon,name);
+  }
+ }
+ function closePickers(except){for(const [id,p] of pickerMap){if(id!==except){p.menu.hidden=true;p.button.setAttribute('aria-expanded','false');}}}
+ function renderPicker(id){
+  const p=pickerMap.get(id);if(!p)return;
+  p.button.replaceChildren();pickerContents(id,p.select.value,p.button);
+  const arrow=document.createElement('span');arrow.className='doge-picker-chevron';arrow.textContent='▾';p.button.append(arrow);
+  p.menu.replaceChildren();
+  for(const option of p.select.options){
+   if(id==='dogeRole'&&!option.value)continue;
+   const item=document.createElement('button');item.type='button';item.className='doge-picker-option';
+   item.setAttribute('role','option');item.setAttribute('aria-selected',String(option.value===p.select.value));
+   pickerContents(id,option.value,item);
+   item.onclick=(event)=>{event.preventDefault();p.select.value=option.value;p.select.dispatchEvent(new Event('change',{bubbles:true}));closePickers();renderPicker(id);};
+   p.menu.append(item);
+  }
+  if(!p.menu.children.length){const text=document.createElement('p');text.className='ds-note';text.textContent='선택 가능한 항목이 없습니다.';p.menu.append(text);}
+ }
+ function initPicker(id){
+  const select=$(id);if(!select)return;
+  const wrap=document.createElement('div');wrap.className='doge-picker';
+  select.parentNode.insertBefore(wrap,select);wrap.append(select);
+  const button=document.createElement('button');button.type='button';button.className='doge-picker-button';
+  button.setAttribute('aria-haspopup','listbox');button.setAttribute('aria-expanded','false');button.setAttribute('aria-label',id==='dogeRole'?'지급 역할 선택':'서버 선택');
+  const menu=document.createElement('div');menu.className='doge-picker-menu';menu.setAttribute('role','listbox');menu.hidden=true;
+  wrap.append(button,menu);pickerMap.set(id,{select,button,menu,roles:[]});
+  button.onclick=(event)=>{event.preventDefault();const opening=menu.hidden;closePickers();menu.hidden=!opening;button.setAttribute('aria-expanded',String(opening));if(opening)renderPicker(id);};
+  button.onkeydown=event=>{if(event.key==='Escape'){closePickers();}else if(event.key==='ArrowDown'&&menu.hidden){event.preventDefault();button.click();}};
+  select.addEventListener('change',()=>renderPicker(id));renderPicker(id);
+ }
+ for(const id of ['dogeRedeemGuild','dogeScope','dogeRole'])initPicker(id);
+ document.addEventListener('click',event=>{if(!event.target.closest('#page-doge-codes .doge-picker'))closePickers();});
  function guildOptions(){const list=Array.isArray(cachedDisplayGuilds)?cachedDisplayGuilds:[];return list.filter(g=>/^\d{17,20}$/.test(g.id));}
  function populate(){const guilds=guildOptions();const scope=$('dogeScope'),redeem=$('dogeRedeemGuild');const scopeOld=scope.value,redeemOld=redeem.value;
   scope.replaceChildren(new Option('모든 서버 (역할 보상 불가)','ALL'));
@@ -6040,11 +6113,12 @@ dsHash();dsRefreshAuth();
   $('dogeItemWrap').hidden=$('dogeType').value!=='item';
   $('dogeRoleWrap').hidden=$('dogeType').value!=='role'||scope.value==='ALL';
   if($('dogeType').value==='role')loadRoles();
+  renderPicker('dogeScope');renderPicker('dogeRedeemGuild');renderPicker('dogeRole');
  }
  let roleRequestId=0;
  async function loadRoles(){
   const requestId=++roleRequestId,select=$('dogeRole');
-  select.replaceChildren(new Option('역할 불러오는 중…',''));
+  select.replaceChildren(new Option('역할 불러오는 중…',''));renderPicker('dogeRole');
   const gid=$('dogeScope').value;
   if($('dogeType').value!=='role'||!/^\d{17,20}$/.test(gid)){
    select.replaceChildren(new Option('서버를 먼저 선택해주세요',''));return;
@@ -6053,15 +6127,18 @@ dsHash();dsRefreshAuth();
    const rows=await call('doge_code_assignable_roles_web',{p_guild_id:gid});
    if(requestId!==roleRequestId||gid!==$('dogeScope').value)return;
    select.replaceChildren(new Option('지급 가능한 역할 선택',''));
+   pickerMap.get('dogeRole').roles=Array.isArray(rows)?rows:[];
    for(const role of Array.isArray(rows)?rows:[]){
     if(/^\d{17,20}$/.test(String(role.id)))select.add(new Option('@'+role.name,String(role.id)));
    }
    if(select.options.length===1){
     select.options[0].textContent='지급 가능한 역할 없음 (봇 권한·역할 순서 확인)';
    }
+   renderPicker('dogeRole');
   }catch(err){
    if(requestId!==roleRequestId)return;
    select.replaceChildren(new Option('역할 목록을 불러오지 못했습니다',''));
+   pickerMap.get('dogeRole').roles=[];renderPicker('dogeRole');
    message('dogeAdminMsg','❌ 역할 목록 오류: '+err.message+' (SQL 적용 및 봇 동기화 확인)');
   }
  }
@@ -6106,3 +6183,4 @@ dsHash();dsRefreshAuth();
 
 
   
+
