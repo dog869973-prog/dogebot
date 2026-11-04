@@ -1087,6 +1087,19 @@ html[data-background] .bodytext strong,html[data-background] .qna-q{color:var(--
 
 /* 보상 종류별 선택 입력란 표시 보장 */
 #dogePointsWrap[hidden],#dogeItemWrap[hidden],#dogeRoleWrap[hidden]{display:none!important}
+
+/* Admin console: Discord server icon + name picker */
+.admin-guild-picker{position:relative;width:100%}
+.admin-guild-native{position:absolute!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important;left:0;bottom:0;padding:0!important}
+.admin-guild-button{width:100%;display:flex;align-items:center;gap:10px;min-height:48px;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--panel-2);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.admin-guild-button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.admin-guild-avatar{width:29px;height:29px;object-fit:cover;border-radius:9px;flex:none;background:var(--panel);display:grid;place-items:center;font-size:15px;font-weight:700}
+.admin-guild-label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.admin-guild-menu{position:absolute;top:calc(100% + 5px);left:0;right:0;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:5px;max-height:290px;overflow-y:auto;z-index:90;box-shadow:0 14px 30px #0004}
+.admin-guild-menu[hidden]{display:none!important}
+.admin-guild-option{display:flex;gap:10px;align-items:center;width:100%;padding:8px;background:transparent;color:var(--ink);border:0;border-radius:7px;text-align:left;cursor:pointer;font:inherit}
+.admin-guild-option:hover,.admin-guild-option[aria-selected=true]{background:rgba(255,138,31,.12)}
+.panel-selected-guild{width:30px;height:30px;object-fit:cover;border-radius:9px;flex:none}
 </style>
 <style id="officeFontStyles">.office-text .ql-editor{font-family:"Malgun Gothic",sans-serif;font-size:16px}.office-text .ql-picker.ql-font{width:130px}.office-text .ql-picker.ql-size{width:75px}.office-text .ql-picker.ql-font .ql-picker-label::before,.office-text .ql-picker.ql-font .ql-picker-item::before{content:"맑은 고딕"}.office-text .ql-picker.ql-size .ql-picker-label::before,.office-text .ql-picker.ql-size .ql-picker-item::before{content:"16px"}
 .ql-font-malgun{font-family:"Malgun Gothic",sans-serif}
@@ -1481,6 +1494,7 @@ window.alert=message=>{void dogeAlert(message);};
       <div id="panelContent" style="display:none;">
         <div class="panel-server-header">
           <button class="btn-back-server" onclick="backToServerSelect()">← 서버 목록</button>
+          <img id="selectedServerIcon" class="panel-selected-guild" alt="" hidden>
           <div>
             <div class="panel-server-name" id="selectedServerName"></div>
           </div>
@@ -2218,7 +2232,13 @@ window.alert=message=>{void dogeAlert(message);};
       <div class="preset-form-side" style="max-width:480px;">
         <div class="preset-field-group">
           <label class="preset-label">대상 서버</label>
-          <select class="modal-input" id="ac_guild_select"><option value="">불러오는 중...</option></select>
+          <div class="admin-guild-picker" id="adminGuildPicker">
+            <select class="modal-input admin-guild-native" id="ac_guild_select"><option value="">불러오는 중...</option></select>
+            <button type="button" class="admin-guild-button" id="adminGuildButton" aria-haspopup="listbox" aria-expanded="false" onclick="toggleAdminGuildPicker()">
+              <span class="admin-guild-avatar" id="adminGuildCurrentIcon">🐶</span><span class="admin-guild-label" id="adminGuildCurrentLabel">불러오는 중...</span><span aria-hidden="true">▾</span>
+            </button>
+            <div class="admin-guild-menu" id="adminGuildMenu" role="listbox" hidden></div>
+          </div>
         </div>
         <div class="preset-field-group">
           <label class="preset-label">포인트</label>
@@ -4326,6 +4346,49 @@ function formatTimeAgo(date){
   return currentLang === 'ko' ? `${diffDay}일 전` : `${diffDay}d ago`;
 }
 
+function setAdminGuildAvatar(parent, src, fallback){
+  parent.replaceChildren();
+  const fallbackText=String(fallback||'🐶');
+  if(src && /^https:\/\/(?:cdn\.discordapp\.com|media\.discordapp\.net)\//.test(src)){
+    const img=document.createElement('img');img.className='admin-guild-avatar';img.alt='';img.loading='lazy';img.src=src;
+    img.onerror=()=>{const span=document.createElement('span');span.className='admin-guild-avatar';span.textContent=Array.from(fallbackText)[0]||'🐶';img.replaceWith(span);};
+    parent.append(img);
+  }else{const span=document.createElement('span');span.className='admin-guild-avatar';span.textContent=Array.from(fallbackText)[0]||'🐶';parent.append(span);}
+}
+function closeAdminGuildPicker(){
+  const menu=document.getElementById('adminGuildMenu'),button=document.getElementById('adminGuildButton');
+  if(menu)menu.hidden=true;if(button)button.setAttribute('aria-expanded','false');
+}
+function toggleAdminGuildPicker(){
+  const menu=document.getElementById('adminGuildMenu'),button=document.getElementById('adminGuildButton');
+  if(!menu||!button)return;menu.hidden=!menu.hidden;button.setAttribute('aria-expanded',String(!menu.hidden));
+}
+function refreshAdminGuildPicker(){
+  const select=document.getElementById('ac_guild_select');
+  const menu=document.getElementById('adminGuildMenu');
+  const label=document.getElementById('adminGuildCurrentLabel');
+  const icon=document.getElementById('adminGuildCurrentIcon');
+  if(!select||!menu||!label||!icon)return;
+  const guildMap=new Map((window.adminConsoleGuilds||[]).map(g=>[String(g.guild_id),g]));
+  const chosen=select.selectedOptions[0];
+  label.textContent=chosen?.textContent||'서버를 선택하세요';
+  const chosenGuild=guildMap.get(select.value);
+  setAdminGuildAvatar(icon,chosenGuild?.guild_icon,chosenGuild?.guild_name||'🐶');
+  menu.replaceChildren();
+  for(const option of select.options){
+    const guild=guildMap.get(option.value);
+    const button=document.createElement('button');button.type='button';button.className='admin-guild-option';
+    button.setAttribute('role','option');button.setAttribute('aria-selected',String(select.value===option.value));
+    const avatar=document.createElement('span');setAdminGuildAvatar(avatar,guild?.guild_icon,guild?.guild_name||'🐶');
+    const name=document.createElement('span');name.className='admin-guild-label';name.textContent=option.textContent;
+    button.append(avatar,name);
+    button.addEventListener('click',()=>{select.value=option.value;select.dispatchEvent(new Event('change',{bubbles:true}));refreshAdminGuildPicker();closeAdminGuildPicker();});
+    menu.append(button);
+  }
+}
+document.addEventListener('click',e=>{if(!e.target.closest('#adminGuildPicker'))closeAdminGuildPicker();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeAdminGuildPicker();});
+
 async function loadAdminConsole(){
   if(!isBotOwner) return;
   const listEl = document.getElementById('adminGuildList');
@@ -4342,6 +4405,7 @@ async function loadAdminConsole(){
 
   // 서버 내 전체 지급/차감용 드롭다운 채우기
   const guildSelect = document.getElementById('ac_guild_select');
+  window.adminConsoleGuilds = guilds || [];
   if(guildSelect){
     if(!guilds || guilds.length === 0){
       guildSelect.innerHTML = `<option value="">등록된 서버 없음</option>`;
@@ -4349,6 +4413,7 @@ async function loadAdminConsole(){
       guildSelect.innerHTML = `<option value="">서버를 선택하세요</option>` +
         guilds.map(g => `<option value="${g.guild_id}">${g.guild_name || g.guild_id} (${g.member_count ?? '?'}명)</option>`).join('');
     }
+    refreshAdminGuildPicker();
   }
 
   if(!guilds || guilds.length === 0){
@@ -5002,6 +5067,14 @@ async function selectServer(id, name, role){
   document.getElementById('panelServerSelect').style.display = 'none';
   document.getElementById('panelContent').style.display = 'block';
   document.getElementById('selectedServerName').textContent = name;
+  const selectedIcon=document.getElementById('selectedServerIcon');
+  const selectedGuild=cachedDisplayGuilds.find(g=>String(g.id)===String(id));
+  if(selectedIcon){
+    const url=selectedGuild?.icon;
+    if(url && /^https:\/\/(?:cdn\.discordapp\.com|media\.discordapp\.net)\//.test(url)){
+      selectedIcon.src=url;selectedIcon.hidden=false;selectedIcon.onerror=()=>{selectedIcon.hidden=true;};
+    }else{selectedIcon.removeAttribute('src');selectedIcon.hidden=true;}
+  }
 
   const badge = document.getElementById('permBadge');
   if(isBotOwner){ badge.textContent = '봇 오너'; badge.className = 'panel-perm-badge role-owner'; }
