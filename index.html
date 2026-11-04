@@ -6041,6 +6041,15 @@ dsHash();dsRefreshAuth();
  const $=id=>document.getElementById(id);
  const message=(id,value)=>{$(id).textContent=value;};
  const codeRE=/^[A-Z0-9]{4}(?:-[A-Z0-9]{4}){3}$/;
+ const formatRewardCode=value=>(String(value||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,16).match(/.{1,4}/g)||[]).join('-');
+ const newCodeInput=$('dogeNewCode');
+ newCodeInput.addEventListener('input',()=>{
+  const before=newCodeInput.value.slice(0,newCodeInput.selectionStart??newCodeInput.value.length);
+  const offset=formatRewardCode(before).length;
+  const formatted=formatRewardCode(newCodeInput.value);
+  newCodeInput.value=formatted;
+  newCodeInput.setSelectionRange(offset,offset);
+ });
  const rand=()=>{const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';const bytes=new Uint8Array(16);crypto.getRandomValues(bytes);return Array.from({length:4},(_,g)=>Array.from({length:4},(_,i)=>chars[bytes[g*4+i]%chars.length]).join('')).join('-');};
  const dateKST=s=>{const match=/^(\d{4})-(\d{2})-(\d{2})$/.exec(s);if(!match)throw new Error('날짜를 선택해주세요.');
  const y=+match[1],m=+match[2],day=+match[3],check=new Date(Date.UTC(y,m-1,day));
@@ -6149,7 +6158,7 @@ dsHash();dsRefreshAuth();
  }
  $('dogeType').addEventListener('change',()=>{$('dogePointsWrap').hidden=$('dogeType').value!=='points';$('dogeItemWrap').hidden=$('dogeType').value!=='item';$('dogeRoleWrap').hidden=$('dogeType').value!=='role'||$('dogeScope').value==='ALL';if($('dogeType').value==='role')loadRoles();});
  $('dogeScope').addEventListener('change',()=>{$('dogeRoleWrap').hidden=$('dogeType').value!=='role'||$('dogeScope').value==='ALL';if($('dogeType').value==='role')loadRoles();});
- $('dogeRandom').addEventListener('click',()=>{$('dogeNewCode').value=rand();});
+ $('dogeRandom').addEventListener('click',()=>{newCodeInput.value=formatRewardCode(rand());});
  $('dogeRedeemForm').addEventListener('submit',async e=>{e.preventDefault();message('dogeRedeemMsg','확인 중…');try{
   if(!currentDiscordUser)throw new Error('Discord 로그인 후 사용해주세요.');const code=$('dogeCode').value.trim().toUpperCase();if(!codeRE.test(code))throw new Error('XXXX-XXXX-XXXX-XXXX 형식으로 입력해주세요.');
   const guild=$('dogeRedeemGuild').value;if(!guild)throw new Error('서버를 선택해주세요.');
@@ -6158,7 +6167,7 @@ dsHash();dsRefreshAuth();
  }catch(err){message('dogeRedeemMsg','❌ '+err.message);}});
  $('dogeCreateForm').addEventListener('submit',async e=>{e.preventDefault();message('dogeAdminMsg','생성 중…');try{
   if(!isBotOwner)throw new Error('오너만 사용할 수 있습니다.');const type=$('dogeType').value;const gid=$('dogeScope').value==='ALL'?null:$('dogeScope').value;
-  const code=($('dogeNewCode').value.trim()||rand()).toUpperCase();if(!codeRE.test(code))throw new Error('코드 형식이 올바르지 않습니다.');
+  const code=formatRewardCode(newCodeInput.value.trim()||rand());if(!codeRE.test(code))throw new Error('코드 형식이 올바르지 않습니다.');
   const reward={type};if(type==='role'){if(!gid)throw new Error('역할 보상은 특정 서버만 사용할 수 있습니다.');if(!$('dogeRole').value)throw new Error('역할을 선택해주세요.');reward.role_id=$('dogeRole').value;}
   if(type==='points'){reward.amount=Number($('dogePoints').value);if(!Number.isSafeInteger(reward.amount)||reward.amount<1||reward.amount>100000000)throw new Error('포인트 수량 오류');}
   if(type==='item'){reward.item_key=$('dogeItem').value;if(!reward.item_key)throw new Error('아이템을 선택해주세요.');reward.quantity=1;}
@@ -6181,6 +6190,8 @@ dsHash();dsRefreshAuth();
 </body>
 </html>
 
+
+  
 
   
 
