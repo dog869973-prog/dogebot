@@ -2295,7 +2295,9 @@ window.alert=message=>{void dogeAlert(message);};
  <label class="ds-field" id="dogePointsWrap">지급 포인트<input id="dogePoints" class="ds-input" type="number" value="100" min="1" max="100000000"></label>
  <label class="ds-field" id="dogeItemWrap" hidden>상점 아이템<select class="ds-input" id="dogeItem"><option value="rr_hp_boost">체력 부스트 5분</option><option value="rr_instant_win">즉시 승리하기</option><option value="rr_double_bullet">확률성 더블총알</option><option value="rr_rank_up">등급 상승</option><option value="rf_annihilation">확률성 전멸</option><option value="rf_instant_win">즉시 승리</option><option value="cl_hint">민감한 가시성</option></select></label>
  <label class="ds-field" id="dogeRoleWrap" hidden>지급 역할<select class="ds-input" id="dogeRole"></select></label>
- <label class="ds-field">유효기간 종료일 (한국 시간 23:59:59)<input class="ds-input" id="dogeExpiry" type="date" required></label>
+ <label class="ds-field">유효기간 종료일 (한국 시간)<input class="ds-input" id="dogeExpiry" type="date" required></label>
+ <label class="ds-field">종료 시간 (선택 · 한국 시간)<input class="ds-input" id="dogeExpiryTime" type="time" step="1" aria-describedby="dogeExpiryTimeHint"></label>
+ <p class="ds-note" id="dogeExpiryTimeHint">설정하지 않으면 선택한 날짜의 오후 11:59:59까지 유효합니다.</p>
  <label class="ds-field">코드 (비우면 랜덤)<input class="ds-input" id="dogeNewCode" maxlength="19" placeholder="XXXX-XXXX-XXXX-XXXX"></label>
  <button type="button" id="dogeRandom" class="ds-btn">랜덤 생성</button>
  <label class="ds-field">1인당 사용 가능 횟수<input class="ds-input" id="dogeMaxUses" type="number" value="1" min="1" max="100000" required></label>
@@ -6051,10 +6053,16 @@ dsHash();dsRefreshAuth();
   newCodeInput.setSelectionRange(offset,offset);
  });
  const rand=()=>{const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';const bytes=new Uint8Array(16);crypto.getRandomValues(bytes);return Array.from({length:4},(_,g)=>Array.from({length:4},(_,i)=>chars[bytes[g*4+i]%chars.length]).join('')).join('-');};
- const dateKST=s=>{const match=/^(\d{4})-(\d{2})-(\d{2})$/.exec(s);if(!match)throw new Error('날짜를 선택해주세요.');
+ const dateKST=(s, time='')=>{const match=/^(\d{4})-(\d{2})-(\d{2})$/.exec(s);if(!match)throw new Error('날짜를 선택해주세요.');
  const y=+match[1],m=+match[2],day=+match[3],check=new Date(Date.UTC(y,m-1,day));
  if(check.getUTCFullYear()!==y||check.getUTCMonth()!==m-1||check.getUTCDate()!==day)throw new Error('날짜가 올바르지 않습니다.');
- return new Date(Date.UTC(y,m-1,day,14,59,59,999)).toISOString();};
+ const input=String(time||'').trim();
+ const tm=input? /^(\d{2}):(\d{2})(?::(\d{2}))?$/.exec(input):null;
+ if(input&&!tm)throw new Error('종료 시간 형식이 올바르지 않습니다.');
+ const hour=tm?Number(tm[1]):23,minute=tm?Number(tm[2]):59,second=tm?(tm[3]===undefined?0:Number(tm[3])):59;
+ if(hour>23||minute>59||second>59)throw new Error('종료 시간을 확인해주세요.');
+ // Asia/Seoul = UTC+09:00, so subtract nine hours from the entered KST clock time.
+ return new Date(Date.UTC(y,m-1,day,hour-9,minute,second,999)).toISOString();};
  async function call(name,args){const {data,error}=await sb.rpc(name,args);if(error)throw error;return data;}
  // Rich server/role selectors: keep the original select for existing form and validation logic.
  const pickerMap=new Map();
@@ -6171,7 +6179,7 @@ dsHash();dsRefreshAuth();
   const reward={type};if(type==='role'){if(!gid)throw new Error('역할 보상은 특정 서버만 사용할 수 있습니다.');if(!$('dogeRole').value)throw new Error('역할을 선택해주세요.');reward.role_id=$('dogeRole').value;}
   if(type==='points'){reward.amount=Number($('dogePoints').value);if(!Number.isSafeInteger(reward.amount)||reward.amount<1||reward.amount>100000000)throw new Error('포인트 수량 오류');}
   if(type==='item'){reward.item_key=$('dogeItem').value;if(!reward.item_key)throw new Error('아이템을 선택해주세요.');reward.quantity=1;}
-  const expires=dateKST($('dogeExpiry').value), maxUses=Number($('dogeMaxUses').value);if(!Number.isInteger(maxUses)||maxUses<1||maxUses>100000)throw new Error('1인당 사용 가능 횟수를 확인해주세요.');
+  const expires=dateKST($('dogeExpiry').value,$('dogeExpiryTime').value), maxUses=Number($('dogeMaxUses').value);if(!Number.isInteger(maxUses)||maxUses<1||maxUses>100000)throw new Error('1인당 사용 가능 횟수를 확인해주세요.');
   const result=await call('doge_code_create_web',{p_code:code,p_guild_id:gid,p_reward:reward,p_expires:expires,p_max_uses:maxUses});if(!result.ok)throw new Error(result.message);
   $('dogeNewCode').value=code;message('dogeAdminMsg','✅ 생성 완료: '+code);await loadCodes();
  }catch(err){message('dogeAdminMsg','❌ '+err.message);}});
@@ -6190,8 +6198,6 @@ dsHash();dsRefreshAuth();
 </body>
 </html>
 
-
-  
 
   
 
