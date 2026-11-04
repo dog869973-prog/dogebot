@@ -2315,6 +2315,8 @@ window.alert=message=>{void dogeAlert(message);};
  <label class="ds-field" id="dogePointsWrap">지급 포인트<input id="dogePoints" class="ds-input" type="number" value="100" min="1" max="100000000"></label>
  <label class="ds-field" id="dogeItemWrap" hidden>상점 아이템<select class="ds-input" id="dogeItem"><option value="rr_hp_boost">체력 부스트 5분</option><option value="rr_instant_win">즉시 승리하기</option><option value="rr_double_bullet">확률성 더블총알</option><option value="rr_rank_up">등급 상승</option><option value="rf_annihilation">확률성 전멸</option><option value="rf_instant_win">즉시 승리</option><option value="cl_hint">민감한 가시성</option></select></label>
  <label class="ds-field" id="dogeRoleWrap" hidden>지급 역할<select class="ds-input" id="dogeRole"></select></label>
+ <div class="ds-actions"><button type="button" class="ds-btn" id="dogeAddReward">＋ 이 보상 추가</button><span class="ds-note">다른 종류와 동일한 아이템도 여러 번 추가할 수 있습니다.</span></div>
+ <div class="ds-card" style="padding:12px;margin:12px 0"><strong>추가된 보상 목록</strong><div id="dogeRewardList" class="ds-note" aria-live="polite">아직 추가된 보상이 없습니다. (기존 단일 보상 생성도 가능)</div></div>
  <label class="ds-field">유효기간 종료일 (한국 시간)<input class="ds-input" id="dogeExpiry" type="date" required></label>
  <label class="ds-field">종료 시간 (선택 · 한국 시간)<input class="ds-input" id="dogeExpiryTime" type="time" step="1" aria-describedby="dogeExpiryTimeHint"></label>
  <p class="ds-note" id="dogeExpiryTimeHint">설정하지 않으면 선택한 날짜의 오후 11:59:59까지 유효합니다.</p>
@@ -6237,6 +6239,46 @@ dsHash();dsRefreshAuth();
   $('dogeLoginNotice').hidden=logged;$('dogeRedeemForm').hidden=!logged;$('dogeAdmin').hidden=!owner;
   if(logged)populate();
  }
+ const pendingCodeRewards=[];
+ function currentCodeReward(){
+  const type=$('dogeType').value; const reward={type};
+  if(type==='points'){
+   reward.amount=Number($('dogePoints').value);
+   if(!Number.isSafeInteger(reward.amount)||reward.amount<1||reward.amount>100000000)throw new Error('포인트 수량을 확인하세요.');
+  }else if(type==='item'){
+   reward.item_key=$('dogeItem').value;
+   if(!reward.item_key)throw new Error('아이템을 선택해주세요.');
+   reward.quantity=1;
+  }else if(type==='role'){
+   if($('dogeScope').value==='ALL')throw new Error('전체 서버에서는 역할 보상을 추가할 수 없습니다.');
+   if(!$('dogeRole').value)throw new Error('역할을 선택해주세요.');
+   reward.role_id=$('dogeRole').value;
+  }
+  return reward;
+ }
+ function rewardText(r){
+  if(r.type==='points')return Number(r.amount).toLocaleString('ko-KR')+'P';
+  if(r.type==='item')return ($('dogeItem').querySelector(`option[value="${r.item_key}"]`)?.textContent||r.item_key)+' × '+(r.quantity||1)+'개';
+  if(r.type==='role')return '@'+(Array.from($('dogeRole').options).find(x=>x.value===r.role_id)?.textContent||r.role_id);
+  return '알 수 없는 보상';
+ }
+ function renderCodeRewards(){
+  const wrap=$('dogeRewardList');wrap.replaceChildren();
+  if(!pendingCodeRewards.length){wrap.textContent='아직 추가된 보상이 없습니다. (기존 단일 보상 생성도 가능)';return;}
+  pendingCodeRewards.forEach((r,i)=>{
+   const line=document.createElement('div');line.className='ds-row';line.style.margin='6px 0';
+   const label=document.createElement('span');label.textContent=`${i+1}. ${rewardText(r)}`;
+   const remove=document.createElement('button');remove.type='button';remove.className='ds-btn';remove.textContent='삭제';
+   remove.onclick=()=>{pendingCodeRewards.splice(i,1);renderCodeRewards();};
+   line.append(label,remove);wrap.append(line);
+  });
+ }
+ $('dogeAddReward').addEventListener('click',()=>{
+  try{
+   if(pendingCodeRewards.length>=20)throw new Error('최대 20개까지 추가할 수 있습니다.');
+   pendingCodeRewards.push(currentCodeReward());renderCodeRewards();message('dogeAdminMsg','✅ 보상이 목록에 추가됐습니다.');
+  }catch(e){message('dogeAdminMsg','❌ '+e.message);}
+ });
  $('dogeType').addEventListener('change',()=>{$('dogePointsWrap').hidden=$('dogeType').value!=='points';$('dogeItemWrap').hidden=$('dogeType').value!=='item';$('dogeRoleWrap').hidden=$('dogeType').value!=='role'||$('dogeScope').value==='ALL';if($('dogeType').value==='role')loadRoles();});
  $('dogeScope').addEventListener('change',()=>{$('dogeRoleWrap').hidden=$('dogeType').value!=='role'||$('dogeScope').value==='ALL';if($('dogeType').value==='role')loadRoles();});
  $('dogeRandom').addEventListener('click',()=>{newCodeInput.value=formatRewardCode(rand());});
@@ -6249,12 +6291,12 @@ dsHash();dsRefreshAuth();
  $('dogeCreateForm').addEventListener('submit',async e=>{e.preventDefault();message('dogeAdminMsg','생성 중…');try{
   if(!isBotOwner)throw new Error('오너만 사용할 수 있습니다.');const type=$('dogeType').value;const gid=$('dogeScope').value==='ALL'?null:$('dogeScope').value;
   const code=formatRewardCode(newCodeInput.value.trim()||rand());if(!codeRE.test(code))throw new Error('코드 형식이 올바르지 않습니다.');
-  const reward={type};if(type==='role'){if(!gid)throw new Error('역할 보상은 특정 서버만 사용할 수 있습니다.');if(!$('dogeRole').value)throw new Error('역할을 선택해주세요.');reward.role_id=$('dogeRole').value;}
-  if(type==='points'){reward.amount=Number($('dogePoints').value);if(!Number.isSafeInteger(reward.amount)||reward.amount<1||reward.amount>100000000)throw new Error('포인트 수량 오류');}
-  if(type==='item'){reward.item_key=$('dogeItem').value;if(!reward.item_key)throw new Error('아이템을 선택해주세요.');reward.quantity=1;}
+  const rewards=pendingCodeRewards.length?[...pendingCodeRewards]:[currentCodeReward()];
+  if(!gid&&rewards.some(r=>r.type==='role'))throw new Error('전체 서버 코드는 역할 보상을 포함할 수 없습니다.');
+  const reward=rewards.length===1?rewards[0]:{type:'bundle',rewards};
   const expires=dateKST($('dogeExpiry').value,$('dogeExpiryTime').value), maxUses=Number($('dogeMaxUses').value);if(!Number.isInteger(maxUses)||maxUses<1||maxUses>100000)throw new Error('1인당 사용 가능 횟수를 확인해주세요.');
   const result=await call('doge_code_create_web',{p_code:code,p_guild_id:gid,p_reward:reward,p_expires:expires,p_max_uses:maxUses});if(!result.ok)throw new Error(result.message);
-  $('dogeNewCode').value=code;message('dogeAdminMsg','✅ 생성 완료: '+code);await loadCodes();
+  $('dogeNewCode').value=code;pendingCodeRewards.length=0;renderCodeRewards();message('dogeAdminMsg','✅ 생성 완료: '+code);await loadCodes();
  }catch(err){message('dogeAdminMsg','❌ '+err.message);}});
  async function loadCodes(){if(!isBotOwner)return;const gid=$('dogeScope').value;if(!gid||gid==='ALL'){message('dogeLogs','서버를 선택하면 해당 서버에서 사용된 코드 기록을 확인할 수 있습니다.');return;}
   message('dogeLogs','불러오는 중…');try{const records=await call('doge_code_list_web',{p_guild_id:gid});const wrap=$('dogeLogs');wrap.replaceChildren();if(!records.length){wrap.textContent='등록된 코드가 없습니다.';return;}
